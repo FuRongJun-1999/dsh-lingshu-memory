@@ -6,6 +6,8 @@
 
 ## 阅读入口
 
+新长期任务：[上下文主动取用](<docs/CONTEXT_LOOP.md>)、[隔离存储C1](<docs/CONTEXT_STORE.md>)（完整动作闭环尚未完成）。
+
 - [方案基线验收单](<docs/BASELINE_ACCEPTANCE.md>)
 - [项目章程](<docs/CHARTER.md>)、[架构](<docs/ARCHITECTURE.md>)、[理论依据](<docs/SOURCES.md>)
 - [安全与血缘](<docs/SECURITY_MODEL.md>)、[恢复与回执](<docs/RECOVERY.md>)

@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-DIR_ROLES = {".github": "跨平台公开CI", "docs": "架构、恢复、安全、迁移与ADR", "spec": "结构化契约真源与冻结锁", "framework": "纯参考模型，不是运行时", "scripts": "规格、索引、合规和门禁工具", "tests": "独立预期样例与变异自证"}
+DIR_ROLES = {"sandbox_runtime": "显式隔离合成执行，不接生产", ".github": "跨平台公开CI", "docs": "架构、恢复、安全、迁移与ADR", "spec": "结构化契约真源与冻结锁", "framework": "纯参考模型，不是运行时", "scripts": "规格、索引、合规和门禁工具", "tests": "独立预期样例与变异自证"}
 ROOT_FILES = {"README.md": "项目入口与状态", "LICENSE": "MIT许可", "CONTRIBUTING.md": "贡献与验证纪律", "SECURITY.md": "漏洞报告边界", "WORKSPACE_INDEX.md": "本生成索引", ".gitignore": "本地产物排除", ".gitattributes": "文本格式"}
 IGNORE = {".git", "__pycache__", ".pytest_cache", ".venv", "artifacts", ".private"}
 

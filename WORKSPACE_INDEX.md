@@ -7,6 +7,7 @@
 - .github: 跨平台公开CI
 - docs: 架构、恢复、安全、迁移与ADR
 - framework: 纯参考模型，不是运行时
+- sandbox_runtime: 显式隔离合成执行，不接生产
 - scripts: 规格、索引、合规和门禁工具
 - spec: 结构化契约真源与冻结锁
 - tests: 独立预期样例与变异自证

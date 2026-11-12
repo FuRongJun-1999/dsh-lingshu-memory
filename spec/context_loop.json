@@ -1,0 +1,46 @@
+{
+  "version": "0.1-proposal",
+  "status": "design_only",
+  "scope": {
+    "host": "DSH",
+    "environment": "isolated_synthetic",
+    "production_fallback": false
+  },
+  "upstream_commit": "f251ad86425e2ece7f338c11c9e3c10c15a2ba2c",
+  "obligations": [
+    "task_bound_retrieval",
+    "filter_before_limit",
+    "exact_locator_readback",
+    "query_result_claim_binding",
+    "conditions_and_version",
+    "no_facts_in_degraded_output",
+    "bounded_refetch_alert",
+    "independent_effect_probe",
+    "missing_logs_unknown",
+    "no_default_production",
+    "resume_rebind"
+  ],
+  "negative_cases": [
+    "skip_retrieval",
+    "irrelevant_dummy_search",
+    "report_without_effect",
+    "large_irrelevant_corpus",
+    "stale_revision",
+    "same_name_wrong_task",
+    "unauthorized_record",
+    "side_effect_without_log",
+    "budget_exhausted",
+    "production_fallback",
+    "restart_or_compaction"
+  ],
+  "phases": [
+    "C0_contract",
+    "C1_isolated_store",
+    "C2_action_loop",
+    "C3_dsh_replay",
+    "C4_behavior_benchmark",
+    "C5_public_acceptance"
+  ],
+  "runtime_acceptance": "NOT_RUN",
+  "llm_evaluation": "NOT_RUN"
+}

@@ -20,7 +20,7 @@ def main():
         print(r.stderr, end="")
         failures += r.returncode != 0
     print("SPECIFICATION TOOLS:", "PASS" if not failures else "FAIL")
-    print("RUNTIME GATES: NOT_RUN (no storage/runtime implementation)")
+    print("PRODUCTION RUNTIME GATES: NOT_RUN (isolated synthetic store tests are not production acceptance)")
     return bool(failures)
 
 if __name__ == "__main__":
