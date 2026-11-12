@@ -9,6 +9,7 @@
 - [项目章程](<docs/CHARTER.md>)、[架构](<docs/ARCHITECTURE.md>)、[理论依据](<docs/SOURCES.md>)
 - [安全与血缘](<docs/SECURITY_MODEL.md>)、[恢复与回执](<docs/RECOVERY.md>)
 - [结构化规格](<spec/core.json>)、[生成规范](<docs/CONTRACTS.generated.md>)
+- [兼容候选清单](<docs/COMPATIBILITY.md>)、[条件与双时间](<docs/CONDITIONS_TIME.md>)
 - [迁移计划](<docs/MIGRATION.md>)、[验收矩阵](<docs/ACCEPTANCE.md>)、[长期路线](<docs/ROADMAP.md>)
 - [工作区索引](<WORKSPACE_INDEX.md>)、[贡献约定](<CONTRIBUTING.md>)
 - [响应与取消](<docs/RESPONSES.md>)、[事务协议提案](<docs/TRANSACTIONS.md>)

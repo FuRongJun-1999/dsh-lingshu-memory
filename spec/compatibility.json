@@ -1,0 +1,363 @@
+{
+  "version": "0.1-proposal",
+  "upstream_commit": "b450d2f451ed33891e3f6587d238d1d4f5c9ecb9",
+  "source_path": "md_cg/mcp_server.py",
+  "source_sha256": "071eb877ba3a2bcb43fd01a8e9a367a9b3b3e69b26d3b4736f4e902a3aceeaba",
+  "source_blob": "a82f74b17f95c5788694f48d57e072dffe6d5740",
+  "coverage": "top-level op only; NOT action/parameter or legacy alias coverage",
+  "default": "reject",
+  "operations": [
+    {
+      "tool": "cg",
+      "op": "help",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 2551,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "write",
+      "target": "Write",
+      "runtime_ready": false,
+      "source_line": 2562,
+      "reason": "候选映射；逐action/参数保真及当前授权后才能调用，不是兼容适配器"
+    },
+    {
+      "tool": "cg",
+      "op": "status",
+      "target": "Read",
+      "runtime_ready": false,
+      "source_line": 2568,
+      "reason": "候选映射；逐action/参数保真及当前授权后才能调用，不是兼容适配器"
+    },
+    {
+      "tool": "cg",
+      "op": "edges",
+      "target": "Read",
+      "runtime_ready": false,
+      "source_line": 2571,
+      "reason": "候选映射；逐action/参数保真及当前授权后才能调用，不是兼容适配器"
+    },
+    {
+      "tool": "cg",
+      "op": "theory",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 2574,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "link",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 2591,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "info",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 2731,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "route",
+      "target": "Read",
+      "runtime_ready": false,
+      "source_line": 2860,
+      "reason": "候选映射；逐action/参数保真及当前授权后才能调用，不是兼容适配器"
+    },
+    {
+      "tool": "cg",
+      "op": "read",
+      "target": "Read",
+      "runtime_ready": false,
+      "source_line": 2883,
+      "reason": "候选映射；逐action/参数保真及当前授权后才能调用，不是兼容适配器"
+    },
+    {
+      "tool": "cg",
+      "op": "audit",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3073,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "goal",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3144,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "task",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3193,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "recent",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3196,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "state_event",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3235,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "state_view",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3255,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "verify",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3266,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "review",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3272,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "forget",
+      "target": "Govern",
+      "runtime_ready": false,
+      "source_line": 3307,
+      "reason": "候选映射；逐action/参数保真及当前授权后才能调用，不是兼容适配器"
+    },
+    {
+      "tool": "cg",
+      "op": "protect",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3317,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "identity",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3320,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "consistency",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3323,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "metacognition",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3326,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "self_state",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3329,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "evolution",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3332,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "sustain",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3335,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "scrub",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3338,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "predict",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3341,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "causal",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3344,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "whitebox",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3347,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "index_code",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3350,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "index_doc",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3423,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "ref",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3491,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "session",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3494,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "ingest",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3497,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "export",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3500,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "maintain",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3503,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "consolidate",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3506,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "insight",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3509,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "cg",
+      "op": "ccg",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 3512,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "stg",
+      "op": "relation",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 4214,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "stg",
+      "op": "timeline",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 4216,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "stg",
+      "op": "anchors",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 4223,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "stg",
+      "op": "consistency",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 4227,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    },
+    {
+      "tool": "stg",
+      "op": "state_chain",
+      "target": "extension",
+      "runtime_ready": false,
+      "source_line": 4230,
+      "reason": "扩展协议未定义；不能把同名动作直接包装成四应用"
+    }
+  ]
+}
