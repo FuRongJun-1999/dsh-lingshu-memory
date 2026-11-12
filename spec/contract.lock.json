@@ -1,0 +1,6 @@
+{
+  "spec_version": "0.1.0",
+  "sha256": "0b73148ae2bddf3a94dd544aa6f9f0387ed43091e298e9c67fe337a2ae986740",
+  "previous_sha256": null,
+  "reason": "Initial reviewed design contract; runtime not implemented"
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "spec_version": "0.1.0",
+  "status": "design-development",
+  "runtime_released": false,
+  "application_contracts": [
+    "Write",
+    "Read",
+    "Govern",
+    "SelfCheck"
+  ],
+  "sensitivity": {
+    "levels": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "max": 3,
+    "inherit_relation": "derived",
+    "aggregate": "max",
+    "clearance_operator": "gte",
+    "dangling_relations": [
+      "derived",
+      "corroborating",
+      "contradicting",
+      "unknown"
+    ],
+    "unknown_to_max": true,
+    "invalid_to_quarantine": true
+  },
+  "formation": {
+    "quantifier": "any",
+    "relation": "derived",
+    "true_result": "derived",
+    "false_result": "direct"
+  },
+  "edges": {
+    "relations": [
+      "derived",
+      "corroborating",
+      "contradicting",
+      "unknown"
+    ],
+    "cross_tenant": "reject",
+    "bind_target": [
+      "node_id",
+      "revision",
+      "content_sha"
+    ],
+    "mutation": "reject",
+    "correction": "new_revision",
+    "cycles": "reject",
+    "scope_composition": "intersection",
+    "policy_tightening": "immediate",
+    "policy_widening": "bounded_by_creation"
+  },
+  "recovery": {
+    "states": [
+      "committed",
+      "absent",
+      "unknown"
+    ],
+    "empty_after_restart": "unknown",
+    "absent_requires": "authoritative_preaccept_rejection_or_durable_cancellation_without_conflict",
+    "process_power_loss": "arbitrary_subset",
+    "power_claim_requires": "platform_evidence",
+    "receipt_is": "historical_commit_not_current_visibility"
+  },
+  "idempotency": {
+    "scope": [
+      "tenant",
+      "principal",
+      "operation",
+      "token"
+    ],
+    "same_fingerprint": "return_original",
+    "different_fingerprint": "reject",
+    "incomplete_history": "unknown_block_retry",
+    "forget_releases_token": false
+  },
+  "verification": {
+    "bind": [
+      "subject_revision",
+      "subject_content_sha",
+      "scope",
+      "method",
+      "credential",
+      "verified_at"
+    ],
+    "source_identity_operator": "ne",
+    "source_identity_operands": [
+      "verifier_id",
+      "source_id"
+    ],
+    "content_change": "invalidate",
+    "truth_assurance": "not_claimed",
+    "independence_without_evidence": "unassessed"
+  }
+}
