@@ -1,16 +1,16 @@
 # 四应用契约字段草案
 
-状态：proposal，尚未纳入核心结构化规格与冻结锁；不是已可调用的API。已有[输入schema](<../spec/api.schema.json>)、[纯验证器](<../framework/api.py>)与[独立反例](<../tests/test_api.py>)，约束和缺口见[ADR-0004](<adr/0004-api-proposal.md>)。输出envelope未实现。
+状态：proposal，尚未纳入核心结构化规格与冻结锁；不是已可调用的API。已有[输入schema](<../spec/api.schema.json>)、[纯验证器](<../framework/api.py>)与[独立反例](<../tests/test_api.py>)，约束和缺口见[ADR-0004](<adr/0004-api-proposal.md>)。已有[响应元数据提案](<RESPONSES.md>)，不包含完整records数据输出或运行时。
 
 ## 可信上下文与调用方数据
 
 可信入口提供 Context(tenant_id, principal_id, clearance, policy_generation, auth_method, request_id)。业务payload不能覆盖这些字段；session_id仅定位，不授予身份。
-网络层拒绝未知字段、重复键、非法类型、过大嵌套、超限内容；限制值须另行固定，当前未声称已实现。
+网络层拒绝未知字段、重复键、非法类型、过大嵌套、超限内容；纯输入验证器已固定大小/深度/节点上限；网络入口尚未实现。
 控制面与内容面分离：不在正文内嵌系统指令来获取Govern能力。
 
 共享返回 Envelope(request_id, outcome, result, error, evidence_refs)。outcome=ok/error/unknown，三值不等同历史提交committed/absent/unknown。
 unknown表示请求结果不确定，必须提供可安全查询的caller token与恢复范围；绝不建议盲目换token重试。
-error含code、retryable、details_public；内部stacktrace/源路径/不可见目标标识不对外返回。
+响应提案使用error_code与next_action，不再用模糊retryable；内部stacktrace/源路径/不可见目标标识不对外返回。
 
 ## Write
 
@@ -43,16 +43,18 @@ forget是治理事件，不自动承诺物理擦除所有备份/审计；保留�
 
 ## 错误草案
 
-| code | retryable | 公开细节 |
+| code | 下一步（非统一retryable） | 公开细节 |
 |---|---|---|
-| INVALID_ARGUMENT | 否 | 字段/类型，不回显秘密值 |
-| AUTH_REQUIRED / NOT_FOUND_OR_DENIED | 否 | 不暴露另一tenant存在性 |
-| REVISION_CONFLICT | 否 | 仅已授权资源的当前revision |
-| TOKEN_PAYLOAD_CONFLICT | 否 | 调用方自己的token，原正文不回显 |
-| RECOVERY_UNCERTAIN | 条件性 | 同token查询，不换token重写 |
-| POWER_UNSUPPORTED | 否 | 平台能力缺口，不静默降级 |
-| SNAPSHOT_EXPIRED / POLICY_CHANGED | 是 | 新建读快照，不沿用旧授权 |
-| INTEGRITY_FAILURE | 否 | 隔离与安全恢复引用，不暴露原始内部日志 |
-| RESOURCE_EXHAUSTED | 条件性 | 限额与退避，不保证未提交 |
+| INVALID_ARGUMENT | 修正输入 | 字段/类型，不回显秘密值 |
+| AUTH_REQUIRED / NOT_FOUND_OR_DENIED | 重新认证或停止 | 不暴露另一tenant存在性 |
+| REVISION_CONFLICT | 授权后读取现态再决策 | 不自动合并 |
+| TOKEN_PAYLOAD_CONFLICT | 保留原token历史，停止冲突写 | 不回显原正文 |
+| RECOVERY_UNCERTAIN | 查询同token | 不换token重写 |
+| POWER_UNSUPPORTED | 停止或显式重新选择档位 | 不静默降级 |
+| SNAPSHOT_EXPIRED / POLICY_CHANGED | 新建读快照 | 不沿用旧授权 |
+| INTEGRITY_FAILURE | 隔离并查询恢复 | 不暴露原始内部日志 |
+| RESOURCE_EXHAUSTED | 查明提交状态后退避 | 不保证未提交 |
 
-输入大小和形状已固定在提案schema；conditions暂为文本数组，不解释语义。仍待输出envelope、取消/超时权威判定、条件语言与双时间类型、真实事务和平台持久化。
+此表覆盖未来接口错误，当前响应元数据schema仅支持[已建模子集](<RESPONSES.md>)，不把此表全部code声称为已实现。
+
+输入大小和形状已固定在提案schema；conditions暂为文本数组，不解释语义。已有响应元数据与取消证据顺序模型；完整records输出、真实取消/超时证据、条件语言、双时间、原子事务和平台持久化仍待完成。

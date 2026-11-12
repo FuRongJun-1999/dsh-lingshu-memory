@@ -1,0 +1,130 @@
+{
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "0.2"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "read",
+        "mutation",
+        "receipt"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "error",
+        "unknown"
+      ]
+    },
+    "error_code": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "enum": [
+            "NOT_FOUND_OR_DENIED",
+            "READ_FAILED",
+            "INTEGRITY_FAILURE",
+            "RECOVERY_UNCERTAIN",
+            "CANCELLED",
+            "PREACCEPT_REJECTED",
+            "AUDIT_INCOMPLETE",
+            "AUDIT_FAILED",
+            "AUDIT_UNCERTAIN"
+          ]
+        }
+      ]
+    },
+    "next_action": {
+      "type": "string",
+      "enum": [
+        "none",
+        "authenticate",
+        "retry_read",
+        "query_same_token",
+        "return_original_cancel",
+        "return_original_rejection",
+        "reconcile_audit",
+        "return_original"
+      ]
+    },
+    "target": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "commit_status": {
+              "type": "string",
+              "enum": [
+                "committed",
+                "absent",
+                "unknown"
+              ]
+            },
+            "audit": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "missing",
+                "failed",
+                "unknown"
+              ]
+            },
+            "projection": {
+              "type": "string",
+              "enum": [
+                "active",
+                "tombstoned",
+                "superseded",
+                "quarantined",
+                "unknown"
+              ]
+            },
+            "negative_basis": {
+              "type": "string",
+              "enum": [
+                "unassessed",
+                "preaccept_rejected",
+                "durable_cancel"
+              ]
+            }
+          },
+          "required": [
+            "commit_status",
+            "audit",
+            "projection",
+            "negative_basis"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": [
+    "version",
+    "request_id",
+    "scope",
+    "outcome",
+    "error_code",
+    "next_action",
+    "target"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "响应元数据提案0.2，不包含正文或认证证明"
+}

@@ -138,7 +138,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(api.retry_action("absent", True, False), "query_only")
         self.assertEqual(api.retry_action("committed", True, True), "return_original")
         self.assertEqual(api.retry_action("committed", False, True), "conflict")
-        self.assertEqual(api.retry_action("absent", True, True), "eligible_for_authorized_first_apply")
+        self.assertEqual(api.retry_action("absent", True, True, "fresh_unseen"), "eligible_for_authorized_first_apply")
         with self.assertRaises(ValueError): api.retry_action("unknown", True, "yes")
 
     def test_govern_positive(self):
@@ -182,7 +182,7 @@ class ApiTests(unittest.TestCase):
             ("committed", False, False): "query_only", ("committed", False, True): "conflict",
             ("committed", True, False): "query_only", ("committed", True, True): "return_original",
             ("absent", False, False): "query_only", ("absent", False, True): "conflict",
-            ("absent", True, False): "query_only", ("absent", True, True): "eligible_for_authorized_first_apply"}
+            ("absent", True, False): "query_only", ("absent", True, True): "query_only"}
         for args, result in expected.items():
             with self.subTest(args=args): self.assertEqual(api.retry_action(*args), result)
 

@@ -17,7 +17,7 @@ PASS / FAIL / NOT_RUN分别报告。规格工具绿不会自动更新运行时�
 | C09 | 所有原地边撤销拒绝、不隐式降密 |
 | C10 | 本地链接、索引、公开内容与凭据扫描 |
 
-API提案的shape、cursor、治理、未知提交与聚合由[独立测试](<../tests/test_api.py>)和[7类API变异](<../tests/test_api_mutations.py>)覆盖；[复核裁决](<reviews/API-proposal.md>)列明未实现边界。核心冻结规范保持不变。
+API提案的shape、cursor、治理、未知提交与聚合由[独立测试](<../tests/test_api.py>)和[7类API变异](<../tests/test_api_mutations.py>)覆盖；[复核裁决](<reviews/API-proposal.md>)列明未实现边界。[响应/取消独立断言](<../tests/test_responses.py>)与[行为变异](<../tests/test_response_mutations.py>)覆盖终结token不复用、授权先于回放和审计正交；[事务实验](<TRANSACTIONS.md>)仍全部NOT_RUN。核心冻结规范保持不变。
 
 测试独立预期由反例编写，不能从模型输出生成。变异既要测试锁也要测试模型行为，避免只证明hash会变。
 

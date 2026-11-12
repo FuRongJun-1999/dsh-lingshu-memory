@@ -12,10 +12,10 @@ Read新增receipt模式，只能查可信主体自己的tenant/principal/operati
 
 Govern纯谓词要求revision匹配、状态有效、重新授权，禁止原地边撤销。correct只返回旧superseded与新active的目标状态；没有原子事务，不能证明并发至多一个active。未来事务必须CAS当前revision与状态、分配严格递增revision、原子切换唯一active。restore重新核验安全与凭证。policy_safe和proof_fresh是可信证据的占位，不允许从业务请求直接取值。
 
-unknown/历史不完整仅可query；完整历史中的权威absent才具备首次应用资格，仍须授权、CAS和唯一token事务。unknown换新token不能解决原操作不确定，纯谓词不能识别任意新token重复语义。超时和取消均不自动产生absent。
+unknown/历史不完整仅可query；absent必须区分封存拒绝/持久取消（返原终结）和在线同epoch的fresh_unseen（首次应用资格），默认unassessed不放行，见[响应提案](<../RESPONSES.md>)。首次应用仍须授权、CAS和唯一token事务。unknown换新token不能解决原操作不确定，纯谓词不能识别任意新token重复语义。超时和取消均不自动产生absent。
 
 SelfCheck必需项缺失按NOT_RUN，重复/未知id拒绝，任何报告FAIL优先；空required拒绝。不支持用自报不适用跳过门禁。
 
 独立设计复核采纳CAS目标、缺失项、模式绑定与unknown反例；拒绝“任何首次token必须已有回执”的字面建议，否则首次写入永远不能开始。
 
-尚未完成：输出envelope schema、可信Context建立、分页快照生命周期、持久intent/取消协议、真实并发、平台I/O证明。测试PASS仅属于纯规格工具。
+更新：响应元数据schema与取消证据纯模型见[响应提案](<../RESPONSES.md>)。尚未完成：完整records输出、可信Context建立、分页快照生命周期、持久intent/取消的实际实现、真实并发、平台I/O证明。测试PASS仅属于纯规格工具。

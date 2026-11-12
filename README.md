@@ -11,6 +11,7 @@
 - [结构化规格](<spec/core.json>)、[生成规范](<docs/CONTRACTS.generated.md>)
 - [迁移计划](<docs/MIGRATION.md>)、[验收矩阵](<docs/ACCEPTANCE.md>)、[长期路线](<docs/ROADMAP.md>)
 - [工作区索引](<WORKSPACE_INDEX.md>)、[贡献约定](<CONTRIBUTING.md>)
+- [响应与取消](<docs/RESPONSES.md>)、[事务协议提案](<docs/TRANSACTIONS.md>)
 - [四应用字段草案](<docs/API_DRAFT.md>)、[输入schema提案](<spec/api.schema.json>)、[开发运维](<docs/OPERATIONS.md>)
 
 ## 定位

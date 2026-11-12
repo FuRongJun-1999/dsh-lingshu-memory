@@ -185,14 +185,20 @@ def receipt_scope_allowed(context, record_scope, operation, token):
     return all(type(v) is str and v for v in values) and all(type(v) is str for v in record_scope) and values == record_scope
 
 
-def retry_action(commit_status, same_fingerprint, history_complete):
+def retry_action(commit_status, same_fingerprint, history_complete, negative_basis="unassessed"):
     if type(same_fingerprint) is not bool or type(history_complete) is not bool:
         raise ValueError("INVALID_ARGUMENT")
     if type(commit_status) is not str or commit_status not in ("committed", "absent", "unknown"):
         raise ValueError("INVALID_ARGUMENT")
+    if type(negative_basis) is not str or negative_basis not in ("unassessed", "fresh_unseen", "preaccept_rejected", "durable_cancel"):
+        raise ValueError("INVALID_ARGUMENT")
+    if commit_status != "absent" and negative_basis != "unassessed": raise ValueError("INVALID_ARGUMENT")
     if not history_complete or commit_status == "unknown": return "query_only"
     if not same_fingerprint: return "conflict"
-    return "return_original" if commit_status == "committed" else "eligible_for_authorized_first_apply"
+    if commit_status == "committed": return "return_original"
+    if negative_basis == "durable_cancel": return "return_original_cancel"
+    if negative_basis == "preaccept_rejected": return "return_original_rejection"
+    return "eligible_for_authorized_first_apply" if negative_basis == "fresh_unseen" else "query_only"
 
 
 def govern_transition(state, current_revision, expected_revision, action, authorized, policy_safe, proof_fresh):
