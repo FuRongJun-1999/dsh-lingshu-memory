@@ -1,6 +1,6 @@
 # 四应用契约字段草案
 
-状态：proposal，尚未纳入核心结构化规格与冻结锁；不是已可调用的API。合并为规范前须逐字段schema、负例与独立复核。
+状态：proposal，尚未纳入核心结构化规格与冻结锁；不是已可调用的API。已有[输入schema](<../spec/api.schema.json>)、[纯验证器](<../framework/api.py>)与[独立反例](<../tests/test_api.py>)，约束和缺口见[ADR-0004](<adr/0004-api-proposal.md>)。输出envelope未实现。
 
 ## 可信上下文与调用方数据
 
@@ -22,7 +22,7 @@ modify必须精确匹配expected_revision；冲突不自动合并。reader_ceili
 
 ## Read
 
-输入：mode(get/search/expand)、node_id或query、limit、cursor、include_provenance。
+输入：schema使用kind=Read.get/search/expand/receipt；get用node_id，search用query，expand用node_id与depth，分页有limit、可选cursor、include_provenance。receipt用operation与caller_token，作用域来自可信入口。
 输出：snapshot_ref、policy_generation、records、next_cursor、coverage与不可见来源的无标识占位。
 候选在排序、limit、分页、图扩展前过滤。不能让总命中数暴露不可见节点数量。
 cursor绑定主体/tenant/查询摘要/内容快照/策略代际；重放到另一主体拒绝，权限代际变化必须重新授权或失效，不能用旧快照延续旧权限。
@@ -55,4 +55,4 @@ forget是治理事件，不自动承诺物理擦除所有备份/审计；保留�
 | INTEGRITY_FAILURE | 否 | 隔离与安全恢复引用，不暴露原始内部日志 |
 | RESOURCE_EXHAUSTED | 条件性 | 限额与退避，不保证未提交 |
 
-尚需裁定：error时可确定未提交的边界、异常响应丢失后的查询接口、超时与取消语义、字段大小上限、条件空间schema与双时间精确类型。
+输入大小和形状已固定在提案schema；conditions暂为文本数组，不解释语义。仍待输出envelope、取消/超时权威判定、条件语言与双时间类型、真实事务和平台持久化。
