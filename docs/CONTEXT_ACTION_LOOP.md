@@ -27,6 +27,6 @@ python -X utf8 -B scripts/context_demo.py
 - [C3归一化事件重放](<CONTEXT_REPLAY.md>)已实现重复错序、压缩/resume重新取证与同进程累计预算；DSH真实事件接线仍未做，当前GUI和生产服务未修改，不等于生产恢复机制。
 - 静态内存库、同步单线程；最终Context检查到外部传输间的并发撤权原子性、崩溃持久性、认证来源真实性未解决。Context形状不是认证。
 - 哈希与locator只能证字节及出处，不证明原文真假、语义蕴含、无提示注入，原文始终是不可信数据而非可执行指令。无LLM调用，亦不宣称输出原文就是正确任务答案。
-- 无key自然语言词汇召回、不同语料/规模/预算的系统基准待C4；本轮500噪音的成功依赖显式key回取。
+- [C4固定合成基准](<CONTEXT_BENCHMARK.md>)已分报无key词汇定位、噪音规模与预算负例；真实自然语料/多知识域仍未评估，成功依赖显式key回取。
 
 [总体契约](<CONTEXT_LOOP.md>)仍runtime_acceptance=NOT_RUN；生产R门禁NOT_RUN。公开CI须绑定本轮提交，历史C1绿灯不能替代。

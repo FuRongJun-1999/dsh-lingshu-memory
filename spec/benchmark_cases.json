@@ -1,0 +1,1833 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "normal-0-0-7",
+      "noise": 0,
+      "query": "blue widget",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "zz-target"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "909714a468f137dcc8207adb0ab310884d0f8eae4bff8c979a0295c63504dd95"
+    },
+    {
+      "id": "normal-0-0-29",
+      "noise": 0,
+      "query": "blue widget",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "zz-target"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "08ac87f0d97c45e3f542b17728c206d99e4ad0b6670af0d36cf29aca26b3f224"
+    },
+    {
+      "id": "normal-0-1-7",
+      "noise": 0,
+      "query": "蓝色组件",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "zz-target"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "52caee5dd1c5d9d727b6d94cf9cffe43ecfb625cbcc06bfe191cf82c89493aba"
+    },
+    {
+      "id": "normal-0-1-29",
+      "noise": 0,
+      "query": "蓝色组件",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "zz-target"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "a7165efc7c3f9fe044a0ae1d4439c21904f83d4277e94a4a39815b749a867a72"
+    },
+    {
+      "id": "normal-0-2-7",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "b08b7ef674ef21da514ef638ea051988aa8e4970c766c1cd02aa6f58c2944123"
+    },
+    {
+      "id": "normal-0-2-29",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "7c5798b3d29eca634a4e1611035df60c4cf6885e424c4335dd3686621f22c241"
+    },
+    {
+      "id": "normal-10-0-7",
+      "noise": 10,
+      "query": "blue widget",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "29da90ae05b53382673128d1c30d701c1580e9eb5083c0a4e8b81429f5358371",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "2a0d8811bd074a588ea8423d6335b84d78a6368b16c1925695670256fda30fb2"
+    },
+    {
+      "id": "normal-10-0-29",
+      "noise": 10,
+      "query": "blue widget",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "e2b75163a7ed9ca733a6874204deb9718474231a5bc59b509ec30b7fcbd8b5be",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "c736448eb9e9ec18d4397eead4238f9e43a4a8f4453f7c22a8447fb59ee0ac3f"
+    },
+    {
+      "id": "normal-10-1-7",
+      "noise": 10,
+      "query": "蓝色组件",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "29da90ae05b53382673128d1c30d701c1580e9eb5083c0a4e8b81429f5358371",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "8a55097ba59c7d584e7cb0bf87e6c622aabd1be0680939ac64896234f3fbe0d3"
+    },
+    {
+      "id": "normal-10-1-29",
+      "noise": 10,
+      "query": "蓝色组件",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "e2b75163a7ed9ca733a6874204deb9718474231a5bc59b509ec30b7fcbd8b5be",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "c252bda35fa428e2c613f24681aed8217e960692d2b22789f4750abc3f7fe63a"
+    },
+    {
+      "id": "normal-10-2-7",
+      "noise": 10,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "29da90ae05b53382673128d1c30d701c1580e9eb5083c0a4e8b81429f5358371",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "47bb6ca5b2fe6cbee0cd2ca821bb35a74c11dd20f2a5241351e03a9f015fdc1f"
+    },
+    {
+      "id": "normal-10-2-29",
+      "noise": 10,
+      "query": "unrelatedphrase",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "e2b75163a7ed9ca733a6874204deb9718474231a5bc59b509ec30b7fcbd8b5be",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "62947ae08adb51f5e66905e23ac6ce4cf4e781c65b6970c74070eb700f4e56cf"
+    },
+    {
+      "id": "normal-100-0-7",
+      "noise": 100,
+      "query": "blue widget",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "dd7a05e675da91daa52e6c692f0e35af570876ecabed27794065080574b8d744",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "194ba88226ae1c2efe0bd7ccbe20ea48835ede6101e13b9554815197a7339eb3"
+    },
+    {
+      "id": "normal-100-0-29",
+      "noise": 100,
+      "query": "blue widget",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "da31e1f9a80eca4af69b3c156947bf9597b9b9f7b5a0b4b7b65fa9d1af2bea52",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "904d1286c4b9262d3fe9bef7391732a6a9d8fd8a8fd18f29c9cb68b34414da1a"
+    },
+    {
+      "id": "normal-100-1-7",
+      "noise": 100,
+      "query": "蓝色组件",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "dd7a05e675da91daa52e6c692f0e35af570876ecabed27794065080574b8d744",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "2f04e83d11064fb1cbfc8395818d901947c7f4fec177d812fccceb49a379c3ff"
+    },
+    {
+      "id": "normal-100-1-29",
+      "noise": 100,
+      "query": "蓝色组件",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "da31e1f9a80eca4af69b3c156947bf9597b9b9f7b5a0b4b7b65fa9d1af2bea52",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "5c63d5b44157f8c94a5b5e4a4f32ca5bcb215a77aa639780c485943502fdcfa5"
+    },
+    {
+      "id": "normal-100-2-7",
+      "noise": 100,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "dd7a05e675da91daa52e6c692f0e35af570876ecabed27794065080574b8d744",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "6e4b08b0d2cbfb2853ff3e6b6dcf2dc54e743ea5a7ea1cf42be38d9ff68298d2"
+    },
+    {
+      "id": "normal-100-2-29",
+      "noise": 100,
+      "query": "unrelatedphrase",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "da31e1f9a80eca4af69b3c156947bf9597b9b9f7b5a0b4b7b65fa9d1af2bea52",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "0309153d8d7f9e6363cf8fd667791e7abd7ed319287a7112e215aafd3d1d46ec"
+    },
+    {
+      "id": "normal-1000-0-7",
+      "noise": 1000,
+      "query": "blue widget",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "62333eafbf68a06465e759e0b13a194f8648a106db1e23a14853efb59f6230cd",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "6b0b5eaad970db2d39b773c21bc60cc3d1e525f99ad5f28043a2061e4962b763"
+    },
+    {
+      "id": "normal-1000-0-29",
+      "noise": 1000,
+      "query": "blue widget",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "355af9014eeeb95c47dff27ffbab8d2ab55bf3a9950f05be019faec482c57c66",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "a0ee2e7bfe1ee95730953f83fa21de7cb7b1c87ab2a63243f589a2cbc8e95605"
+    },
+    {
+      "id": "normal-1000-1-7",
+      "noise": 1000,
+      "query": "蓝色组件",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "62333eafbf68a06465e759e0b13a194f8648a106db1e23a14853efb59f6230cd",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "f01d8d7899670c92a055c1354dbe502ce18f5a20fcadad6b26d71fa23c1b8de4"
+    },
+    {
+      "id": "normal-1000-1-29",
+      "noise": 1000,
+      "query": "蓝色组件",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "355af9014eeeb95c47dff27ffbab8d2ab55bf3a9950f05be019faec482c57c66",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 4,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 32
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "eb285c9dc3128ea9d408030b5e1784a256bf1dece290bbeb68f1d675ff871644"
+    },
+    {
+      "id": "normal-1000-2-7",
+      "noise": 1000,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "62333eafbf68a06465e759e0b13a194f8648a106db1e23a14853efb59f6230cd",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "f9c66fd232b4b0d4154aec68b8666e7553da8fd75eb83ce662df76f3bdcb1dc3"
+    },
+    {
+      "id": "normal-1000-2-29",
+      "noise": 1000,
+      "query": "unrelatedphrase",
+      "seed": 29,
+      "variant": "normal",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "ready",
+        "id": "zz-target",
+        "body": "blue widget limit 8 蓝色组件限额八"
+      },
+      "fixture_sha": "355af9014eeeb95c47dff27ffbab8d2ab55bf3a9950f05be019faec482c57c66",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "9f902df22d0b99aa88f285f95d2ee9d6a87515faba588abe9a96a73808cac90f"
+    },
+    {
+      "id": "negative-missing",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "missing",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "EVIDENCE_GAP"
+      },
+      "fixture_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "key"
+        }
+      ],
+      "expected_trace_sha": "2368825e6622b2a938f3e5ae347dcab47f5d8a8a876f757188dce4c90f224620"
+    },
+    {
+      "id": "negative-private",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "private",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "EVIDENCE_GAP"
+      },
+      "fixture_sha": "e1628e33e8dfb4a25c841db914bb79628bddaf05bd75b62b71028a773a4b463a",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "key"
+        }
+      ],
+      "expected_trace_sha": "cf94ad85450fbd31656b4a9260fed20fff93880beb89130bbfbe435d688259e6"
+    },
+    {
+      "id": "negative-tenant",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "tenant",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "EVIDENCE_GAP"
+      },
+      "fixture_sha": "96bbbfb947e76824746a51d174b77016fc865f4acc8be3ed9b0ba5952b156822",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "key"
+        }
+      ],
+      "expected_trace_sha": "baf86d24d0463c3c5c33820174499be379470d57b628a2d9c4688dc81e7943d7"
+    },
+    {
+      "id": "negative-version",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "version",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "EVIDENCE_GAP"
+      },
+      "fixture_sha": "6a3799d741d7f92f8aef1dcb9eddb1a4863afbc4ffd7873d7e513027559e14d9",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "4cf21549a32827f5a7393cb7a8f37d2f7b2897777c936a81064161cc79936a69"
+    },
+    {
+      "id": "negative-architecture",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "architecture",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "EVIDENCE_GAP"
+      },
+      "fixture_sha": "29e8de27a021e1acd9a6f855f5702e7da28ebe517e93e002b89ae58625b026ad",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "7934f3bd0123c26649433b6124545bb6e47bdb00bf8c499c87e83bd3fca413a9"
+    },
+    {
+      "id": "negative-condition",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "condition",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "EVIDENCE_GAP"
+      },
+      "fixture_sha": "f5225f370cd0eaafc591909c1811479169345a3d2afaccf724dd64548f177b1c",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "ae193563b9eb96644b6686731f60c36574debfe83450ec56cca486a5bad79a67"
+    },
+    {
+      "id": "negative-tombstone",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "tombstone",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "EVIDENCE_GAP"
+      },
+      "fixture_sha": "18b701048c908a0c4b5317b76835bf94441dc679bf537909d8e6021d412bc84a",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "key"
+        }
+      ],
+      "expected_trace_sha": "7728df467c01dbd9af3490e2daf699b0cafe87966d37074db1ef6b09bbb836ce"
+    },
+    {
+      "id": "negative-dangling",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "dangling",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "EVIDENCE_GAP"
+      },
+      "fixture_sha": "019f68d7980ff2a398c52b45769d2ca150cf7c1bedd59b62503d126040015fc9",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "key"
+        }
+      ],
+      "expected_trace_sha": "67837b380c18df2fc7b66334f65185102b2f4e837588de77c5b55718049c8b3f"
+    },
+    {
+      "id": "negative-ambiguous",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "ambiguous",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "AMBIGUOUS"
+      },
+      "fixture_sha": "155f325d6a05aa8defb983a57009f45e6efaac1e3f0962afcae70fff98bb77bb",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 2,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 19
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "465615e29701639c340f28f35f7ffc5a5003dd70d9129e65780413d729916652"
+    },
+    {
+      "id": "negative-candidate_cap",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "candidate_cap",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "CANDIDATE_LIMIT"
+      },
+      "fixture_sha": "505199138a1483e9f445e6204450b516a31403338b246c656c7ef5efe00a90a7",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        },
+        {
+          "operation": "search",
+          "returned": 64,
+          "mode": "key"
+        }
+      ],
+      "expected_trace_sha": "397bf202c9e4d891b4fcfaf99db3694f005353313bf72875718c01895f175d06"
+    },
+    {
+      "id": "negative-zero_calls",
+      "noise": 0,
+      "query": "blue widget",
+      "seed": 7,
+      "variant": "zero_calls",
+      "budget": {
+        "calls": 0,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "zz-target"
+      ],
+      "expected": {
+        "status": "blocked",
+        "reason": "BUDGET"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [],
+      "expected_trace_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "id": "negative-emit_call_short",
+      "noise": 0,
+      "query": "blue widget",
+      "seed": 7,
+      "variant": "emit_call_short",
+      "budget": {
+        "calls": 4,
+        "bytes": 20000,
+        "retries": 1
+      },
+      "text_top4": [
+        "zz-target"
+      ],
+      "expected": {
+        "status": "blocked",
+        "reason": "BUDGET"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        },
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "key"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "563a5bace8aad32509f503e9a89453808d8ab5eafb683064c4b0d718db9d4b53"
+    },
+    {
+      "id": "negative-zero_bytes",
+      "noise": 0,
+      "query": "blue widget",
+      "seed": 7,
+      "variant": "zero_bytes",
+      "budget": {
+        "calls": 64,
+        "bytes": 0,
+        "retries": 1
+      },
+      "text_top4": [
+        "zz-target"
+      ],
+      "expected": {
+        "status": "blocked",
+        "reason": "BUDGET"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "5107499f4299dd6f5a38ba856363dac93daa9337dfd9d38ee987a8cd56f66975"
+    },
+    {
+      "id": "negative-no_confirmation",
+      "noise": 0,
+      "query": "blue widget",
+      "seed": 7,
+      "variant": "no_confirmation",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 0
+      },
+      "text_top4": [
+        "zz-target"
+      ],
+      "expected": {
+        "status": "blocked",
+        "reason": "KEY_CONFIRMATION_REQUIRED"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 1,
+          "mode": "text"
+        },
+        {
+          "operation": "get",
+          "matched": true,
+          "bytes": 41
+        }
+      ],
+      "expected_trace_sha": "8578d0e202dd735fd943ee4f2d291de48c7cd24eb42b5801e73d81f7d5ac7b11"
+    },
+    {
+      "id": "negative-no_retry_miss",
+      "noise": 0,
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "variant": "no_retry_miss",
+      "budget": {
+        "calls": 64,
+        "bytes": 20000,
+        "retries": 0
+      },
+      "text_top4": [],
+      "expected": {
+        "status": "blocked",
+        "reason": "EVIDENCE_GAP"
+      },
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "expected_actions": [
+        {
+          "operation": "search",
+          "returned": 0,
+          "mode": "text"
+        }
+      ],
+      "expected_trace_sha": "d77cc7e107aa51147df97d2a6e32b4718a296581dada81ea4f27448a61281a5e"
+    }
+  ]
+}

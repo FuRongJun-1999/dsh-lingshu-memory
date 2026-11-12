@@ -1,0 +1,2973 @@
+{
+  "cases": [
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "89992f658d9771b63ae1e0e90604a49395028be899d212a96f9b0bd4dcf2a071:1",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "89992f658d9771b63ae1e0e90604a49395028be899d212a96f9b0bd4dcf2a071:2",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "3c4b01a52a214759240e47c9dcfd4086b73f3b1bf60c1d27f936d37e51036ef8",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "89992f658d9771b63ae1e0e90604a49395028be899d212a96f9b0bd4dcf2a071:3",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "89992f658d9771b63ae1e0e90604a49395028be899d212a96f9b0bd4dcf2a071:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "89992f658d9771b63ae1e0e90604a49395028be899d212a96f9b0bd4dcf2a071:5",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 123,
+      "calls": 5,
+      "case_sha": "1613a9e6f070b2f0015fc24a18fb2ab9b94b6e91a3f0cacb3ce57aa68d9f9a3c",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "normal-0-0-7",
+      "noise": 0,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "89992f658d9771b63ae1e0e90604a49395028be899d212a96f9b0bd4dcf2a071"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 7,
+      "text_target_hit": true,
+      "text_top4": [
+        "zz-target"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "725d4ac735a7acf1d9d6940080d5333fe8157bf13fcc95210f20e7826443a320:1",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "725d4ac735a7acf1d9d6940080d5333fe8157bf13fcc95210f20e7826443a320:2",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "3c4b01a52a214759240e47c9dcfd4086b73f3b1bf60c1d27f936d37e51036ef8",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "725d4ac735a7acf1d9d6940080d5333fe8157bf13fcc95210f20e7826443a320:3",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "725d4ac735a7acf1d9d6940080d5333fe8157bf13fcc95210f20e7826443a320:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "725d4ac735a7acf1d9d6940080d5333fe8157bf13fcc95210f20e7826443a320:5",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 123,
+      "calls": 5,
+      "case_sha": "66a65dc7c71a7719a05508b94687bde541fe844ce556bddf09716c95e1d35799",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "normal-0-0-29",
+      "noise": 0,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "725d4ac735a7acf1d9d6940080d5333fe8157bf13fcc95210f20e7826443a320"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 29,
+      "text_target_hit": true,
+      "text_top4": [
+        "zz-target"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "ba3fc3eac0461617678de915a6d45a0e734d499adad4ae45c6eb6808c5dc5bba",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "b98df09349b51f1e5b3f66cf1a643bbde14ef2f29eb9587ef7679a189eeeeacb:1",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "b98df09349b51f1e5b3f66cf1a643bbde14ef2f29eb9587ef7679a189eeeeacb:2",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "ffab7cde0bcc96b97c06254f812dc5146b61e6a7be8a1a6ac74f7b53f299bb2d",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "b98df09349b51f1e5b3f66cf1a643bbde14ef2f29eb9587ef7679a189eeeeacb:3",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "b98df09349b51f1e5b3f66cf1a643bbde14ef2f29eb9587ef7679a189eeeeacb:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "b98df09349b51f1e5b3f66cf1a643bbde14ef2f29eb9587ef7679a189eeeeacb:5",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 123,
+      "calls": 5,
+      "case_sha": "c6a481a4a2bc60c4911c5cd85779dfa1c5c89686860c48a78a8722c2fcc4fc2e",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "normal-0-1-7",
+      "noise": 0,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "b98df09349b51f1e5b3f66cf1a643bbde14ef2f29eb9587ef7679a189eeeeacb"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "蓝色组件",
+      "seed": 7,
+      "text_target_hit": true,
+      "text_top4": [
+        "zz-target"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "ba3fc3eac0461617678de915a6d45a0e734d499adad4ae45c6eb6808c5dc5bba",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "3c4a9c5a5b6bd1b793e5b549d2b414cf655c08028a08237e25982ef68da544fc:1",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3c4a9c5a5b6bd1b793e5b549d2b414cf655c08028a08237e25982ef68da544fc:2",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "ffab7cde0bcc96b97c06254f812dc5146b61e6a7be8a1a6ac74f7b53f299bb2d",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "3c4a9c5a5b6bd1b793e5b549d2b414cf655c08028a08237e25982ef68da544fc:3",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3c4a9c5a5b6bd1b793e5b549d2b414cf655c08028a08237e25982ef68da544fc:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3c4a9c5a5b6bd1b793e5b549d2b414cf655c08028a08237e25982ef68da544fc:5",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 123,
+      "calls": 5,
+      "case_sha": "5a01cfe4aab01ff3f28e9c5446928253c6345683beaed2b5d6ea5568a3ce0335",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "normal-0-1-29",
+      "noise": 0,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "3c4a9c5a5b6bd1b793e5b549d2b414cf655c08028a08237e25982ef68da544fc"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "蓝色组件",
+      "seed": 29,
+      "text_target_hit": true,
+      "text_top4": [
+        "zz-target"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "f38b122ca5178dfde24a669abb9683f4421a37effeeec1dba4b8c04df398fb85:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "f38b122ca5178dfde24a669abb9683f4421a37effeeec1dba4b8c04df398fb85:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "f38b122ca5178dfde24a669abb9683f4421a37effeeec1dba4b8c04df398fb85:3",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "f38b122ca5178dfde24a669abb9683f4421a37effeeec1dba4b8c04df398fb85:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 82,
+      "calls": 4,
+      "case_sha": "f273c204c4d14252451e1b7651e7fa6e32ad8e62a807d5a78cb8d811c753ef2c",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "normal-0-2-7",
+      "noise": 0,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "f38b122ca5178dfde24a669abb9683f4421a37effeeec1dba4b8c04df398fb85"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "8c1f6013b13e3ea945e5c2cb69b754b97c3740c278ff91f66cc64f972c5f7368:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "8c1f6013b13e3ea945e5c2cb69b754b97c3740c278ff91f66cc64f972c5f7368:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "8c1f6013b13e3ea945e5c2cb69b754b97c3740c278ff91f66cc64f972c5f7368:3",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "8c1f6013b13e3ea945e5c2cb69b754b97c3740c278ff91f66cc64f972c5f7368:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 82,
+      "calls": 4,
+      "case_sha": "07f546cbc04aaa315a5ade6900d2ae4baf7b309637c0fdf9648a7307fc3c08a6",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "normal-0-2-29",
+      "noise": 0,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "8c1f6013b13e3ea945e5c2cb69b754b97c3740c278ff91f66cc64f972c5f7368"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "dea3696a78c7a447e0551a6359c5779ed8a744665a177f4014f44aebc8bb0aff:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "dea3696a78c7a447e0551a6359c5779ed8a744665a177f4014f44aebc8bb0aff:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "dea3696a78c7a447e0551a6359c5779ed8a744665a177f4014f44aebc8bb0aff:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "dea3696a78c7a447e0551a6359c5779ed8a744665a177f4014f44aebc8bb0aff:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "dea3696a78c7a447e0551a6359c5779ed8a744665a177f4014f44aebc8bb0aff:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "3c4b01a52a214759240e47c9dcfd4086b73f3b1bf60c1d27f936d37e51036ef8",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "dea3696a78c7a447e0551a6359c5779ed8a744665a177f4014f44aebc8bb0aff:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "dea3696a78c7a447e0551a6359c5779ed8a744665a177f4014f44aebc8bb0aff:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "dea3696a78c7a447e0551a6359c5779ed8a744665a177f4014f44aebc8bb0aff:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "deb7415801c4943608061e6a16dbbf8e35e44ff2c433f0527d6822c5a9ff67d3",
+      "errors": [],
+      "fixture_sha": "29da90ae05b53382673128d1c30d701c1580e9eb5083c0a4e8b81429f5358371",
+      "id": "normal-10-0-7",
+      "noise": 10,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "dea3696a78c7a447e0551a6359c5779ed8a744665a177f4014f44aebc8bb0aff"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "450f1925677b0c8de149a4203f509e27baf7892de1267feefb4da21088608714:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "450f1925677b0c8de149a4203f509e27baf7892de1267feefb4da21088608714:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "450f1925677b0c8de149a4203f509e27baf7892de1267feefb4da21088608714:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "450f1925677b0c8de149a4203f509e27baf7892de1267feefb4da21088608714:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "450f1925677b0c8de149a4203f509e27baf7892de1267feefb4da21088608714:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "3c4b01a52a214759240e47c9dcfd4086b73f3b1bf60c1d27f936d37e51036ef8",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "450f1925677b0c8de149a4203f509e27baf7892de1267feefb4da21088608714:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "450f1925677b0c8de149a4203f509e27baf7892de1267feefb4da21088608714:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "450f1925677b0c8de149a4203f509e27baf7892de1267feefb4da21088608714:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "5f56d0cb9f1cc3486684e5d4e0954a1a9720041d13239ff7bd4911d603c0fab6",
+      "errors": [],
+      "fixture_sha": "e2b75163a7ed9ca733a6874204deb9718474231a5bc59b509ec30b7fcbd8b5be",
+      "id": "normal-10-0-29",
+      "noise": 10,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "450f1925677b0c8de149a4203f509e27baf7892de1267feefb4da21088608714"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "ba3fc3eac0461617678de915a6d45a0e734d499adad4ae45c6eb6808c5dc5bba",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "4409acdf4d1bce19b4f709ae9d77c642d4b231eb7500ca8a9b66ea097eaacc38:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "4409acdf4d1bce19b4f709ae9d77c642d4b231eb7500ca8a9b66ea097eaacc38:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "4409acdf4d1bce19b4f709ae9d77c642d4b231eb7500ca8a9b66ea097eaacc38:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "4409acdf4d1bce19b4f709ae9d77c642d4b231eb7500ca8a9b66ea097eaacc38:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "4409acdf4d1bce19b4f709ae9d77c642d4b231eb7500ca8a9b66ea097eaacc38:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "ffab7cde0bcc96b97c06254f812dc5146b61e6a7be8a1a6ac74f7b53f299bb2d",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "4409acdf4d1bce19b4f709ae9d77c642d4b231eb7500ca8a9b66ea097eaacc38:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "4409acdf4d1bce19b4f709ae9d77c642d4b231eb7500ca8a9b66ea097eaacc38:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "4409acdf4d1bce19b4f709ae9d77c642d4b231eb7500ca8a9b66ea097eaacc38:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "8b49b05b312d4b5513684f7f2268691fa500e9fc199d013a7278d27c933b21fe",
+      "errors": [],
+      "fixture_sha": "29da90ae05b53382673128d1c30d701c1580e9eb5083c0a4e8b81429f5358371",
+      "id": "normal-10-1-7",
+      "noise": 10,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "4409acdf4d1bce19b4f709ae9d77c642d4b231eb7500ca8a9b66ea097eaacc38"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "蓝色组件",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "ba3fc3eac0461617678de915a6d45a0e734d499adad4ae45c6eb6808c5dc5bba",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "2d31185a77c90fe95485107eb6b5724fdc4391d068e3ca76d50d1fb11bcf3583:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "2d31185a77c90fe95485107eb6b5724fdc4391d068e3ca76d50d1fb11bcf3583:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "2d31185a77c90fe95485107eb6b5724fdc4391d068e3ca76d50d1fb11bcf3583:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "2d31185a77c90fe95485107eb6b5724fdc4391d068e3ca76d50d1fb11bcf3583:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "2d31185a77c90fe95485107eb6b5724fdc4391d068e3ca76d50d1fb11bcf3583:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "ffab7cde0bcc96b97c06254f812dc5146b61e6a7be8a1a6ac74f7b53f299bb2d",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "2d31185a77c90fe95485107eb6b5724fdc4391d068e3ca76d50d1fb11bcf3583:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "2d31185a77c90fe95485107eb6b5724fdc4391d068e3ca76d50d1fb11bcf3583:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "2d31185a77c90fe95485107eb6b5724fdc4391d068e3ca76d50d1fb11bcf3583:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "4ef51565cc891e39f850bf0033eb2a0c0fa7e5db03c2c680191c0de9a8026e7b",
+      "errors": [],
+      "fixture_sha": "e2b75163a7ed9ca733a6874204deb9718474231a5bc59b509ec30b7fcbd8b5be",
+      "id": "normal-10-1-29",
+      "noise": 10,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "2d31185a77c90fe95485107eb6b5724fdc4391d068e3ca76d50d1fb11bcf3583"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "蓝色组件",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "74da2b47968c6cc9538cffeca57d409edd481db9117dca1f6ba5833b047214ad:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "74da2b47968c6cc9538cffeca57d409edd481db9117dca1f6ba5833b047214ad:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "74da2b47968c6cc9538cffeca57d409edd481db9117dca1f6ba5833b047214ad:3",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "74da2b47968c6cc9538cffeca57d409edd481db9117dca1f6ba5833b047214ad:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 82,
+      "calls": 4,
+      "case_sha": "b7365016099b07ceacb21ca08b276091ffb8318cf67b8328e015837373ff018a",
+      "errors": [],
+      "fixture_sha": "29da90ae05b53382673128d1c30d701c1580e9eb5083c0a4e8b81429f5358371",
+      "id": "normal-10-2-7",
+      "noise": 10,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "74da2b47968c6cc9538cffeca57d409edd481db9117dca1f6ba5833b047214ad"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "df58aa1296c2ac0ef5b4e1c486c1b59cf366eedab0e643dd4b2b2fe7f26e6da3:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "df58aa1296c2ac0ef5b4e1c486c1b59cf366eedab0e643dd4b2b2fe7f26e6da3:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "df58aa1296c2ac0ef5b4e1c486c1b59cf366eedab0e643dd4b2b2fe7f26e6da3:3",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "df58aa1296c2ac0ef5b4e1c486c1b59cf366eedab0e643dd4b2b2fe7f26e6da3:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 82,
+      "calls": 4,
+      "case_sha": "e5943730cf5a364690f8125b844601ca8c99aca99727388a7b3013ff02bffd19",
+      "errors": [],
+      "fixture_sha": "e2b75163a7ed9ca733a6874204deb9718474231a5bc59b509ec30b7fcbd8b5be",
+      "id": "normal-10-2-29",
+      "noise": 10,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "df58aa1296c2ac0ef5b4e1c486c1b59cf366eedab0e643dd4b2b2fe7f26e6da3"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "97df7ce2054618238a3b082d5bc539c21f38f31e8e6eb8453fb79bfb4e172a88:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "97df7ce2054618238a3b082d5bc539c21f38f31e8e6eb8453fb79bfb4e172a88:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "97df7ce2054618238a3b082d5bc539c21f38f31e8e6eb8453fb79bfb4e172a88:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "97df7ce2054618238a3b082d5bc539c21f38f31e8e6eb8453fb79bfb4e172a88:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "97df7ce2054618238a3b082d5bc539c21f38f31e8e6eb8453fb79bfb4e172a88:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "3c4b01a52a214759240e47c9dcfd4086b73f3b1bf60c1d27f936d37e51036ef8",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "97df7ce2054618238a3b082d5bc539c21f38f31e8e6eb8453fb79bfb4e172a88:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "97df7ce2054618238a3b082d5bc539c21f38f31e8e6eb8453fb79bfb4e172a88:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "97df7ce2054618238a3b082d5bc539c21f38f31e8e6eb8453fb79bfb4e172a88:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "ea8847731751646ecda2c547893b65ca160d9e847ddcaf4ff8e8e60aebdda788",
+      "errors": [],
+      "fixture_sha": "dd7a05e675da91daa52e6c692f0e35af570876ecabed27794065080574b8d744",
+      "id": "normal-100-0-7",
+      "noise": 100,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "97df7ce2054618238a3b082d5bc539c21f38f31e8e6eb8453fb79bfb4e172a88"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "3461d7531e18b32cd2d1c1f4876d165f0b5a662720d14673a59327259ec638ff:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3461d7531e18b32cd2d1c1f4876d165f0b5a662720d14673a59327259ec638ff:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3461d7531e18b32cd2d1c1f4876d165f0b5a662720d14673a59327259ec638ff:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3461d7531e18b32cd2d1c1f4876d165f0b5a662720d14673a59327259ec638ff:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3461d7531e18b32cd2d1c1f4876d165f0b5a662720d14673a59327259ec638ff:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "3c4b01a52a214759240e47c9dcfd4086b73f3b1bf60c1d27f936d37e51036ef8",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "3461d7531e18b32cd2d1c1f4876d165f0b5a662720d14673a59327259ec638ff:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3461d7531e18b32cd2d1c1f4876d165f0b5a662720d14673a59327259ec638ff:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3461d7531e18b32cd2d1c1f4876d165f0b5a662720d14673a59327259ec638ff:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "7580ae1025f97bcc70d2eebfb63da8fb350d5bd5be02ee87c1f9e80f78d7ada0",
+      "errors": [],
+      "fixture_sha": "da31e1f9a80eca4af69b3c156947bf9597b9b9f7b5a0b4b7b65fa9d1af2bea52",
+      "id": "normal-100-0-29",
+      "noise": 100,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "3461d7531e18b32cd2d1c1f4876d165f0b5a662720d14673a59327259ec638ff"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "ba3fc3eac0461617678de915a6d45a0e734d499adad4ae45c6eb6808c5dc5bba",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "9c9707cbd64674b0fb10bd75dce3b7cfdfc2851a800690a6779dfa7288406045:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "9c9707cbd64674b0fb10bd75dce3b7cfdfc2851a800690a6779dfa7288406045:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "9c9707cbd64674b0fb10bd75dce3b7cfdfc2851a800690a6779dfa7288406045:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "9c9707cbd64674b0fb10bd75dce3b7cfdfc2851a800690a6779dfa7288406045:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "9c9707cbd64674b0fb10bd75dce3b7cfdfc2851a800690a6779dfa7288406045:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "ffab7cde0bcc96b97c06254f812dc5146b61e6a7be8a1a6ac74f7b53f299bb2d",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "9c9707cbd64674b0fb10bd75dce3b7cfdfc2851a800690a6779dfa7288406045:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "9c9707cbd64674b0fb10bd75dce3b7cfdfc2851a800690a6779dfa7288406045:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "9c9707cbd64674b0fb10bd75dce3b7cfdfc2851a800690a6779dfa7288406045:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "18777797aea28365dd90934426bfd6a41c9851ccc93936d07ac7c8fc99b084c7",
+      "errors": [],
+      "fixture_sha": "dd7a05e675da91daa52e6c692f0e35af570876ecabed27794065080574b8d744",
+      "id": "normal-100-1-7",
+      "noise": 100,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "9c9707cbd64674b0fb10bd75dce3b7cfdfc2851a800690a6779dfa7288406045"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "蓝色组件",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "ba3fc3eac0461617678de915a6d45a0e734d499adad4ae45c6eb6808c5dc5bba",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "3610485fff670b3ea26c2dd9c11c4b6cd0fc959b219ec3ffa917091c3e7ede2c:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3610485fff670b3ea26c2dd9c11c4b6cd0fc959b219ec3ffa917091c3e7ede2c:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3610485fff670b3ea26c2dd9c11c4b6cd0fc959b219ec3ffa917091c3e7ede2c:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3610485fff670b3ea26c2dd9c11c4b6cd0fc959b219ec3ffa917091c3e7ede2c:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3610485fff670b3ea26c2dd9c11c4b6cd0fc959b219ec3ffa917091c3e7ede2c:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "ffab7cde0bcc96b97c06254f812dc5146b61e6a7be8a1a6ac74f7b53f299bb2d",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "3610485fff670b3ea26c2dd9c11c4b6cd0fc959b219ec3ffa917091c3e7ede2c:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3610485fff670b3ea26c2dd9c11c4b6cd0fc959b219ec3ffa917091c3e7ede2c:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3610485fff670b3ea26c2dd9c11c4b6cd0fc959b219ec3ffa917091c3e7ede2c:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "80f08de42a99c78bd04d8293cd7045555e7083ee277ba2aa5dcf70747d69f123",
+      "errors": [],
+      "fixture_sha": "da31e1f9a80eca4af69b3c156947bf9597b9b9f7b5a0b4b7b65fa9d1af2bea52",
+      "id": "normal-100-1-29",
+      "noise": 100,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "3610485fff670b3ea26c2dd9c11c4b6cd0fc959b219ec3ffa917091c3e7ede2c"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "蓝色组件",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "6195b0a85b5865ec9dba7cb3815524d212422b24ab4178472b723ca620b706f8:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "6195b0a85b5865ec9dba7cb3815524d212422b24ab4178472b723ca620b706f8:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "6195b0a85b5865ec9dba7cb3815524d212422b24ab4178472b723ca620b706f8:3",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "6195b0a85b5865ec9dba7cb3815524d212422b24ab4178472b723ca620b706f8:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 82,
+      "calls": 4,
+      "case_sha": "cc9b43c0d762e041ac4aee03247b623396e023372bb2a0a0751ceabcc6e73eed",
+      "errors": [],
+      "fixture_sha": "dd7a05e675da91daa52e6c692f0e35af570876ecabed27794065080574b8d744",
+      "id": "normal-100-2-7",
+      "noise": 100,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "6195b0a85b5865ec9dba7cb3815524d212422b24ab4178472b723ca620b706f8"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "2fa6d1b06440352a62976341cddbe6fcab8842c040c5f974ec368b6db1d12a1a:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "2fa6d1b06440352a62976341cddbe6fcab8842c040c5f974ec368b6db1d12a1a:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "2fa6d1b06440352a62976341cddbe6fcab8842c040c5f974ec368b6db1d12a1a:3",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "2fa6d1b06440352a62976341cddbe6fcab8842c040c5f974ec368b6db1d12a1a:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 82,
+      "calls": 4,
+      "case_sha": "e5141dd84b23c38ae0dbb1bde5a74cb3b44471c4d5c724d4c0be602d0e5e0450",
+      "errors": [],
+      "fixture_sha": "da31e1f9a80eca4af69b3c156947bf9597b9b9f7b5a0b4b7b65fa9d1af2bea52",
+      "id": "normal-100-2-29",
+      "noise": 100,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "2fa6d1b06440352a62976341cddbe6fcab8842c040c5f974ec368b6db1d12a1a"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "3a52a9de6c7a2e5ca561007a5ac95989fcf704cb09292689b47620e235f778bf:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3a52a9de6c7a2e5ca561007a5ac95989fcf704cb09292689b47620e235f778bf:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3a52a9de6c7a2e5ca561007a5ac95989fcf704cb09292689b47620e235f778bf:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3a52a9de6c7a2e5ca561007a5ac95989fcf704cb09292689b47620e235f778bf:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3a52a9de6c7a2e5ca561007a5ac95989fcf704cb09292689b47620e235f778bf:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "3c4b01a52a214759240e47c9dcfd4086b73f3b1bf60c1d27f936d37e51036ef8",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "3a52a9de6c7a2e5ca561007a5ac95989fcf704cb09292689b47620e235f778bf:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3a52a9de6c7a2e5ca561007a5ac95989fcf704cb09292689b47620e235f778bf:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "3a52a9de6c7a2e5ca561007a5ac95989fcf704cb09292689b47620e235f778bf:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "00e7828fe5e9a6b7d85af55788c30fa7fe00c0150d1d83ff96a50898e12e08b2",
+      "errors": [],
+      "fixture_sha": "62333eafbf68a06465e759e0b13a194f8648a106db1e23a14853efb59f6230cd",
+      "id": "normal-1000-0-7",
+      "noise": 1000,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "3a52a9de6c7a2e5ca561007a5ac95989fcf704cb09292689b47620e235f778bf"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "aebee415b5f7c10151e51492470f537d0b580c0c74e56e00b776db5267609d74:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "aebee415b5f7c10151e51492470f537d0b580c0c74e56e00b776db5267609d74:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "aebee415b5f7c10151e51492470f537d0b580c0c74e56e00b776db5267609d74:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "aebee415b5f7c10151e51492470f537d0b580c0c74e56e00b776db5267609d74:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "aebee415b5f7c10151e51492470f537d0b580c0c74e56e00b776db5267609d74:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "3c4b01a52a214759240e47c9dcfd4086b73f3b1bf60c1d27f936d37e51036ef8",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "aebee415b5f7c10151e51492470f537d0b580c0c74e56e00b776db5267609d74:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "aebee415b5f7c10151e51492470f537d0b580c0c74e56e00b776db5267609d74:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "aebee415b5f7c10151e51492470f537d0b580c0c74e56e00b776db5267609d74:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "41adf65e9b49b58d235e5d60470b2c8cd2d189128fa8810e4262da0c3b2d469b",
+      "errors": [],
+      "fixture_sha": "355af9014eeeb95c47dff27ffbab8d2ab55bf3a9950f05be019faec482c57c66",
+      "id": "normal-1000-0-29",
+      "noise": 1000,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "aebee415b5f7c10151e51492470f537d0b580c0c74e56e00b776db5267609d74"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "ba3fc3eac0461617678de915a6d45a0e734d499adad4ae45c6eb6808c5dc5bba",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "a6fedb156adbd468bf1f5090a11473d98975d26098447aaa1761c37e44bc9d7d:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "a6fedb156adbd468bf1f5090a11473d98975d26098447aaa1761c37e44bc9d7d:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "a6fedb156adbd468bf1f5090a11473d98975d26098447aaa1761c37e44bc9d7d:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "a6fedb156adbd468bf1f5090a11473d98975d26098447aaa1761c37e44bc9d7d:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "a6fedb156adbd468bf1f5090a11473d98975d26098447aaa1761c37e44bc9d7d:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "ffab7cde0bcc96b97c06254f812dc5146b61e6a7be8a1a6ac74f7b53f299bb2d",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "a6fedb156adbd468bf1f5090a11473d98975d26098447aaa1761c37e44bc9d7d:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "a6fedb156adbd468bf1f5090a11473d98975d26098447aaa1761c37e44bc9d7d:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "a6fedb156adbd468bf1f5090a11473d98975d26098447aaa1761c37e44bc9d7d:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "00a3a85af2a90df1e59dedb4be8f13f90beb01727c08adb8206e190d84d004f5",
+      "errors": [],
+      "fixture_sha": "62333eafbf68a06465e759e0b13a194f8648a106db1e23a14853efb59f6230cd",
+      "id": "normal-1000-1-7",
+      "noise": 1000,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "a6fedb156adbd468bf1f5090a11473d98975d26098447aaa1761c37e44bc9d7d"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "蓝色组件",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "ba3fc3eac0461617678de915a6d45a0e734d499adad4ae45c6eb6808c5dc5bba",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "f6c43ec5c2fec563a5c7a85c57c7f18d157efed2bda74d50d3cac108a19b580d:1",
+          "result_sha": "063c984951db193be232b422fba29fbe92ab0fe18a1133b850e8619188bacbda",
+          "returned": 4
+        },
+        {
+          "argument_sha": "178491f07dbcc855bda29594b1358a9214cbdcf5238970c9482d0574b9bc1f8e",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "f6c43ec5c2fec563a5c7a85c57c7f18d157efed2bda74d50d3cac108a19b580d:2",
+          "result_sha": "1ff37ab0d525cb976fcdf9cefca88f84dbbe57820b783ddb380ca467cab2ab91"
+        },
+        {
+          "argument_sha": "b39a7ebf72eced87a1f13c205a4f1e470bb3f41b2d52452def51f7e413bd443d",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "f6c43ec5c2fec563a5c7a85c57c7f18d157efed2bda74d50d3cac108a19b580d:3",
+          "result_sha": "aea5a0ba2d0d4492886015294e5e47021421219a2eb10fe370529dbd4f7b498d"
+        },
+        {
+          "argument_sha": "242f72b4d38bc1f068ea0568e341f91c66dfca73dfd424cf80beed3f5e64728f",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "f6c43ec5c2fec563a5c7a85c57c7f18d157efed2bda74d50d3cac108a19b580d:4",
+          "result_sha": "2657653d24ddd1be5bc0a7d9a5c192bffb8b001c7152363ccb44dad02a08bbbf"
+        },
+        {
+          "argument_sha": "eb97ec6bdbd7ec66bc64a825e61504fa6c27960cc599c77545ebae61d21cc5e7",
+          "bytes": 32,
+          "matched": true,
+          "operation": "get",
+          "request_id": "f6c43ec5c2fec563a5c7a85c57c7f18d157efed2bda74d50d3cac108a19b580d:5",
+          "result_sha": "31a15bcc4c0ee6f31189ec01cfa186f548321cfa67cf38859306952c8be812a2"
+        },
+        {
+          "argument_sha": "ffab7cde0bcc96b97c06254f812dc5146b61e6a7be8a1a6ac74f7b53f299bb2d",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "f6c43ec5c2fec563a5c7a85c57c7f18d157efed2bda74d50d3cac108a19b580d:6",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "f6c43ec5c2fec563a5c7a85c57c7f18d157efed2bda74d50d3cac108a19b580d:7",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "f6c43ec5c2fec563a5c7a85c57c7f18d157efed2bda74d50d3cac108a19b580d:8",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 210,
+      "calls": 8,
+      "case_sha": "2628e679669646b799285166445d828c42206cf854f3166c60d21793179e069e",
+      "errors": [],
+      "fixture_sha": "355af9014eeeb95c47dff27ffbab8d2ab55bf3a9950f05be019faec482c57c66",
+      "id": "normal-1000-1-29",
+      "noise": 1000,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "f6c43ec5c2fec563a5c7a85c57c7f18d157efed2bda74d50d3cac108a19b580d"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "蓝色组件",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [
+        "noise-0000",
+        "noise-0001",
+        "noise-0002",
+        "noise-0003"
+      ],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "42b91ae124840bbe1d4bdb45eb341d6718eb574e16e3fe9579c22c00f86db827:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "42b91ae124840bbe1d4bdb45eb341d6718eb574e16e3fe9579c22c00f86db827:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "42b91ae124840bbe1d4bdb45eb341d6718eb574e16e3fe9579c22c00f86db827:3",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "42b91ae124840bbe1d4bdb45eb341d6718eb574e16e3fe9579c22c00f86db827:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 82,
+      "calls": 4,
+      "case_sha": "3b387ce2b31848b07d9a90cad3485303b168e2269eaa3bf9982c1fb284a3a058",
+      "errors": [],
+      "fixture_sha": "62333eafbf68a06465e759e0b13a194f8648a106db1e23a14853efb59f6230cd",
+      "id": "normal-1000-2-7",
+      "noise": 1000,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "42b91ae124840bbe1d4bdb45eb341d6718eb574e16e3fe9579c22c00f86db827"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "286e46ecc50469b48cd8fd09dd587fcefeac908c7f68db5169fb6598fe70c6e8:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "286e46ecc50469b48cd8fd09dd587fcefeac908c7f68db5169fb6598fe70c6e8:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "286e46ecc50469b48cd8fd09dd587fcefeac908c7f68db5169fb6598fe70c6e8:3",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "286e46ecc50469b48cd8fd09dd587fcefeac908c7f68db5169fb6598fe70c6e8:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [],
+      "bytes": 82,
+      "calls": 4,
+      "case_sha": "db3596822481e327b30286f930d8de70762225116fb93ac33329df2054b6739a",
+      "errors": [],
+      "fixture_sha": "355af9014eeeb95c47dff27ffbab8d2ab55bf3a9950f05be019faec482c57c66",
+      "id": "normal-1000-2-29",
+      "noise": 1000,
+      "output": {
+        "records": [
+          {
+            "body": "blue widget limit 8 蓝色组件限额八",
+            "citation": {
+              "content_sha": "8957cab64d1b92c64eabd46071d42ff79e662b125ca2934e8067f822c0bcdf06",
+              "id": "zz-target",
+              "revision": 1
+            }
+          }
+        ],
+        "status": "ready",
+        "task_sha": "286e46ecc50469b48cd8fd09dd587fcefeac908c7f68db5169fb6598fe70c6e8"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 29,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "normal"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "0e21d47063da0ba2a48b5a9fd8c92f7c419660a7ebffa9e4e63eb868c4f317e5:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "0e21d47063da0ba2a48b5a9fd8c92f7c419660a7ebffa9e4e63eb868c4f317e5:2",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "EVIDENCE_GAP"
+        }
+      ],
+      "bytes": 0,
+      "calls": 2,
+      "case_sha": "25531cff2f32713adb71de4b211ef0d53feffa071c59db361de9edf9b765cbbf",
+      "errors": [],
+      "fixture_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "id": "negative-missing",
+      "noise": 0,
+      "output": {
+        "reason": "EVIDENCE_GAP",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "missing"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "09ad8324f33014fdad8edeefd2f3188a841675878f4aeea0d705b266c8756613:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "09ad8324f33014fdad8edeefd2f3188a841675878f4aeea0d705b266c8756613:2",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "EVIDENCE_GAP"
+        }
+      ],
+      "bytes": 0,
+      "calls": 2,
+      "case_sha": "64154fd7081c43f454f275bc9e182deb1889c756ce8ca8ddd68cba35798cdd6b",
+      "errors": [],
+      "fixture_sha": "e1628e33e8dfb4a25c841db914bb79628bddaf05bd75b62b71028a773a4b463a",
+      "id": "negative-private",
+      "noise": 0,
+      "output": {
+        "reason": "EVIDENCE_GAP",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "private"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "5365c4bb37fa2a6b60c5a854611b26c20c29967bebfa0b673232790baddf9e7c:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "5365c4bb37fa2a6b60c5a854611b26c20c29967bebfa0b673232790baddf9e7c:2",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "EVIDENCE_GAP"
+        }
+      ],
+      "bytes": 0,
+      "calls": 2,
+      "case_sha": "adf0dfee6f1cfe1c09e8f3ad2e65e0dd9412c1f63ce84bc8b54218b2920ae7ce",
+      "errors": [],
+      "fixture_sha": "96bbbfb947e76824746a51d174b77016fc865f4acc8be3ed9b0ba5952b156822",
+      "id": "negative-tenant",
+      "noise": 0,
+      "output": {
+        "reason": "EVIDENCE_GAP",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "tenant"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "d95f68abf2678b29c21b159a62d049e70c11c1572882bd5579f814ed24f45e0d:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "d95f68abf2678b29c21b159a62d049e70c11c1572882bd5579f814ed24f45e0d:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "d95f68abf2678b29c21b159a62d049e70c11c1572882bd5579f814ed24f45e0d:3",
+          "result_sha": "a81c057426ecf312f90ccc73535417e9e7bb19ca242634a0eefbcf07357cb7ae"
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "EVIDENCE_GAP"
+        }
+      ],
+      "bytes": 41,
+      "calls": 3,
+      "case_sha": "b538ea7ec0801040945ad0c5726e59816d38b61f66ff54d1dd7f0c8006fd4c41",
+      "errors": [],
+      "fixture_sha": "6a3799d741d7f92f8aef1dcb9eddb1a4863afbc4ffd7873d7e513027559e14d9",
+      "id": "negative-version",
+      "noise": 0,
+      "output": {
+        "reason": "EVIDENCE_GAP",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "version"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "836bab272e8b73bfef81a7a5559ddacc6ddacc0c679941b6d285ed0a47457d14:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "836bab272e8b73bfef81a7a5559ddacc6ddacc0c679941b6d285ed0a47457d14:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "836bab272e8b73bfef81a7a5559ddacc6ddacc0c679941b6d285ed0a47457d14:3",
+          "result_sha": "fef2d35ff2b450c50ed6186a44aeab73858a54639f182f90464243bac5e30ee0"
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "EVIDENCE_GAP"
+        }
+      ],
+      "bytes": 41,
+      "calls": 3,
+      "case_sha": "1c42ed3b17490973cb927b82392f14d71e130adcdb2a7fd9b4910d9f74d68207",
+      "errors": [],
+      "fixture_sha": "29e8de27a021e1acd9a6f855f5702e7da28ebe517e93e002b89ae58625b026ad",
+      "id": "negative-architecture",
+      "noise": 0,
+      "output": {
+        "reason": "EVIDENCE_GAP",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "architecture"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "0135a51e8b02982c4ee059a946a25bcf7b47a57a60eca728fb96b4c695436356:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "0135a51e8b02982c4ee059a946a25bcf7b47a57a60eca728fb96b4c695436356:2",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "0135a51e8b02982c4ee059a946a25bcf7b47a57a60eca728fb96b4c695436356:3",
+          "result_sha": "75a739b1c64b0e6e3349b964e2730aeff9646c50d5667641b9ead31fad141ac6"
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "EVIDENCE_GAP"
+        }
+      ],
+      "bytes": 41,
+      "calls": 3,
+      "case_sha": "5c74e7a3c0695ff24e2bbbe23dc0d77af255fd3cb837915edf4623d760afcd7d",
+      "errors": [],
+      "fixture_sha": "f5225f370cd0eaafc591909c1811479169345a3d2afaccf724dd64548f177b1c",
+      "id": "negative-condition",
+      "noise": 0,
+      "output": {
+        "reason": "EVIDENCE_GAP",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "condition"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "54a41d1036668c75e0a229326f667e156ca44c1834dbc597778dd063dd6af10c:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "54a41d1036668c75e0a229326f667e156ca44c1834dbc597778dd063dd6af10c:2",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "EVIDENCE_GAP"
+        }
+      ],
+      "bytes": 0,
+      "calls": 2,
+      "case_sha": "50f4753e8331802f5dad9a8f65f78f46f86e0c2312f79908bbd477d9084715d7",
+      "errors": [],
+      "fixture_sha": "18b701048c908a0c4b5317b76835bf94441dc679bf537909d8e6021d412bc84a",
+      "id": "negative-tombstone",
+      "noise": 0,
+      "output": {
+        "reason": "EVIDENCE_GAP",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "tombstone"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "550c3bc348ceaaf9172839f6c1a179f7517fbec825f310704670dab64ce5f71f:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "550c3bc348ceaaf9172839f6c1a179f7517fbec825f310704670dab64ce5f71f:2",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "EVIDENCE_GAP"
+        }
+      ],
+      "bytes": 0,
+      "calls": 2,
+      "case_sha": "5b709d502a5ce3733624c46058e1fc083cfbb147298c33bbbdd1d5462cdf588b",
+      "errors": [],
+      "fixture_sha": "019f68d7980ff2a398c52b45769d2ca150cf7c1bedd59b62503d126040015fc9",
+      "id": "negative-dangling",
+      "noise": 0,
+      "output": {
+        "reason": "EVIDENCE_GAP",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "dangling"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "6c1357b05f2059e66049f7f3aa8921f9e5c8328503cf495b7fc173c2ff53b87c:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "6c1357b05f2059e66049f7f3aa8921f9e5c8328503cf495b7fc173c2ff53b87c:2",
+          "result_sha": "1d6710a28aa00467c3a339a1bf514ab61bb177d84d803aa9d1afd0f384239e5e",
+          "returned": 2
+        },
+        {
+          "argument_sha": "bfe19b06864b29ff10271c4ab027166ddc1a29fb0cdaafde2b10ae8f651a8907",
+          "bytes": 19,
+          "matched": true,
+          "operation": "get",
+          "request_id": "6c1357b05f2059e66049f7f3aa8921f9e5c8328503cf495b7fc173c2ff53b87c:3",
+          "result_sha": "ecaf3d3abe430a70d04c805f7cbd71455c58d60a097472db991b574fc7db5a6a"
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "6c1357b05f2059e66049f7f3aa8921f9e5c8328503cf495b7fc173c2ff53b87c:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "AMBIGUOUS"
+        }
+      ],
+      "bytes": 60,
+      "calls": 4,
+      "case_sha": "67bdff0af8582fdba02e1a5a479b7fa840321092359ea84119710b54aad2c5a8",
+      "errors": [],
+      "fixture_sha": "155f325d6a05aa8defb983a57009f45e6efaac1e3f0962afcae70fff98bb77bb",
+      "id": "negative-ambiguous",
+      "noise": 0,
+      "output": {
+        "reason": "AMBIGUOUS",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "ambiguous"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "da24903d1de8dcde13f521c02cc236c818207ff740cdcd1d65000d731a74e7da:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        },
+        {
+          "argument_sha": "8a23ad46bf6cabc516abf9ac2747adf54206569609b76a94ae070f7b986e9654",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "da24903d1de8dcde13f521c02cc236c818207ff740cdcd1d65000d731a74e7da:2",
+          "result_sha": "4d763cbac61dc7761d0015d968ba0c2a92a7e37723f44474e26e4f077c2ca298",
+          "returned": 64
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "CANDIDATE_LIMIT"
+        }
+      ],
+      "bytes": 0,
+      "calls": 2,
+      "case_sha": "a95e602ff88a429038562ec285da6304871d21ff43432168a4f613f6edb35743",
+      "errors": [],
+      "fixture_sha": "505199138a1483e9f445e6204450b516a31403338b246c656c7ef5efe00a90a7",
+      "id": "negative-candidate_cap",
+      "noise": 0,
+      "output": {
+        "reason": "CANDIDATE_LIMIT",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "candidate_cap"
+    },
+    {
+      "actions": [],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "BUDGET"
+        }
+      ],
+      "bytes": 0,
+      "calls": 0,
+      "case_sha": "742993edbb9c2b12069d1feb4633dfcae642dbb93c9175147e5b123c2c4dde70",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "negative-zero_calls",
+      "noise": 0,
+      "output": {
+        "reason": "BUDGET",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "zz-target"
+      ],
+      "variant": "zero_calls"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "a1f740dc5f0b9af8f49e99491c4dac7414dae48aa322d330576067cf502f2faf:1",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "a1f740dc5f0b9af8f49e99491c4dac7414dae48aa322d330576067cf502f2faf:2",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        },
+        {
+          "argument_sha": "3c4b01a52a214759240e47c9dcfd4086b73f3b1bf60c1d27f936d37e51036ef8",
+          "mode": "key",
+          "operation": "search",
+          "request_id": "a1f740dc5f0b9af8f49e99491c4dac7414dae48aa322d330576067cf502f2faf:3",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "a1f740dc5f0b9af8f49e99491c4dac7414dae48aa322d330576067cf502f2faf:4",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "BUDGET"
+        }
+      ],
+      "bytes": 82,
+      "calls": 4,
+      "case_sha": "b44ba2eff64b7bfa3b79ed668ae7ca16f3b23403cf923d046bc6bb5df36642a2",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "negative-emit_call_short",
+      "noise": 0,
+      "output": {
+        "reason": "BUDGET",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "zz-target"
+      ],
+      "variant": "emit_call_short"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "e47f9075140fb17ee42dc4551f26eb34d1f3ab5f60f297b86b2c8fba99cf57cd:1",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "e47f9075140fb17ee42dc4551f26eb34d1f3ab5f60f297b86b2c8fba99cf57cd:2",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "BUDGET"
+        }
+      ],
+      "bytes": 41,
+      "calls": 2,
+      "case_sha": "a83c33e3a6059e507ad2345f6a8d0850ab81c73abc93b6e83fb1dc37508f95ef",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "negative-zero_bytes",
+      "noise": 0,
+      "output": {
+        "reason": "BUDGET",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "zz-target"
+      ],
+      "variant": "zero_bytes"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "3db3e9d19fd104205498755698fd2b76f35c1407913a787efc6533e776953e98",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "40a07b0881c8daada8b01c200967c754c4be1233773ecb30d3b2af85b65539b5:1",
+          "result_sha": "efb0289a1a89f0f274307d4a46f71990a9e4a17aea1a9994a92312e1c8b48916",
+          "returned": 1
+        },
+        {
+          "argument_sha": "9154edd51f1fd43cc962ba0433a220ab5b1cb98a4ed3ce586ae132691c86dd0e",
+          "bytes": 41,
+          "matched": true,
+          "operation": "get",
+          "request_id": "40a07b0881c8daada8b01c200967c754c4be1233773ecb30d3b2af85b65539b5:2",
+          "result_sha": "d7bce12ca36adeeec4d273805e2906f7b9f821fdd766d4ab0b97f54eac4b3edb"
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "KEY_CONFIRMATION_REQUIRED"
+        }
+      ],
+      "bytes": 41,
+      "calls": 2,
+      "case_sha": "88e6e56768d742fff2ae355ec738fd5d3a67e473ada56d8cd511f572f74dad5e",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "negative-no_confirmation",
+      "noise": 0,
+      "output": {
+        "reason": "KEY_CONFIRMATION_REQUIRED",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "blue widget",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [
+        "zz-target"
+      ],
+      "variant": "no_confirmation"
+    },
+    {
+      "actions": [
+        {
+          "argument_sha": "73e9c06231f61c115724141cbdd33d2f8acfd8bc95178ced0e53b80ea61ab7c3",
+          "mode": "text",
+          "operation": "search",
+          "request_id": "cc1da72a521127e6a5457b0fa79d07b898848baba9a85dc692802275cd54778c:1",
+          "result_sha": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "returned": 0
+        }
+      ],
+      "alerts": [
+        {
+          "event": "alert",
+          "reason": "EVIDENCE_GAP"
+        }
+      ],
+      "bytes": 0,
+      "calls": 1,
+      "case_sha": "f1f3efbf7dfcd5eefd2c0d8e5a16e73fbea0db7cca7c57e4051233190cced05b",
+      "errors": [],
+      "fixture_sha": "2511f4415570275ace31a34fae65041b2ac1364f854187936ba0bc098f575ee5",
+      "id": "negative-no_retry_miss",
+      "noise": 0,
+      "output": {
+        "reason": "EVIDENCE_GAP",
+        "status": "blocked"
+      },
+      "passive": {
+        "calls": 0,
+        "evidence": [],
+        "status": "NOT_RUN"
+      },
+      "query": "unrelatedphrase",
+      "seed": 7,
+      "text_target_hit": false,
+      "text_top4": [],
+      "variant": "no_retry_miss"
+    }
+  ],
+  "groups": [
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 0,
+      "passive_evidence": 0,
+      "query": "blue widget",
+      "text_target_hits": 2
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 10,
+      "passive_evidence": 0,
+      "query": "blue widget",
+      "text_target_hits": 0
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 100,
+      "passive_evidence": 0,
+      "query": "blue widget",
+      "text_target_hits": 0
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 1000,
+      "passive_evidence": 0,
+      "query": "blue widget",
+      "text_target_hits": 0
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 0,
+      "passive_evidence": 0,
+      "query": "unrelatedphrase",
+      "text_target_hits": 0
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 10,
+      "passive_evidence": 0,
+      "query": "unrelatedphrase",
+      "text_target_hits": 0
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 100,
+      "passive_evidence": 0,
+      "query": "unrelatedphrase",
+      "text_target_hits": 0
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 1000,
+      "passive_evidence": 0,
+      "query": "unrelatedphrase",
+      "text_target_hits": 0
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 0,
+      "passive_evidence": 0,
+      "query": "蓝色组件",
+      "text_target_hits": 2
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 10,
+      "passive_evidence": 0,
+      "query": "蓝色组件",
+      "text_target_hits": 0
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 100,
+      "passive_evidence": 0,
+      "query": "蓝色组件",
+      "text_target_hits": 0
+    },
+    {
+      "cases": 2,
+      "keyed_ready": 2,
+      "noise": 1000,
+      "passive_evidence": 0,
+      "query": "蓝色组件",
+      "text_target_hits": 0
+    }
+  ],
+  "llm_evaluation": "NOT_RUN",
+  "manifest_sha": "5016ca1a5f7b791c28e660d8e6c23dc4fa458728f93cf2cf1f7ede0406798791",
+  "passed": 39,
+  "production": "NOT_RUN",
+  "source_sha": {
+    "sandbox_runtime/benchmark.py": "9dace246f8ef4271bfcdf662b1ac91d7975e3a642b6d875e9f37c9a3110f1a33",
+    "sandbox_runtime/controller.py": "8febb83a285483c947b8968afcf729445ffd7664d6a7968a06c02a5305bf9ba7",
+    "sandbox_runtime/store.py": "d4d2b54099b67a45fac8053c11e0ae6935718e7b8634456e0c15d3f34ca53242"
+  },
+  "total": 39,
+  "transcript_sha": "22ef36b2189d09fff49c6b124e329bfa231eff09948c5ed3107b93600a5c4734"
+}
