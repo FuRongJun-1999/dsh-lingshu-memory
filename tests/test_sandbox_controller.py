@@ -136,3 +136,28 @@ class ControllerTests(unittest.TestCase):
             fields["result_sha"]="0"*64;old(operation,**fields)
         p.record=corrupt_final
         self.assertEqual(c.emit(k,t),{"status":"blocked","reason":"TRACE_UNKNOWN"})
+
+    def test_independent_review_conflicts_beyond_text_top4(self):
+        rows=[record("d%d"%i,version="old",body="blue widget") for i in range(4)]
+        rows += [record("late-a",body="alternative rule"),record("late-b",revision=2,body="another rule")]
+        c,p,_,_,_=loop(rows)
+        self.assertEqual(c.run(task()),{"status":"blocked","reason":"AMBIGUOUS"})
+        self.assertEqual(p.events[0]["returned"],4)
+
+    def test_independent_review_equal_body_digest_wrong_revision(self):
+        c,_,_,_,_=loop();t=task();k=c.prepare(t)
+        c._pending[1]["rows"][0]["locator"]["revision"]=2
+        self.assertEqual(c.emit(k,t),{"status":"blocked","reason":"EVIDENCE_CHANGED"})
+
+    def test_independent_review_failure_before_any_stdout_fact(self):
+        import contextlib
+        import io
+        for mode in ("log","bytes"):
+            c,p,_,_,_=loop();t=task()
+            if mode=="bytes":t["budget"]["bytes"]=38
+            k=c.prepare(t)
+            if mode=="log":p.record=lambda *args,**kwargs:None
+            stdout=io.StringIO()
+            with contextlib.redirect_stdout(stdout):out=c.emit(k,t)
+            self.assertEqual(stdout.getvalue(),"")
+            self.assertEqual(out,{"status":"blocked","reason":"TRACE_UNKNOWN" if mode=="log" else "BUDGET"})
