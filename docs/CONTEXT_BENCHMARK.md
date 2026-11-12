@@ -36,4 +36,4 @@ python -X utf8 -B scripts/context_benchmark.py
 
 ## 仍未验收
 
-C5整体证据矩阵、真正DSH事件注册和现用宿主桥接、生产授权/持久化、LLM语义效果均未由本基准证明。当前GUI/生产未修改。整体runtime_acceptance及llm_evaluation仍NOT_RUN；下一阶段必须按已确认的隔离范围重新核目标，不能因39case绿就宣称“AI已经可信”。
+[C5隔离证据矩阵](<CONTEXT_ACCEPTANCE.md>)已实际通过；真正DSH事件注册和现用宿主桥接、生产授权/持久化、LLM语义效果仍未证明。当前GUI/生产未修改。原始规划保留历史NOT_RUN，隔离通过不外推生产/LLM，不能因39case绿就宣称“AI已经可信”。

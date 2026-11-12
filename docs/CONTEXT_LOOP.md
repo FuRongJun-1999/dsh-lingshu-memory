@@ -1,6 +1,6 @@
 # 上下文与记忆主动取用闭环
 
-状态：C0契约及C1/C2隔离实现。用户确认同仓、DSH先行、隔离可运行闭环；不改研究或现用生产。旧[基线](<BASELINE_ACCEPTANCE.md>)与核心冻结不变。
+状态：C0-C5隔离闭环已实现及实跑验收，见[C5裁定](<CONTEXT_ACCEPTANCE.md>)。用户确认同仓、DSH先行、隔离可运行闭环；不改研究或现用生产。旧[基线](<BASELINE_ACCEPTANCE.md>)与核心冻结不变。
 
 ## 断点与来源
 
@@ -22,4 +22,4 @@ L3接任务、续接、assemble、decision事件；L2实际编排检索、原文
 
 [计划](<../spec/context_loop.json>)和[规划检查](<../tests/test_context_contract.py>)不证明运行时。C0契约；C1隔离存储；C2真实动作环；C3 DSH事件重放/重复错序/恢复；C4独立行为负例、变异和噪音规模基准；C5当前SHA四矩阵CI与整体验收。
 
-固定合成语料、种子、正确locator、噪音级和预算，分报主动取用、定位、引用gate、真实动作与LLM效果。不得编造可信提升百分比，零命中不证明不存在。最终须可运行CLI/重放和失败注入，文档或纯谓词绿不能关闭目标。当前C1存储及[C2动作环](<CONTEXT_ACTION_LOOP.md>)已隔离执行，[C3归一化事件重放](<CONTEXT_REPLAY.md>)已隔离执行；[C4固定合成基准](<CONTEXT_BENCHMARK.md>)已实测；C5 pending，整体验收runtime及LLM评测NOT_RUN。
+固定合成语料、种子、正确locator、噪音级和预算，分报主动取用、定位、引用gate、真实动作与LLM效果。不得编造可信提升百分比，零命中不证明不存在。最终须可运行CLI/重放和失败注入，文档或纯谓词绿不能关闭目标。当前C1存储及[C2动作环](<CONTEXT_ACTION_LOOP.md>)已隔离执行，[C3归一化事件重放](<CONTEXT_REPLAY.md>)已隔离执行；[C4固定合成基准](<CONTEXT_BENCHMARK.md>)已实测；[C5隔离裁定](<CONTEXT_ACCEPTANCE.md>)为ISOLATED_ACCEPTED；原始规划保留历史状态，生产/GUI/LLM评测NOT_RUN。

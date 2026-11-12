@@ -29,4 +29,4 @@ python -X utf8 -B scripts/context_demo.py
 - 哈希与locator只能证字节及出处，不证明原文真假、语义蕴含、无提示注入，原文始终是不可信数据而非可执行指令。无LLM调用，亦不宣称输出原文就是正确任务答案。
 - [C4固定合成基准](<CONTEXT_BENCHMARK.md>)已分报无key词汇定位、噪音规模与预算负例；真实自然语料/多知识域仍未评估，成功依赖显式key回取。
 
-[总体契约](<CONTEXT_LOOP.md>)仍runtime_acceptance=NOT_RUN；生产R门禁NOT_RUN。公开CI须绑定本轮提交，历史C1绿灯不能替代。
+[原始规划](<CONTEXT_LOOP.md>)保留历史NOT_RUN；[C5实际隔离报告](<CONTEXT_ACCEPTANCE.md>)为ISOLATED_ACCEPTED，生产R门禁NOT_RUN。公开CI须绑定本轮提交，历史C1绿灯不能替代。
