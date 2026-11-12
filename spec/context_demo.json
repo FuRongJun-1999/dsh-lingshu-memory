@@ -1,0 +1,54 @@
+{
+  "fixture": [
+    {
+      "id": "target",
+      "revision": 1,
+      "tenant": "a",
+      "sensitivity": 0,
+      "creation_readers": [
+        "p"
+      ],
+      "current_readers": [
+        "p"
+      ],
+      "edges": [],
+      "tombstoned": false,
+      "body": "blue widget limit 8",
+      "key": "widget.limit",
+      "architecture": "widget",
+      "version": "v1",
+      "conditions": {
+        "region": "east"
+      }
+    }
+  ],
+  "context": {
+    "tenant": "a",
+    "principal": "p",
+    "clearance": 0,
+    "auth_epoch": 1,
+    "policy_generation": 1,
+    "expires_at": 100
+  },
+  "now": 1,
+  "task": {
+    "id": "demo",
+    "revision": 1,
+    "query": "blue widget",
+    "requirements": [
+      {
+        "key": "widget.limit",
+        "architecture": "widget",
+        "version": "v1",
+        "conditions": {
+          "region": "east"
+        }
+      }
+    ],
+    "budget": {
+      "calls": 64,
+      "bytes": 20000,
+      "retries": 1
+    }
+  }
+}

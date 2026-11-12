@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import re
+from framework.spec import canonical
 from framework.api import _json_domain
 from framework.model import Model, Node, Edge
 from framework.security import context_shape
@@ -79,7 +80,13 @@ class SyntheticStore:
     def _allowed(self, key, ctx):
         return self._model.can_read(key,self._nodes,tenant=ctx["tenant"],principal=ctx["principal"],clearance=ctx["clearance"])
 
-    def search(self, query, context, now, *, evidence_key=None, limit=8):
+    def _trace(self, operation, argument, options, result, request_id, **fields):
+        extra={}
+        if request_id is not None:
+            extra={"request_id":text(request_id),"argument_sha":hashlib.sha256(canonical({"argument":argument,"options":options})).hexdigest(),"result_sha":hashlib.sha256(canonical(result)).hexdigest()}
+        self._probe.record(operation,**fields,**extra)
+
+    def search(self, query, context, now, *, evidence_key=None, limit=8, request_id=None):
         ctx=self._context(context,now);text(query,4096)
         if type(limit) is not int or not 1<=limit<=64:raise ValueError("INVALID_LIMIT")
         if evidence_key is not None:text(evidence_key)
@@ -89,20 +96,20 @@ class SyntheticStore:
         visible=[key for key in ids if self._allowed(key,ctx)]
         ranked=sorted(visible,key=lambda key:(-len(tokens&wordset(self._records[key]["body"]+" "+self._records[key]["key"])),key))[:limit]
         result=[{"id":key,"revision":self._nodes[key].revision,"content_sha":self._nodes[key].content_sha} for key in ranked]
-        self._probe.record("search",returned=len(result),mode="key" if evidence_key is not None else "text")
+        self._trace("search",query,{"evidence_key":evidence_key,"limit":limit},result,request_id,returned=len(result),mode="key" if evidence_key is not None else "text")
         return copy.deepcopy(result)
 
-    def get(self, locator, context, now):
+    def get(self, locator, context, now, *, request_id=None):
         ctx=self._context(context,now)
         if type(locator) is not dict or set(locator)!={"id","revision","content_sha"}:raise ValueError("INVALID_LOCATOR")
         text(locator["id"]);integer(locator["revision"])
         if type(locator["content_sha"]) is not str or re.fullmatch("[0-9a-f]{64}",locator["content_sha"]) is None:raise ValueError("INVALID_LOCATOR")
         key=locator["id"];n=self._nodes.get(key)
         if n is None or not self._allowed(key,ctx) or n.revision!=locator["revision"] or n.content_sha!=locator["content_sha"]:
-            self._probe.record("get",matched=False,bytes=0);return None
+            self._trace("get",locator,{},None,request_id,matched=False,bytes=0);return None
         row=copy.deepcopy(self._records[key])
         if hashlib.sha256(row["body"].encode("utf-8")).hexdigest()!=n.content_sha:
-            self._probe.record("get",matched=False,bytes=0);return None
-        self._probe.record("get",matched=True,bytes=len(row["body"].encode("utf-8")))
+            self._trace("get",locator,{},None,request_id,matched=False,bytes=0);return None
         row["locator"]=copy.deepcopy(locator)
+        self._trace("get",locator,{},row,request_id,matched=True,bytes=len(row["body"].encode("utf-8")))
         return row
