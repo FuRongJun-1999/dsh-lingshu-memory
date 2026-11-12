@@ -6,8 +6,10 @@
 
 ## 阅读入口
 
+- [方案基线验收单](<docs/BASELINE_ACCEPTANCE.md>)
 - [项目章程](<docs/CHARTER.md>)、[架构](<docs/ARCHITECTURE.md>)、[理论依据](<docs/SOURCES.md>)
 - [安全与血缘](<docs/SECURITY_MODEL.md>)、[恢复与回执](<docs/RECOVERY.md>)
+- [Context与输出](<docs/CONTEXT_OUTPUT.md>)、[保留与删除](<docs/RETENTION.md>)
 - [结构化规格](<spec/core.json>)、[生成规范](<docs/CONTRACTS.generated.md>)
 - [兼容候选清单](<docs/COMPATIBILITY.md>)、[条件与双时间](<docs/CONDITIONS_TIME.md>)
 - [迁移计划](<docs/MIGRATION.md>)、[验收矩阵](<docs/ACCEPTANCE.md>)、[长期路线](<docs/ROADMAP.md>)

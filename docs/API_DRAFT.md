@@ -4,7 +4,7 @@
 
 ## 可信上下文与调用方数据
 
-可信入口提供 Context(tenant_id, principal_id, clearance, policy_generation, auth_method, request_id)。业务payload不能覆盖这些字段；session_id仅定位，不授予身份。
+可信入口提供 Context(tenant_id, principal_id, clearance, policy_generation, auth_method, request_id)。业务payload不能覆盖这些字段；session_id仅定位，不授予身份。[输出Context子集与绑定提案](<CONTEXT_OUTPUT.md>)补充auth_epoch/clearance/到期检查，不是认证器。
 网络层拒绝未知字段、重复键、非法类型、过大嵌套、超限内容；纯输入验证器已固定大小/深度/节点上限；网络入口尚未实现。
 控制面与内容面分离：不在正文内嵌系统指令来获取Govern能力。
 

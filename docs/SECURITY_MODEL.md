@@ -23,6 +23,10 @@ derived边绑定node_id、revision、content_sha。来源内容修订不静默�
 核验证据绑定被核验内容摘要、revision和scope；修改内容、凭证失效或scope失配自动失去verified资格。
 verified只表明符合核验规则，不证明绝对真实；核验者身份保证与独立性分开，无证据则unassessed。
 
+## 可信输出与保留
+
+[Context/快照输出提案](<CONTEXT_OUTPUT.md>)和[审计删除保留规划](<RETENTION.md>)提供纯谓词与反例，不实现认证、原子发送或清理。
+
 ## 边界
 
 不防有本地完全控制权的管理员重写全部历史与密钥；无外部可信锚不声称抵抗该攻击。

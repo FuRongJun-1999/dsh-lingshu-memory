@@ -2,7 +2,7 @@
 
 ## 门禁
 
-在仓库根运行python scripts/check_all.py；公开提交前再独立执行public_guard。命令使用argv、UTF-8、PYTHONUTF8=1、shell=False，保留退出码；日志留本地，不提交原始会话。
+在仓库根运行python scripts/check_all.py；公开提交前再独立执行public_guard。命令使用argv、UTF-8、PYTHONUTF8=1、shell=False，保留退出码；日志留本地，不提交原始会话。新增文件在未跟踪状态不会被普通git diff --check覆盖，必须在明确候选暂存后运行git diff --cached --check；暂存门禁非零不提交。
 
 ## Git网络兜底
 
