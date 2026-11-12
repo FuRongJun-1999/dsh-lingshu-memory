@@ -52,7 +52,7 @@ class Controller:
         if type(store) is not SyntheticStore or type(probe) is not Probe or store._probe is not probe or type(alerts) is not AlertSink:raise ValueError("INVALID_CAPABILITY")
         if not callable(context_provider) or not callable(clock):raise ValueError("INVALID_CAPABILITY")
         self.store=store;self.probe=probe;self.provider=context_provider;self.clock=clock;self.alerts=alerts
-        self.events=[];self._pending=None;self._seq=0
+        self.events=[];self._pending=None;self._seq=0;self.usage={"calls":0,"bytes":0}
 
     def invalidate(self):
         self._pending=None
@@ -67,11 +67,18 @@ class Controller:
     def _call(self, state, op, argument, **kwargs):
         ctx,now=self._fresh(state)
         if state["calls"]>=state["task"]["budget"]["calls"]:raise Halt("BUDGET")
-        state["calls"]+=1;self._seq+=1
+        state["calls"]+=1;self._seq+=1;self.usage["calls"]+=1
         rid=state["task_sha"]+":"+str(self._seq)
         if self.probe.events[state["trace_start"]:]!=state["trace"]:raise Halt("TRACE_UNKNOWN")
         before=len(self.probe.events)
-        result=getattr(self.store,op)(argument,ctx,now,request_id=rid,**kwargs)
+        try:result=getattr(self.store,op)(argument,ctx,now,request_id=rid,**kwargs)
+        except Exception:
+            # Unknown completed work cannot be refunded into repeated event attempts.
+            self.usage["calls"]+=state["task"]["budget"]["calls"]-state["calls"]
+            self.usage["bytes"]+=max(0,state["task"]["budget"]["bytes"]-state["bytes"])
+            raise
+        if op=="get" and result is not None:
+            self.usage["bytes"]+=len(result["body"].encode("utf-8"))
         observed=self.probe.events[before:]
         expected={"operation":op,"request_id":rid,"argument_sha":digest({"argument":argument,"options":kwargs}),"result_sha":digest(result)}
         if op=="search":expected.update(returned=len(result),mode="key" if kwargs.get("evidence_key") is not None else "text")

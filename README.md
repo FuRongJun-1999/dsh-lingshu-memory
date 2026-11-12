@@ -6,7 +6,7 @@
 
 ## 阅读入口
 
-新长期任务：[上下文主动取用](<docs/CONTEXT_LOOP.md>)、[隔离存储C1](<docs/CONTEXT_STORE.md>)、[C2可运行动作环](<docs/CONTEXT_ACTION_LOOP.md>)（DSH事件闭环尚未完成）。
+新长期任务：[上下文主动取用](<docs/CONTEXT_LOOP.md>)、[隔离存储C1](<docs/CONTEXT_STORE.md>)、[C2可运行动作环](<docs/CONTEXT_ACTION_LOOP.md>)、[C3隔离事件重放](<docs/CONTEXT_REPLAY.md>)（未接现用宿主，完整验收未完成）。
 
 - [方案基线验收单](<docs/BASELINE_ACCEPTANCE.md>)
 - [项目章程](<docs/CHARTER.md>)、[架构](<docs/ARCHITECTURE.md>)、[理论依据](<docs/SOURCES.md>)
