@@ -58,6 +58,21 @@ SUPPORTED = {
         "source_identity_operator": "ne", "source_identity_operands": ["verifier_id", "source_id"],
         "content_change": "invalidate", "truth_assurance": "not_claimed",
         "independence_without_evidence": "unassessed"},
+    "conditions": {"slots": ["carrier", "method", "existence"],
+        "slot_states": ["declared", "unknown"],
+        "attributes_type": "string_map",
+        "unknown_equals_match": False,
+        "missing_equals_satisfied": False,
+        "verdicts": ["MATCH", "NO_MATCH", "DEFER"],
+        "contradiction_precedence": True},
+    "bitemporal": {"axes": ["observed", "effective"],
+        "no_axis_fallback": True,
+        "interval": "half_open",
+        "precision": "utc_second",
+        "bounds": ["instant", "unbounded", "unknown"],
+        "unknown_is_unbounded": False,
+        "query_requires_explicit_axis": True,
+        "defer_blocks_output": True},
 }
 
 def validate(spec):

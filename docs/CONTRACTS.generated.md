@@ -2,7 +2,7 @@
 
 由 spec/core.json 完整生成；请改真源，不手改本文件。参考模型不等于运行时。
 
-规格版本：0.1.0；完整摘要：0b73148ae2bddf3a94dd544aa6f9f0387ed43091e298e9c67fe337a2ae986740
+规格版本：0.2.0；完整摘要：7a35d4bb0b676349b4663f65dab47d1fc2e54746daffcfbfeb2fdc960938b989
 
 ~~~json
 {
@@ -12,6 +12,43 @@
     "Govern",
     "SelfCheck"
   ],
+  "bitemporal": {
+    "axes": [
+      "observed",
+      "effective"
+    ],
+    "bounds": [
+      "instant",
+      "unbounded",
+      "unknown"
+    ],
+    "defer_blocks_output": true,
+    "interval": "half_open",
+    "no_axis_fallback": true,
+    "precision": "utc_second",
+    "query_requires_explicit_axis": true,
+    "unknown_is_unbounded": false
+  },
+  "conditions": {
+    "attributes_type": "string_map",
+    "contradiction_precedence": true,
+    "missing_equals_satisfied": false,
+    "slot_states": [
+      "declared",
+      "unknown"
+    ],
+    "slots": [
+      "carrier",
+      "method",
+      "existence"
+    ],
+    "unknown_equals_match": false,
+    "verdicts": [
+      "MATCH",
+      "NO_MATCH",
+      "DEFER"
+    ]
+  },
   "edges": {
     "bind_target": [
       "node_id",
@@ -84,7 +121,7 @@
     "max": 3,
     "unknown_to_max": true
   },
-  "spec_version": "0.1.0",
+  "spec_version": "0.2.0",
   "status": "design-development",
   "verification": {
     "bind": [

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "spec_version": "0.1.0",
+  "spec_version": "0.2.0",
   "status": "design-development",
   "runtime_released": false,
   "application_contracts": [
@@ -96,5 +96,42 @@
     "content_change": "invalidate",
     "truth_assurance": "not_claimed",
     "independence_without_evidence": "unassessed"
+  },
+  "conditions": {
+    "slots": [
+      "carrier",
+      "method",
+      "existence"
+    ],
+    "slot_states": [
+      "declared",
+      "unknown"
+    ],
+    "attributes_type": "string_map",
+    "unknown_equals_match": false,
+    "missing_equals_satisfied": false,
+    "verdicts": [
+      "MATCH",
+      "NO_MATCH",
+      "DEFER"
+    ],
+    "contradiction_precedence": true
+  },
+  "bitemporal": {
+    "axes": [
+      "observed",
+      "effective"
+    ],
+    "no_axis_fallback": true,
+    "interval": "half_open",
+    "precision": "utc_second",
+    "bounds": [
+      "instant",
+      "unbounded",
+      "unknown"
+    ],
+    "unknown_is_unbounded": false,
+    "query_requires_explicit_axis": true,
+    "defer_blocks_output": true
   }
 }

@@ -31,3 +31,7 @@ read_required/write_required来自经审核的部署能力profile，不能由外
 缺任何必需读能力=reject，未知=defer；全部读能力支持后，缺写能力可read_only，写能力未知=defer；全部已验证才eligible_isolated_shadow，仍不是生产切换许可。read_only也必须当前授权，不意味着解密/解封历史记录。资格判定不是授权检查：实际入口须先认证，授权false拒绝，unknown/缺失身份阻断并保持未决，任何分支都不能执行读写。
 
 后续仍需审计完整profile、每个旧action/字段转换、网络适配器、数据授权、权限保留、兼容差异查询与物理回滚实测。未知不能靠降低要求消除。
+
+## 统一条件与双时间核心契约（0.2.0）
+
+依据 [ADR-0005](<adr/0005-unified-conditions-bitemporal.md>)，核心规格 `0.2.0` 已纳入 `conditions` 与 `bitemporal` 两节不变量，[统一纯求值器](<../framework/conditions.py>) 强制 `unknown == unknown` 判为 `DEFER`、缺失键判为 `DEFER`、矛盾优先于不确定、双轴联合求值禁止回退。
