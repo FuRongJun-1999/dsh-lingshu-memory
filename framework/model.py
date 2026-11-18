@@ -215,3 +215,34 @@ def verification_eligible(*, subject_revision, subject_sha, proof_revision, proo
             and scope_covers is True and method_allowed is True and credential_exists is True
             and type(credential_time) is int and type(verified_at) is int
             and credential_time < verified_at)
+
+
+class EpochDecisionCache:
+    """Epoch-bound graph decision cache; caller must bump graph_epoch on any graph/policy mutation."""
+    def __init__(self):
+        self._entries = {}
+
+    def get(self, *, graph_epoch, tenant, node_id, revision, content_sha):
+        return self._entries.get((graph_epoch, tenant, node_id, revision, content_sha))
+
+    def put(self, *, graph_epoch, tenant, node_id, revision, content_sha, decision):
+        self._entries[(graph_epoch, tenant, node_id, revision, content_sha)] = decision
+
+    def clear(self):
+        self._entries.clear()
+
+
+def can_read_with_epoch_cache(model, node_id, nodes, *, tenant, principal, clearance, graph_epoch, cache):
+    """Evaluate read permission using an epoch-bound decision cache without bypassing per-read checks."""
+    if type(graph_epoch) is not int or not 0 <= graph_epoch <= 9007199254740991:
+        raise ValueError("INVALID_EPOCH")
+    if type(cache) is not EpochDecisionCache:
+        raise ValueError("INVALID_CACHE")
+    n = nodes.get(node_id)
+    if n is None or n.tenant != tenant or type(clearance) is not int or clearance not in model.spec["sensitivity"]["levels"]:
+        return False
+    d = cache.get(graph_epoch=graph_epoch, tenant=tenant, node_id=node_id, revision=n.revision, content_sha=n.content_sha)
+    if d is None:
+        d = model.decision(node_id, nodes)
+        cache.put(graph_epoch=graph_epoch, tenant=tenant, node_id=node_id, revision=n.revision, content_sha=n.content_sha, decision=d)
+    return not d.quarantined and principal in d.readers and clearance >= d.sensitivity
