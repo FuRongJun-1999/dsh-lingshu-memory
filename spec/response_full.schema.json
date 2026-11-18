@@ -1,0 +1,385 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/dsh-lingshu-memory/response-full-proposal",
+  "title": "完整响应体与取消回执提案0.2-full（不是运行时）",
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "[0-9a-f]{64}"
+    },
+    "text128": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "record_item": {
+      "type": "object",
+      "properties": {
+        "content_type": {
+          "type": "string",
+          "const": "untrusted_markdown"
+        },
+        "locator": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/text128"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "content_sha": {
+              "$ref": "#/$defs/sha256"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "content_sha"
+          ],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        },
+        "body_sha": {
+          "$ref": "#/$defs/sha256"
+        },
+        "condition_verdict": {
+          "type": "string",
+          "const": "MATCH"
+        },
+        "temporal_verdict": {
+          "type": "string",
+          "const": "MATCH"
+        },
+        "provenance": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "source_kind": {
+                  "type": "string",
+                  "enum": [
+                    "human",
+                    "agent",
+                    "tool",
+                    "document"
+                  ]
+                },
+                "source_id": {
+                  "$ref": "#/$defs/text128"
+                },
+                "redacted_edges": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 64
+                }
+              },
+              "required": [
+                "source_kind",
+                "source_id",
+                "redacted_edges"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "content_type",
+        "locator",
+        "body",
+        "body_sha",
+        "condition_verdict",
+        "temporal_verdict",
+        "provenance"
+      ],
+      "additionalProperties": false
+    },
+    "target_meta": {
+      "type": "object",
+      "properties": {
+        "commit_status": {
+          "type": "string",
+          "enum": [
+            "committed",
+            "absent",
+            "unknown"
+          ]
+        },
+        "audit": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "missing",
+            "failed",
+            "unknown"
+          ]
+        },
+        "projection": {
+          "type": "string",
+          "enum": [
+            "active",
+            "tombstoned",
+            "superseded",
+            "quarantined",
+            "unknown"
+          ]
+        },
+        "negative_basis": {
+          "type": "string",
+          "enum": [
+            "unassessed",
+            "preaccept_rejected",
+            "durable_cancel"
+          ]
+        }
+      },
+      "required": [
+        "commit_status",
+        "audit",
+        "projection",
+        "negative_basis"
+      ],
+      "additionalProperties": false
+    },
+    "historical_receipt": {
+      "type": "object",
+      "properties": {
+        "commit_status": {
+          "type": "string",
+          "enum": [
+            "committed",
+            "absent",
+            "unknown"
+          ]
+        },
+        "fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "node_id": {
+          "$ref": "#/$defs/text128"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "content_sha": {
+          "$ref": "#/$defs/sha256"
+        },
+        "durability_actual": {
+          "type": "string",
+          "enum": [
+            "process",
+            "power"
+          ]
+        },
+        "audit_state": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "missing",
+            "failed",
+            "unknown"
+          ]
+        }
+      },
+      "required": [
+        "commit_status",
+        "fingerprint",
+        "node_id",
+        "revision",
+        "content_sha",
+        "durability_actual",
+        "audit_state"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "0.2-full"
+    },
+    "request_id": {
+      "$ref": "#/$defs/text128"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "read",
+        "mutation",
+        "receipt",
+        "cancel",
+        "selfcheck"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "error",
+        "unknown"
+      ]
+    },
+    "error_code": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "enum": [
+            "INVALID_ARGUMENT",
+            "AUTH_REQUIRED",
+            "NOT_FOUND_OR_DENIED",
+            "REVISION_CONFLICT",
+            "STATE_CONFLICT",
+            "TOKEN_PAYLOAD_CONFLICT",
+            "RECOVERY_UNCERTAIN",
+            "POWER_UNSUPPORTED",
+            "SNAPSHOT_EXPIRED",
+            "POLICY_CHANGED",
+            "POLICY_WIDENING_UNSUPPORTED",
+            "VERIFICATION_REQUIRED",
+            "INTEGRITY_FAILURE",
+            "RESOURCE_EXHAUSTED",
+            "READ_FAILED",
+            "CANCELLED",
+            "PREACCEPT_REJECTED",
+            "AUDIT_INCOMPLETE",
+            "AUDIT_FAILED",
+            "AUDIT_UNCERTAIN",
+            "CONDITION_DEFERRED"
+          ]
+        }
+      ]
+    },
+    "next_action": {
+      "type": "string",
+      "enum": [
+        "none",
+        "authenticate",
+        "retry_read",
+        "query_same_token",
+        "return_original_cancel",
+        "return_original_rejection",
+        "reconcile_audit",
+        "return_original",
+        "refresh_snapshot",
+        "fix_input"
+      ]
+    },
+    "snapshot_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/text128"
+        }
+      ]
+    },
+    "policy_generation": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      ]
+    },
+    "records": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/record_item"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": false
+        }
+      ]
+    },
+    "next_cursor": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      ]
+    },
+    "target": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/target_meta"
+        }
+      ]
+    },
+    "historical_receipt": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/historical_receipt"
+        }
+      ]
+    },
+    "selfcheck_aggregate": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "NOT_RUN"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "version",
+    "request_id",
+    "scope",
+    "outcome",
+    "error_code",
+    "next_action",
+    "snapshot_ref",
+    "policy_generation",
+    "records",
+    "next_cursor",
+    "target",
+    "historical_receipt",
+    "selfcheck_aggregate"
+  ],
+  "additionalProperties": false
+}

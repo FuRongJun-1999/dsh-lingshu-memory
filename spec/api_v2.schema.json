@@ -1,0 +1,856 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/dsh-lingshu-memory/api-v2-proposal",
+  "title": "四应用完整输入与取消提案0.2.0（不是运行时）",
+  "$defs": {
+    "text128": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "[0-9a-f]{64}"
+    },
+    "condition_slot": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "string",
+              "const": "unknown"
+            }
+          },
+          "required": [
+            "state"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "string",
+              "const": "declared"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          },
+          "required": [
+            "state",
+            "text"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "condition_attr": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/text128"
+        },
+        "value": {
+          "$ref": "#/$defs/text128"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "condition_space": {
+      "type": "object",
+      "properties": {
+        "carrier": {
+          "$ref": "#/$defs/condition_slot"
+        },
+        "method": {
+          "$ref": "#/$defs/condition_slot"
+        },
+        "existence": {
+          "$ref": "#/$defs/condition_slot"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/condition_attr"
+          },
+          "minItems": 0,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "carrier",
+        "method",
+        "existence",
+        "attributes"
+      ],
+      "additionalProperties": false
+    },
+    "time_bound": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "string",
+              "const": "unknown"
+            }
+          },
+          "required": [
+            "state"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "string",
+              "const": "unbounded"
+            }
+          },
+          "required": [
+            "state"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "string",
+              "const": "instant"
+            },
+            "value": {
+              "type": "string",
+              "pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z"
+            }
+          },
+          "required": [
+            "state",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "time_interval": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/time_bound"
+        },
+        "end": {
+          "$ref": "#/$defs/time_bound"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "additionalProperties": false
+    },
+    "bitemporal": {
+      "type": "object",
+      "properties": {
+        "observed": {
+          "$ref": "#/$defs/time_interval"
+        },
+        "effective": {
+          "$ref": "#/$defs/time_interval"
+        }
+      },
+      "required": [
+        "observed",
+        "effective"
+      ],
+      "additionalProperties": false
+    },
+    "source_edge": {
+      "type": "object",
+      "properties": {
+        "node_id": {
+          "$ref": "#/$defs/text128"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "content_sha": {
+          "$ref": "#/$defs/sha256"
+        },
+        "relation": {
+          "type": "string",
+          "enum": [
+            "derived",
+            "corroborating",
+            "contradicting",
+            "unknown"
+          ]
+        }
+      },
+      "required": [
+        "node_id",
+        "revision",
+        "content_sha",
+        "relation"
+      ],
+      "additionalProperties": false
+    },
+    "source_attribution": {
+      "type": "object",
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "human",
+            "agent",
+            "tool",
+            "document"
+          ]
+        },
+        "source_id": {
+          "$ref": "#/$defs/text128"
+        }
+      },
+      "required": [
+        "source_kind",
+        "source_id"
+      ],
+      "additionalProperties": false
+    },
+    "replacement": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        },
+        "declared_sensitivity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "reader_ceiling": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text128"
+          },
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true
+        },
+        "source_edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_edge"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": false
+        },
+        "condition_space": {
+          "$ref": "#/$defs/condition_space"
+        },
+        "bitemporal": {
+          "$ref": "#/$defs/bitemporal"
+        },
+        "source_attribution": {
+          "$ref": "#/$defs/source_attribution"
+        }
+      },
+      "required": [
+        "content",
+        "declared_sensitivity",
+        "reader_ceiling",
+        "source_edges",
+        "condition_space",
+        "bitemporal",
+        "source_attribution"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Write.create"
+        },
+        "caller_token": {
+          "$ref": "#/$defs/text128"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        },
+        "declared_sensitivity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "reader_ceiling": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text128"
+          },
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true
+        },
+        "source_edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_edge"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": false
+        },
+        "condition_space": {
+          "$ref": "#/$defs/condition_space"
+        },
+        "bitemporal": {
+          "$ref": "#/$defs/bitemporal"
+        },
+        "source_attribution": {
+          "$ref": "#/$defs/source_attribution"
+        },
+        "durability_request": {
+          "type": "string",
+          "enum": [
+            "process",
+            "power"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "caller_token",
+        "content",
+        "declared_sensitivity",
+        "reader_ceiling",
+        "source_edges",
+        "condition_space",
+        "bitemporal",
+        "source_attribution",
+        "durability_request"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Write.modify"
+        },
+        "caller_token": {
+          "$ref": "#/$defs/text128"
+        },
+        "node_id": {
+          "$ref": "#/$defs/text128"
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        },
+        "declared_sensitivity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "reader_ceiling": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text128"
+          },
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true
+        },
+        "source_edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_edge"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": false
+        },
+        "condition_space": {
+          "$ref": "#/$defs/condition_space"
+        },
+        "bitemporal": {
+          "$ref": "#/$defs/bitemporal"
+        },
+        "source_attribution": {
+          "$ref": "#/$defs/source_attribution"
+        },
+        "durability_request": {
+          "type": "string",
+          "enum": [
+            "process",
+            "power"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "caller_token",
+        "node_id",
+        "expected_revision",
+        "content",
+        "declared_sensitivity",
+        "reader_ceiling",
+        "source_edges",
+        "condition_space",
+        "bitemporal",
+        "source_attribution",
+        "durability_request"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Read.get"
+        },
+        "node_id": {
+          "$ref": "#/$defs/text128"
+        },
+        "include_provenance": {
+          "type": "boolean"
+        },
+        "condition_query": {
+          "$ref": "#/$defs/condition_space"
+        },
+        "time_axis": {
+          "type": "string",
+          "enum": [
+            "observed",
+            "effective"
+          ]
+        },
+        "time_point": {
+          "type": "string",
+          "pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z"
+        }
+      },
+      "required": [
+        "kind",
+        "node_id",
+        "include_provenance",
+        "condition_query",
+        "time_axis",
+        "time_point"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Read.search"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "include_provenance": {
+          "type": "boolean"
+        },
+        "condition_query": {
+          "$ref": "#/$defs/condition_space"
+        },
+        "time_axis": {
+          "type": "string",
+          "enum": [
+            "observed",
+            "effective"
+          ]
+        },
+        "time_point": {
+          "type": "string",
+          "pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z"
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "kind",
+        "query",
+        "limit",
+        "include_provenance",
+        "condition_query",
+        "time_axis",
+        "time_point"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Read.expand"
+        },
+        "node_id": {
+          "$ref": "#/$defs/text128"
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "include_provenance": {
+          "type": "boolean"
+        },
+        "condition_query": {
+          "$ref": "#/$defs/condition_space"
+        },
+        "time_axis": {
+          "type": "string",
+          "enum": [
+            "observed",
+            "effective"
+          ]
+        },
+        "time_point": {
+          "type": "string",
+          "pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z"
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "kind",
+        "node_id",
+        "depth",
+        "limit",
+        "include_provenance",
+        "condition_query",
+        "time_axis",
+        "time_point"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Read.receipt"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "Write.create",
+            "Write.modify",
+            "Govern.forget",
+            "Govern.restore",
+            "Govern.correct_revision",
+            "Govern.change_policy"
+          ]
+        },
+        "caller_token": {
+          "$ref": "#/$defs/text128"
+        }
+      },
+      "required": [
+        "kind",
+        "operation",
+        "caller_token"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Govern.forget"
+        },
+        "caller_token": {
+          "$ref": "#/$defs/text128"
+        },
+        "node_id": {
+          "$ref": "#/$defs/text128"
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "kind",
+        "caller_token",
+        "node_id",
+        "expected_revision",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Govern.restore"
+        },
+        "caller_token": {
+          "$ref": "#/$defs/text128"
+        },
+        "node_id": {
+          "$ref": "#/$defs/text128"
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "kind",
+        "caller_token",
+        "node_id",
+        "expected_revision",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Govern.correct_revision"
+        },
+        "caller_token": {
+          "$ref": "#/$defs/text128"
+        },
+        "node_id": {
+          "$ref": "#/$defs/text128"
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "replacement": {
+          "$ref": "#/$defs/replacement"
+        }
+      },
+      "required": [
+        "kind",
+        "caller_token",
+        "node_id",
+        "expected_revision",
+        "reason",
+        "replacement"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Govern.change_policy"
+        },
+        "caller_token": {
+          "$ref": "#/$defs/text128"
+        },
+        "node_id": {
+          "$ref": "#/$defs/text128"
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "declared_sensitivity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "reader_ceiling": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text128"
+          },
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "caller_token",
+        "node_id",
+        "expected_revision",
+        "reason",
+        "declared_sensitivity",
+        "reader_ceiling"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "Operation.cancel"
+        },
+        "target_operation": {
+          "type": "string",
+          "enum": [
+            "Write.create",
+            "Write.modify",
+            "Govern.forget",
+            "Govern.restore",
+            "Govern.correct_revision",
+            "Govern.change_policy"
+          ]
+        },
+        "caller_token": {
+          "$ref": "#/$defs/text128"
+        },
+        "fencing_epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "kind",
+        "target_operation",
+        "caller_token",
+        "fencing_epoch",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "SelfCheck"
+        },
+        "check_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "C01",
+              "C02",
+              "C03",
+              "C04",
+              "C05",
+              "C06",
+              "C07",
+              "C08",
+              "C09",
+              "C10",
+              "R01",
+              "R02",
+              "R03",
+              "R04",
+              "R05",
+              "R06",
+              "R07",
+              "R08",
+              "R09"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 19,
+          "uniqueItems": true
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "specification",
+            "isolated-runtime"
+          ]
+        },
+        "snapshot_ref": {
+          "$ref": "#/$defs/text128"
+        }
+      },
+      "required": [
+        "kind",
+        "check_ids",
+        "scope",
+        "snapshot_ref"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

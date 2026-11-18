@@ -58,3 +58,7 @@ forget是治理事件，不自动承诺物理擦除所有备份/审计；保留�
 此表覆盖未来接口错误，当前响应元数据schema仅支持[已建模子集](<RESPONSES.md>)，不把此表全部code声称为已实现。
 
 输入大小和形状已固定在提案schema；conditions暂为文本数组，不解释语义。已有响应元数据与取消证据顺序模型；完整records输出、真实取消/超时证据、条件语言、双时间、原子事务和平台持久化仍待完成。
+
+## 完整输入/输出与取消提案（0.2-full）
+
+[api_v2 schema](<../spec/api_v2.schema.json>)、[完整响应 schema](<../spec/response_full.schema.json>) 与 [统一契约验证器](<../framework/contracts.py>) 补齐了 `Operation.cancel`、统一 `condition_space`/`bitemporal`、非可信 Markdown 包装（`untrusted_markdown`）以及全量错误码集合；上述仍为提案与隔离契约，不构成生产运行时。

@@ -77,8 +77,19 @@ def _validate(v, rule, root):
         raise ValueError("INVALID_ARGUMENT: integer range")
 
 
+_API_SCHEMA_CACHE = None
+
+
 def load_schema():
-    return parse((ROOT / "spec/api.schema.json").read_text(encoding="utf-8"))
+    global _API_SCHEMA_CACHE
+    path = ROOT / "spec/api.schema.json"
+    st = path.stat()
+    sig = (str(path), st.st_mtime_ns, st.st_size)
+    if _API_SCHEMA_CACHE is not None and _API_SCHEMA_CACHE[0] == sig:
+        return copy.deepcopy(_API_SCHEMA_CACHE[1])
+    parsed = parse(path.read_text(encoding="utf-8"))
+    _API_SCHEMA_CACHE = (sig, parsed)
+    return copy.deepcopy(parsed)
 
 
 

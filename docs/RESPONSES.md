@@ -34,3 +34,7 @@ receipt_allowed是同tenant/principal/operation/token且当前回执权限检查
 neg_basis修正是输入提案行为变更：原三参retry_action(absent,true,true)现返回query_only；显式fresh_unseen才获得首次应用资格，durable_cancel/preaccept_rejected返原终结。恢复全无仍unknown，不修改核心规则。
 
 未实现：完整响应records/envelope数据、取消网络接口与请求schema、真实认证、持久intent、跨进程锁、物理持久化、策略与输出原子性。对可信布尔证据的顺序推演不证明生产能力。
+
+## 完整响应体补充（0.2-full）
+
+[完整响应 schema](<../spec/response_full.schema.json>) 扩展定义了 `read`/`cancel`/`selfcheck` 响应体字段（`records`、`next_cursor`、`historical_receipt`、`selfcheck_aggregate`）并强制拒止/非 `ok` 路径不得夹带 `records` 或明文篡改摘要。

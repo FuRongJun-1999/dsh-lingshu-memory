@@ -3,6 +3,20 @@ from framework.api import _json_domain, _validate, check_schema
 from framework.spec import ROOT, parse
 import copy
 
+_RESP_SCHEMA_CACHE = None
+
+def _load_resp_schema():
+    global _RESP_SCHEMA_CACHE
+    p = ROOT / "spec/response.schema.json"
+    st = p.stat()
+    sig = (str(p), st.st_mtime_ns, st.st_size)
+    if _RESP_SCHEMA_CACHE is not None and _RESP_SCHEMA_CACHE[0] == sig:
+        return copy.deepcopy(_RESP_SCHEMA_CACHE[1])
+    s = parse(p.read_text(encoding="utf-8"))
+    check_schema(s)
+    _RESP_SCHEMA_CACHE = (sig, s)
+    return copy.deepcopy(s)
+
 BASES = ("unassessed", "fresh_unseen", "preaccept_rejected", "durable_cancel")
 
 def bools(*xs):
@@ -64,7 +78,7 @@ def target_response(rid, scope, status, audit, projection, receipt_allowed, cont
 
 def validate_envelope(value):
     _json_domain(value)
-    schema=parse((ROOT/"spec/response.schema.json").read_text(encoding="utf-8"));check_schema(schema);_validate(value,schema,schema)
+    schema=_load_resp_schema();check_schema(schema);_validate(value,schema,schema)
     t=value["target"];key=(value["outcome"],value["error_code"],value["next_action"])
     if t is None:
         allowed={("error","NOT_FOUND_OR_DENIED","authenticate")}
