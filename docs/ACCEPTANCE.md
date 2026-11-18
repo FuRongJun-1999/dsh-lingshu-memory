@@ -21,7 +21,9 @@ API提案的shape、cursor、治理、未知提交与聚合由[独立测试](<..
 
 测试独立预期由反例编写，不能从模型输出生成。变异既要测试锁也要测试模型行为，避免只证明hash会变。
 
-## 运行时（当前全部NOT_RUN）
+## 运行时（隔离影子运行时已实跑 R01–R09；生产接入仍 NOT_RUN）
+
+> 注：在 [shadow_runtime](<../shadow_runtime/store.py>)（纯文本 Markdown 真源 + JSON 结构化索引/账本，零二进制 DB）上，[R01–R09 故障注入测试](<../tests/test_shadow_runtime.py>) 与 [影子变异测试](<../tests/test_shadow_runtime_mutations.py>) 已实跑通过；下表为生产真实环境挂接门禁，生产接管前仍保持 `NOT_RUN`。
 
 | ID | 门禁 | 发布必需 | 状态 |
 |---|---|---|---|

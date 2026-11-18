@@ -59,7 +59,9 @@
     "tests/test_sandbox_store.py": "fe529aa290da9d27ab854fa89a62a4aa0b2881e3c9b191f01487d6c3bd31474b",
     "tests/test_sandbox_store_mutations.py": "1cee042fc33f4e507d4dc647daa2f9422c2cb5cd44adcf785ea67e0a63eb4887",
     "tests/test_security.py": "59c6a6fa86c137261db2571184c79c812f827419b59dd02d3c8b78e21d25a1ab",
-    "tests/test_security_mutations.py": "8548c637dce9356de1a212759b617a2993ccddd7f5d43d16aca5cb537e95e0cf"
+    "tests/test_security_mutations.py": "8548c637dce9356de1a212759b617a2993ccddd7f5d43d16aca5cb537e95e0cf",
+    "tests/test_shadow_runtime.py": "f17decaafe03f32e2fe4ed66d98b14696540d69d78f8ac6f4cde30ad67ed945f",
+    "tests/test_shadow_runtime_mutations.py": "5ecce7643bb64a9e2a87bcc374b0976dbaadb5e2e92f6463a1aefe1b7169bca6"
   },
   "checks": {
     "task_bound_retrieval": {

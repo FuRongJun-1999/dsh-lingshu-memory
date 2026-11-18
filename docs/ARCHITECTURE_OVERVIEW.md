@@ -2,7 +2,7 @@
 
 > **权威与范围声明**：本文是 [dsh-lingshu-memory](<../README.md>) 的**人类可读导读，不新增规范**。
 > 可执行核心规则唯一权威为 [core.json](<../spec/core.json>)（当前 `0.2.0`，受 [contract.lock.json](<../spec/contract.lock.json>) 冻结保护；统一条件空间与双时间轴已按 [ADR-0005](<adr/0005-unified-conditions-bitemporal.md>) 纳入真源）。
-> 截至当前阶段，`runtime_released: false`：本仓包含**规范真源、参考模型与隔离合成验证闭环（C0–C5）**，**不是**可投入生产的 1.0 运行时；发布必需的运行时门禁 `R01–R09` 均处于 `NOT_RUN`。
+> 截至当前阶段，`runtime_released: false`：本仓包含**规范真源、参考模型与隔离合成验证闭环（C0–C5）**，**不是**可投入生产的 1.0 运行时；隔离影子运行时 [shadow_runtime](<../shadow_runtime/store.py>)（纯文本 Markdown 真源 + JSON 索引/WAL/Fencing）已落地并通过 `R01–R09` 隔离故障注入；生产环境真实接入与认证仍未发布（生产门禁 `NOT_RUN`）。
 
 ---
 

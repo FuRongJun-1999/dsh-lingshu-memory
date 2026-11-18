@@ -9,6 +9,7 @@
 - framework: 纯参考模型，不是运行时
 - sandbox_runtime: 显式隔离合成执行，不接生产
 - scripts: 规格、索引、合规和门禁工具
+- shadow_runtime: M4/M5纯文本MD真源+JSON结构化索引影子运行时（隔离验证，禁封闭二进制）
 - spec: 结构化契约真源与冻结锁
 - tests: 独立预期样例与变异自证
 
