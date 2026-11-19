@@ -1,0 +1,23 @@
+{
+  "format": 1,
+  "algorithm": "sha256-bytes",
+  "files": {
+    "acceptance.status.json": "0a900ae050d0b9e38922a2690ebedec8855a32f92b4982748a2862fb7f014c29",
+    "api.schema.json": "2a45aa46c81058a68e381e17578dcae0e08b2b82e92f77eda9506ae418a1f4ae",
+    "api_v2.schema.json": "8975aa081b33834f9dd31bfbe2a255cd89014695886236a9100e42e5d838a2a6",
+    "benchmark.lock.json": "8376fad5779d3404b8c3949d046586925c28ac458f855d79e885f0464789bba8",
+    "benchmark_cases.json": "2a3ffb5ae34a08c0d8b85427d334ab0efcff005024c6bda57ab2a3fcd9f7c361",
+    "benchmark_result.json": "ee43c7aff9b28f444a364062650d30bfe5a07a88903e2761e9bdf1140126736f",
+    "compatibility.json": "2d996b5b785ee880a139aae774fc1175d0aae4d8921da1d43bb7a09e7593ec6e",
+    "context_acceptance.json": "02b68738b220ebd069e8266d92123d9c990c6db24690c123bf7659b5c9161aa3",
+    "context_demo.json": "48160ae8c0dccb03e3edcd010d5148a1373f1cdc193effe0d27a20cd8bc82e42",
+    "context_loop.json": "2f6aa829fa4c627725f499048126f7f47f1e157d2ebe3515b8ee5929c3e97147",
+    "contract.lock.json": "aa72a33158837315aa1b63e86fc37017d657adf70ec2d397db394e922025a6a5",
+    "core.json": "abd9e48848975372b977b54c0b435f1c508e32462b00241f6e36690cc25d8bb6",
+    "migration_shadow_fixture.json": "83116eb62a482ce78db13752a310fc62f9abe7c48ed3dabc6f5e63474f60a680",
+    "replay_demo.json": "d9dd642665baad152d5a3de2a23d26cee20dc1a06413459aa0c7af08fb916443",
+    "response.schema.json": "b021d1c0790f6e96e08289fea2bee4f4f57db1026e88e9cddcea643f9890b713",
+    "response_full.schema.json": "1b2e06c452a28ab6dd8d9931511de7242591c8522c73c8e3a8b763065a67ed46"
+  },
+  "reason": "Add regression fingerprint for durable audit-failure receipts and replay."
+}

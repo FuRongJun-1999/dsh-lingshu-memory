@@ -124,7 +124,7 @@ class ContractsV2Tests(unittest.TestCase):
         bad_read_rcpt["records"] = None
         bad_read_rcpt["historical_receipt"] = {
             "commit_status": "committed", "fingerprint": SHA, "node_id": "n1",
-            "revision": 1, "content_sha": SHA, "durability_actual": "process", "audit_state": "ok"
+            "revision": 1, "content_sha": SHA, "durability_actual": "process", "audit_state": "ok", "writer_id": "fixture-a"
         }
         with self.assertRaises(ValueError):
             ct.validate_full_response(bad_read_rcpt)

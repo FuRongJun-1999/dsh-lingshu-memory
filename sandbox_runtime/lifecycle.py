@@ -5,6 +5,7 @@ Explicitly synthetic and in-memory only; not a persistent runtime or authenticat
 from __future__ import annotations
 import copy
 import hashlib
+import uuid
 from dataclasses import replace
 from framework.api import aggregate_checks, cursor_valid, govern_transition, receipt_scope_allowed, retry_action
 from framework.conditions import bitemporal_match, condition_match
@@ -32,6 +33,7 @@ class LifecycleSandbox:
     def __init__(self, *, synthetic: bool):
         if synthetic is not True:
             raise ValueError("EXPLICIT_SYNTHETIC_REQUIRED")
+        self._writer_id = "memory-" + uuid.uuid4().hex
         self.model = Model()
         self.cache = EpochDecisionCache()
         self.graph_epoch = 1
@@ -113,6 +115,7 @@ class LifecycleSandbox:
 
     def _build_receipt(self, *, commit_status: str, fp: str, node_id: str, rev: int, content_sha: str, durability: str, audit_state: str) -> dict:
         return {
+            "writer_id": self._writer_id,
             "commit_status": commit_status,
             "fingerprint": fp,
             "node_id": node_id,

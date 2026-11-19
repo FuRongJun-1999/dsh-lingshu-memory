@@ -1,0 +1,158 @@
+{
+  "format": 1,
+  "candidate": null,
+  "items": {
+    "C01": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "C02": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "C03": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "C04": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "C05": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "C06": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "C07": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "C08": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "C09": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "C10": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "R01": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "R02": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "R03": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "R04": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "R05": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "R06": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "R07": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "R08": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    },
+    "R09": {
+      "state": "NOT_RUN",
+      "required_for": [
+        "production",
+        "power"
+      ],
+      "evidence_sha": null
+    }
+  },
+  "release_markers": []
+}

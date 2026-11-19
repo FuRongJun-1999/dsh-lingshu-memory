@@ -6,6 +6,8 @@ import json
 import os
 import pathlib
 import time
+import uuid
+from shadow_runtime.writer_status import WriterStatus, _name
 from dataclasses import replace
 from framework.api import cursor_valid, govern_transition, receipt_scope_allowed, retry_action
 from framework.conditions import bitemporal_match, condition_match
@@ -51,11 +53,13 @@ class ShadowMarkdownStore:
     """
 
     def __init__(self, root_dir: str | pathlib.Path, *, synthetic: bool,
-                 durability_probe_fn=probe_platform_durability, lock_timeout_s: float = 5.0):
+                 durability_probe_fn=probe_platform_durability, lock_timeout_s: float = 5.0, writer_handle=None):
         if synthetic is not True:
             raise ValueError("EXPLICIT_SYNTHETIC_REQUIRED")
         self.root = pathlib.Path(root_dir).resolve()
         self.synthetic = True
+        self._writer_id = ("shadow-" + uuid.uuid4().hex if writer_handle is None else
+                           WriterStatus(self.root, synthetic=True).identify(writer_handle))
         self._durability_probe_fn = durability_probe_fn
         self._lock_timeout_s = float(lock_timeout_s)
         self.model = Model()
@@ -99,13 +103,39 @@ class ShadowMarkdownStore:
         text = json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
         atomic_write_text(path, text, durable=durable, fault_hook=fault_hook, stage_prefix=stage)
 
-    def _audit_status_norm(self, tenant: str) -> str:
-        st = inspect_audit(self.root / "audit/audit.jsonl", expected_tenant=tenant)["state"]
-        if st == "ok":
-            return "ok"
-        if st == "missing":
+    @staticmethod
+    def _transaction_audit(chain_state, receipt_state):
+        """A healthy chain alone cannot establish this transaction's audit result."""
+        if "failed" in (chain_state, receipt_state):
+            return "failed"
+        if "missing" in (chain_state, receipt_state):
             return "missing"
-        return "failed"
+        return "ok" if chain_state == receipt_state == "ok" else "failed"
+
+    def _finalize_audit(self, ctx, req, receipt, now, *, durable, fault_hook):
+        try:
+            self.audit.append(
+                writer_id=self._writer_id, ts=now, tenant=ctx["tenant"], principal=ctx["principal"],
+                op=req["kind"], node_id=receipt["node_id"], revision=receipt["revision"],
+                payload_sha=receipt["content_sha"], durable=durable, fault_hook=fault_hook,
+            )
+        except Exception:
+            receipt["audit_state"] = "failed"
+        else:
+            receipt["audit_state"] = "ok"
+        # Receipt persistence errors propagate independently from audit I/O.
+        self._save_token_record(
+            ctx["tenant"], ctx["principal"], req["kind"], req["caller_token"],
+            {"commit_status": "committed", "fingerprint": receipt["fingerprint"], "history_complete": True,
+             "negative_basis": "unassessed", "fencing_epoch": 0, "node_id": receipt["node_id"],
+             "revision": receipt["revision"], "content_sha": receipt["content_sha"], "receipt": receipt},
+            durable=durable,
+        )
+        return receipt["audit_state"] == "ok"
+
+    def _audit_status_norm(self, tenant: str, receipt: dict) -> str:
+        st = inspect_audit(self.root / "audit/audit.jsonl", expected_tenant=tenant)["state"]
+        return self._transaction_audit(st, receipt["audit_state"])
 
     def _load_intent_for_scope(self, tenant: str, principal: str, operation: str, token: str) -> tuple[dict | None, bool]:
         tx_id = _token_key_sha(tenant, principal, operation, token)[:16]
@@ -163,6 +193,8 @@ class ShadowMarkdownStore:
             if obj["key_sha"] != expected_sha or obj["scope"] != {"tenant": tenant, "principal": principal, "operation": operation, "token": token}:
                 return None, True
             body = {k: v for k, v in obj.items() if k != "checksum"}
+            if obj["commit_status"] == "committed":
+                _name(obj["receipt"]["writer_id"])  # never attribute legacy receipts to the replayer
             if _sha_obj(body) != obj["checksum"]:
                 return None, True
             return obj, False
@@ -342,8 +374,7 @@ class ShadowMarkdownStore:
                 nodes, metas = self._build_graph_nodes(manifest_body)
                 can_r = can_read_with_epoch_cache(self.model, nid, nodes, tenant=ctx["tenant"], principal=ctx["principal"], clearance=ctx["clearance"], graph_epoch=manifest_body["graph_epoch"], cache=self.cache)
                 proj = metas[nid]["state"] if can_r else "unknown"
-                audit_state = inspect_audit(self.root / "audit/audit.jsonl", expected_tenant=ctx["tenant"])["state"]
-                audit_norm = "ok" if audit_state == "ok" else ("missing" if audit_state == "missing" else "failed")
+                audit_norm = self._audit_status_norm(ctx["tenant"], tok_rec["receipt"])
                 return validate_full_response({
                     "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "ok" if audit_norm == "ok" else "error",
                     "error_code": None if audit_norm == "ok" else ("AUDIT_INCOMPLETE" if audit_norm == "missing" else "AUDIT_FAILED"),
@@ -508,6 +539,7 @@ class ShadowMarkdownStore:
         # Step 3: Seal committed token receipt
         durability_actual = "power" if durable else "process"
         receipt = {
+            "writer_id": self._writer_id,
             "commit_status": "committed",
             "fingerprint": fp,
             "node_id": node_id,
@@ -535,28 +567,7 @@ class ShadowMarkdownStore:
         self._rebuild_index_locked(manifest_body, durable=durable, fault_hook=fault_hook)
 
         # Step 5: Append payload-free audit AFTER body/manifest/token; failure surfaces honestly (never rolls back committed body!)
-        audit_ok = True
-        try:
-            self.audit.append(
-                ts=now, tenant=ctx["tenant"], principal=ctx["principal"], op=kind,
-                node_id=node_id, revision=rev, payload_sha=content_sha, durable=durable, fault_hook=fault_hook,
-            )
-            receipt["audit_state"] = "ok"
-            self._save_token_record(
-                ctx["tenant"], ctx["principal"], kind, req["caller_token"],
-                {
-                    "commit_status": "committed", "fingerprint": fp, "history_complete": True,
-                    "negative_basis": "unassessed", "fencing_epoch": 0, "node_id": node_id,
-                    "revision": rev, "content_sha": content_sha, "receipt": receipt,
-                },
-                durable=durable,
-            )
-        except Exception as exc:
-            if isinstance(exc, InjectedCrash):
-                raise
-            audit_ok = False
-
-        if not audit_ok:
+        if not self._finalize_audit(ctx, req, receipt, now, durable=durable, fault_hook=fault_hook):
             return validate_full_response({
                 "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "error",
                 "error_code": "AUDIT_FAILED", "next_action": "reconcile_audit",
@@ -635,7 +646,7 @@ class ShadowMarkdownStore:
             nodes, metas = self._build_graph_nodes(manifest_body)
             can_r = can_read_with_epoch_cache(self.model, nid, nodes, tenant=ctx["tenant"], principal=ctx["principal"], clearance=ctx["clearance"], graph_epoch=manifest_body["graph_epoch"], cache=self.cache)
             proj = metas[nid]["state"] if can_r else "unknown"
-            audit_norm = self._audit_status_norm(ctx["tenant"])
+            audit_norm = self._audit_status_norm(ctx["tenant"], tok_rec["receipt"])
             return validate_full_response({
                 "version": "0.2-full", "request_id": rid, "scope": "cancel",
                 "outcome": "ok" if audit_norm == "ok" else "error",
@@ -736,6 +747,7 @@ class ShadowMarkdownStore:
                 return {"commit_status": "absent", "audit_state": "unknown", "integrity_failure": False, "negative_basis": "durable_cancel"}
             return {"commit_status": "unknown", "audit_state": "failed", "integrity_failure": True}
         if tok_rec["commit_status"] == "committed":
+            audit_state = self._transaction_audit(audit_state, tok_rec["receipt"]["audit_state"])
             nid, rev = tok_rec["node_id"], tok_rec["revision"]
             mdp, metap = self._md_path(nid, rev), self._meta_path(nid, rev)
             body_ok = mdp.exists() and metap.exists()
@@ -850,7 +862,7 @@ class ShadowMarkdownStore:
                 })
             can_r = can_read_with_epoch_cache(self.model, node_id, nodes, tenant=ctx["tenant"], principal=ctx["principal"], clearance=ctx["clearance"], graph_epoch=manifest_body["graph_epoch"], cache=self.cache)
             proj = metas[node_id]["state"] if can_r else "unknown"
-            audit_norm = self._audit_status_norm(ctx["tenant"])
+            audit_norm = self._audit_status_norm(ctx["tenant"], tok_rec["receipt"])
             return validate_full_response({
                 "version": "0.2-full", "request_id": rid, "scope": "mutation",
                 "outcome": "ok" if audit_norm == "ok" else "error",
@@ -957,8 +969,9 @@ class ShadowMarkdownStore:
             proj = "active"
 
         receipt = {
+            "writer_id": self._writer_id,
             "commit_status": "committed", "fingerprint": fp, "node_id": node_id,
-            "revision": new_rev, "content_sha": sha, "durability_actual": "process", "audit_state": "ok",
+            "revision": new_rev, "content_sha": sha, "durability_actual": "process", "audit_state": "missing",
         }
         self._save_token_record(
             ctx["tenant"], ctx["principal"], kind, req["caller_token"],
@@ -971,15 +984,7 @@ class ShadowMarkdownStore:
         )
         self._save_manifest(manifest_body, durable=False, fault_hook=fault_hook)
         self._rebuild_index_locked(manifest_body, durable=False, fault_hook=fault_hook)
-        audit_ok = True
-        try:
-            self.audit.append(ts=now, tenant=ctx["tenant"], principal=ctx["principal"], op=kind, node_id=node_id, revision=new_rev, payload_sha=sha, durable=False, fault_hook=fault_hook)
-        except Exception as exc:
-            if isinstance(exc, InjectedCrash):
-                raise
-            audit_ok = False
-        if not audit_ok:
-            receipt["audit_state"] = "failed"
+        if not self._finalize_audit(ctx, req, receipt, now, durable=False, fault_hook=fault_hook):
             return validate_full_response({
                 "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "error",
                 "error_code": "AUDIT_FAILED", "next_action": "reconcile_audit",

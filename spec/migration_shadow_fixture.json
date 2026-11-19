@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "content": "Synthetic migration note: blue tile.",
+  "policy": {
+    "sensitivity": 1,
+    "reader_ceiling": [
+      "alice"
+    ],
+    "context": {
+      "tenant": "t1",
+      "clearance": 2,
+      "auth_epoch": 1,
+      "policy_generation": 1,
+      "expires_at": 100
+    },
+    "condition_space": {
+      "carrier": {
+        "state": "declared",
+        "text": "md"
+      },
+      "method": {
+        "state": "declared",
+        "text": "exact"
+      },
+      "existence": {
+        "state": "declared",
+        "text": "present"
+      },
+      "attributes": []
+    },
+    "bitemporal": {
+      "observed": {
+        "start": {
+          "state": "instant",
+          "value": "2024-01-01T00:00:00Z"
+        },
+        "end": {
+          "state": "instant",
+          "value": "2024-01-10T00:00:00Z"
+        }
+      },
+      "effective": {
+        "start": {
+          "state": "instant",
+          "value": "2024-01-01T00:00:00Z"
+        },
+        "end": {
+          "state": "instant",
+          "value": "2024-01-10T00:00:00Z"
+        }
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "inside",
+      "principal": "alice",
+      "point": "2024-01-05T00:00:00Z",
+      "method": {
+        "state": "declared",
+        "text": "exact"
+      },
+      "reference": "RECORD",
+      "expected": "RECORD",
+      "reason": "unchanged"
+    },
+    {
+      "id": "other-reader",
+      "principal": "bob",
+      "point": "2024-01-05T00:00:00Z",
+      "method": {
+        "state": "declared",
+        "text": "exact"
+      },
+      "reference": "RECORD",
+      "expected": "NOT_FOUND_OR_DENIED",
+      "reason": "reader_ceiling"
+    },
+    {
+      "id": "exclusive-end",
+      "principal": "alice",
+      "point": "2024-01-10T00:00:00Z",
+      "method": {
+        "state": "declared",
+        "text": "exact"
+      },
+      "reference": "RECORD",
+      "expected": "EMPTY",
+      "reason": "effective_interval_end"
+    },
+    {
+      "id": "unknown-method",
+      "principal": "alice",
+      "point": "2024-01-05T00:00:00Z",
+      "method": {
+        "state": "unknown"
+      },
+      "reference": "RECORD",
+      "expected": "CONDITION_DEFERRED",
+      "reason": "unknown_method"
+    }
+  ]
+}

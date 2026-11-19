@@ -6,9 +6,10 @@ import pathlib
 import re
 from framework.spec import canonical, parse
 from shadow_runtime.durability import append_line_durable
+from shadow_runtime.writer_status import _name
 
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
-_EXPECTED_KEYS = {"seq", "ts", "tenant", "principal", "op", "node_id", "revision", "payload_sha", "prev_sha", "entry_sha"}
+_EXPECTED_KEYS = {"writer_id", "seq", "ts", "tenant", "principal", "op", "node_id", "revision", "payload_sha", "prev_sha", "entry_sha"}
 
 
 def _entry_sha(entry_without_sha: dict) -> str:
@@ -21,6 +22,10 @@ def _valid_audit_types(obj: dict) -> bool:
     if type(obj["ts"]) is not int or obj["ts"] < 0:
         return False
     if type(obj["revision"]) is not int or obj["revision"] < 1:
+        return False
+    try:
+        _name(obj["writer_id"])
+    except ValueError:
         return False
     for k in ("tenant", "principal", "op", "node_id"):
         if type(obj[k]) is not str or not obj[k]:
@@ -98,7 +103,7 @@ class PayloadFreeAuditLog:
     def __init__(self, audit_path: pathlib.Path):
         self.path = pathlib.Path(audit_path)
 
-    def append(self, *, ts: int, tenant: str, principal: str, op: str, node_id: str,
+    def append(self, *, writer_id: str, ts: int, tenant: str, principal: str, op: str, node_id: str,
                revision: int, payload_sha: str, durable: bool, fault_hook=None) -> dict:
         info = inspect_audit(self.path)
         if info["state"] not in ("ok", "missing"):
@@ -106,6 +111,7 @@ class PayloadFreeAuditLog:
         seq = info["last_seq"] + 1
         prev_sha = info["last_sha"]
         entry = {
+            "writer_id": _name(writer_id),
             "seq": seq,
             "ts": ts,
             "tenant": tenant,

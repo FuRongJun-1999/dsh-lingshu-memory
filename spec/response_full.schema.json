@@ -191,6 +191,10 @@
             "failed",
             "unknown"
           ]
+        },
+        "writer_id": {
+          "type": "string",
+          "pattern": "[a-z0-9][a-z0-9.-]{0,63}"
         }
       },
       "required": [
@@ -200,7 +204,8 @@
         "revision",
         "content_sha",
         "durability_actual",
-        "audit_state"
+        "audit_state",
+        "writer_id"
       ],
       "additionalProperties": false
     }
