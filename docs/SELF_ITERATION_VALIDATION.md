@@ -99,7 +99,7 @@ planned -> implementing -> candidate-frozen -> independently-verified
 
 本文件即 `stage-0: self-verification protocol` 提案：只定义流程，不更改 `core.json`、release gate 状态或运行时行为。独立复核通过并合并后，后续阶段按风险分开选择：P2 metadata 类型与值域硬化；intent/WAL 与平台故障边界实验；版本冻结工具化；`M6` 授权迁移前置评审。不同阶段不得把验证工具自身的 PASS 当作它正确的自证。
 
-M0–M5 现状与 M6 门槛仍以[路线图](<ROADMAP.md>)、[章程](<CHARTER.md>)、[恢复规范](<RECOVERY.md>)与[核心规格](<../spec/core.json>)为准。C5 的 `ISOLATED_ACCEPTED` 只覆盖其声明的 `framework`/`sandbox_runtime`/`tests`/context 指纹与隔离合成流程，不覆盖 `shadow_runtime`，也不构成 production/power 证据。`spec/acceptance.status.json` 与 release gate 仍是生产资格真源，不由此流程自动改写。
+M0–M5 现状与 M6 门槛仍以[路线图](<ROADMAP.md>)、[章程](<CHARTER.md>)、[恢复规范](<RECOVERY.md>)与[核心规格](<../spec/core.json>)为准。C5 的 `ISOLATED_ACCEPTED` 只覆盖其声明的 `framework`、`sandbox_runtime`、`tests`（含 `tests/test_shadow_runtime*.py`）与 context 指纹及隔离合成流程，不覆盖 `shadow_runtime/` 实现文件；它既不能证明 shadow 实现正确，也不构成 production/power 证据。`spec/acceptance.status.json` 与 release gate 仍是生产资格真源，不由此流程自动改写。
 
 ## 8. 不适用与限制
 
