@@ -23,18 +23,25 @@ MUTANTS = [
     ('skip_base_in_ref', "if git(root, 'merge-base', '--is-ancestor', manifest['base_sha'], ref).returncode != 0:", 'if False:'),
     ('skip_drift', 'if other is None or other != payload:', 'if False:'),
     ('skip_result_line', "if not lines or lines[-1] != 'RESULT: PASS gate=' + gid + ' exit=0':", 'if False:'),
+    ('skip_attestation_required', "out.append(('attestation_missing', 'no signed attestation supplied'))", 'pass'),
+    ('skip_attestation_signature', "if not valid:", 'if False:'),
+    ('skip_trusted_key', "if type(key) is not str or HEX64.match(key.lower()) is None or key.lower() not in trusted:", 'if False:'),
 ]
 
 KINDS = {'skip_manifest_pin': 'pin', 'skip_requirements_pin': 'reqpin', 'skip_anchor_contained': 'anchor',
          'skip_failure_text': 'failed', 'skip_window_early': 'early', 'skip_naive_window': 'naive',
          'skip_ref_prefix': 'localref', 'skip_ref_sha': 'movedref', 'skip_base_in_ref': 'baseout',
-         'skip_drift': 'drift', 'skip_result_line': 'noresult'}
+         'skip_drift': 'drift', 'skip_result_line': 'noresult', 'skip_attestation_required': 'noattest',
+         'skip_attestation_signature': 'forged', 'skip_trusted_key': 'strangerkey'}
 EXPECTED = {'skip_manifest_pin': 'manifest_unpinned', 'skip_requirements_pin': 'requirements_unpinned',
             'skip_anchor_contained': 'anchor_not_contained', 'skip_failure_text': 'evidence_failure_text',
             'skip_window_early': 'review_window_early', 'skip_naive_window': 'review_window_naive',
             'skip_ref_prefix': 'anchor_ref_invalid', 'skip_ref_sha': 'anchor_ref_moved',
             'skip_base_in_ref': 'anchor_base_outside_ref', 'skip_drift': 'requirements_drift',
-            'skip_result_line': 'evidence_result_missing'}
+            'skip_result_line': 'evidence_result_missing',
+            'skip_attestation_required': 'attestation_missing',
+            'skip_attestation_signature': 'attestation_bad_signature',
+            'skip_trusted_key': 'attestation_untrusted_key'}
 
 
 def git(root, *args):
@@ -111,6 +118,28 @@ def build(root, module, kind):
         manifest['base_sha'] = git(root, 'rev-parse', 'HEAD').stdout.strip()
     elif kind == 'drift':
         write_lf(root / 'requirements.json', json.dumps({'required_gate_ids': ['spec', 'zzz'], 'min_level': 'I2'}))
+    if kind in ('noattest', 'forged', 'strangerkey'):
+        import scripts.ed25519 as signer
+        seed = bytes(range(32))
+        public = signer.public_key(seed)
+        body = {'manifest_sha256': manifest['manifest_sha256'],
+                'requirements_sha256': requirements_sha,
+                'ref': 'refs/remotes/origin/main',
+                'ref_sha': candidate,
+                'issuer': 'reviewer',
+                'issued_at': '2026-01-01T00:30:00Z',
+                'public_key': public.hex()}
+        signature = signer.sign(seed, module.canonical(body)).hex()
+        if kind == 'forged':
+            signature = '00' * 64
+        record = dict(body, signature=signature)
+        path = root / 'attestation.json'
+        write_lf(path, json.dumps(record, sort_keys=True))
+        if kind == 'noattest':
+            pins['attestation_path'] = ''
+        else:
+            pins['attestation_path'] = str(path)
+            pins['trusted_keys'] = [public.hex().lower()] if kind == 'forged' else ['ab' * 32]
     return manifest, pins
 
 

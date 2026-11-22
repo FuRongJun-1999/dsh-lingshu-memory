@@ -5,6 +5,7 @@ acceptance status, release gates or production records."""
 import argparse
 import datetime
 import hashlib
+import importlib.util
 import json
 import os
 import pathlib
@@ -284,6 +285,69 @@ def committed_json(root, rev, path):
     return parsed, payload
 
 
+def ed25519_module():
+    path = pathlib.Path(__file__).with_name('ed25519.py')
+    spec = importlib.util.spec_from_file_location('_stage_ed25519', path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+ATTESTATION_FIELDS = {'manifest_sha256', 'requirements_sha256', 'ref', 'ref_sha', 'issuer', 'issued_at', 'public_key', 'signature'}
+
+
+def check_attestation(manifest, pins, out):
+    path = pins.get('attestation_path')
+    trusted = [key.lower() for key in pins.get('trusted_keys') or []]
+    if not path:
+        if pins.get('allow_weak_pin'):
+            return
+        out.append(('attestation_missing', 'no signed attestation supplied'))
+        return
+    try:
+        data = json.loads(pathlib.Path(path).read_text(encoding='utf-8'), object_pairs_hook=no_duplicates)
+    except (OSError, ValueError) as error:
+        out.append(('attestation_schema', str(error)))
+        return
+    if type(data) is not dict or set(data) != ATTESTATION_FIELDS:
+        out.append(('attestation_schema', 'field set mismatch'))
+        return
+    key = data['public_key']
+    if type(key) is not str or HEX64.match(key.lower()) is None or key.lower() not in trusted:
+        out.append(('attestation_untrusted_key', repr(key)))
+        return
+    signature = data['signature']
+    if type(signature) is not str or re.fullmatch(r'[0-9a-f]{128}', signature.lower()) is None:
+        out.append(('attestation_schema', 'signature must be 128 hex characters'))
+        return
+    body = {name: data[name] for name in ATTESTATION_FIELDS - {'signature'}}
+    try:
+        verifier = ed25519_module()
+        valid = verifier.verify(bytes.fromhex(key), canonical(body), bytes.fromhex(signature))
+    except Exception as error:
+        out.append(('attestation_schema', 'verification failed: ' + str(error)))
+        return
+    if not valid:
+        out.append(('attestation_bad_signature', 'signature does not verify'))
+        return
+    if data['manifest_sha256'] != manifest.get('manifest_sha256'):
+        out.append(('attestation_mismatch', 'manifest_sha256'))
+    if data['requirements_sha256'] != pins.get('requirements_sha256'):
+        out.append(('attestation_mismatch', 'requirements_sha256'))
+    if data['ref'] != pins.get('require_ref') or data['ref_sha'] != pins.get('ref_sha'):
+        out.append(('attestation_mismatch', 'ref pin'))
+    if type(data['issuer']) is not str or not data['issuer'].strip():
+        out.append(('attestation_schema', 'issuer must be non-empty'))
+    try:
+        issued = datetime.datetime.fromisoformat(str(data['issued_at']).replace('Z', '+00:00'))
+    except ValueError:
+        out.append(('attestation_schema', 'issued_at must be ISO-8601'))
+        return
+    if issued.tzinfo is None:
+        out.append(('attestation_schema', 'issued_at requires timezone'))
+    elif issued > datetime.datetime.now(datetime.timezone.utc):
+        out.append(('attestation_time', 'issued_at is in the future'))
+
 def check_pins(manifest, root, pins, out):
     requirements, payload = committed_json(root, manifest['base_sha'], 'requirements.json')
     if payload is None:
@@ -382,6 +446,7 @@ def validate(manifest, root, pins):
     elif git(root, 'merge-base', '--is-ancestor', manifest['base_sha'], manifest['candidate_sha']).returncode != 0:
         out.append(('git_base_not_ancestor', manifest['base_sha']))
     requirements = check_pins(manifest, root, pins, out)
+    check_attestation(manifest, pins, out)
     levels = check_gates(manifest, root, out, requirements or {})
     check_claims(manifest, out, levels)
     check_review(manifest, out)
@@ -410,6 +475,9 @@ def main(argv=None):
     parser.add_argument('--pin-requirements-sha256', default='')
     parser.add_argument('--require-ref', default='')
     parser.add_argument('--pin-ref-sha', default='')
+    parser.add_argument('--attestation', default='')
+    parser.add_argument('--trusted-key', action='append', default=[])
+    parser.add_argument('--allow-weak-pin', action='store_true')
     args = parser.parse_args(argv)
     path = pathlib.Path(args.manifest)
     root = path.parent
@@ -421,7 +489,10 @@ def main(argv=None):
     pins = {'manifest_sha256': args.pin_manifest_sha256,
             'requirements_sha256': args.pin_requirements_sha256,
             'require_ref': args.require_ref,
-            'ref_sha': args.pin_ref_sha}
+            'ref_sha': args.pin_ref_sha,
+            'attestation_path': args.attestation,
+            'trusted_keys': args.trusted_key,
+            'allow_weak_pin': args.allow_weak_pin}
     try:
         failures = validate(manifest, root, pins)
     except Exception as error:
@@ -430,7 +501,9 @@ def main(argv=None):
     for code, detail in failures:
         print('FAIL', code + ':', detail)
     print('STAGE MANIFEST:', 'PASS' if not failures else 'FAIL')
-    print('CHECKS RUN: schema,digest,commits,pins,anchor,ref-sha,base-in-ref,requirements-drift,gates,evidence,result-line,claims,review,window,production,not_claimed')
+    if args.allow_weak_pin and not args.attestation:
+        print('WARNING weak_pin: running without a signed attestation')
+    print('CHECKS RUN: schema,digest,commits,pins,anchor,ref-sha,base-in-ref,requirements-drift,attestation,gates,evidence,result-line,claims,review,window,production,not_claimed')
     return 0 if not failures else 1
 
 

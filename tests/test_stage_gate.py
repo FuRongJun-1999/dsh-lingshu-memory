@@ -7,7 +7,9 @@ import sys
 import tempfile
 import unittest
 from framework.spec import ROOT
+import scripts.ed25519 as signer
 import scripts.stage_gate as gate_mod
+SEED = bytes(range(32))
 
 PAST = '2020-01-01T00:00:00Z'
 WINDOW_START = '2026-01-01T00:00:00Z'
@@ -92,7 +94,42 @@ def setup(root, mutate=None, requirements_in_base=True, ref='refs/remotes/origin
     return manifest, pins
 
 
+def attestation(manifest, pins, *, key=SEED, tamper=None, trusted=True):
+    public = signer.public_key(key)
+    body = {'manifest_sha256': manifest['manifest_sha256'],
+            'requirements_sha256': pins['requirements_sha256'],
+            'ref': pins['require_ref'],
+            'ref_sha': pins['ref_sha'],
+            'issuer': 'stage-reviewer',
+            'issued_at': '2026-01-01T00:30:00Z',
+            'public_key': public.hex()}
+    signature = signer.sign(key, gate_mod.canonical(body))
+    record = dict(body, signature=signature.hex())
+    if tamper == 'manifest':
+        body['manifest_sha256'] = 'e' * 64
+        record = dict(body, signature=signer.sign(key, gate_mod.canonical(body)).hex())
+    elif tamper == 'signature':
+        record['signature'] = ('00' * 64)
+    elif tamper == 'time':
+        body['issued_at'] = '2099-01-01T00:00:00Z'
+        record = dict(body, signature=signer.sign(key, gate_mod.canonical(body)).hex())
+    root = pins.pop('_root')
+    path = root / 'attestation.json'
+    write_lf(path, json.dumps(record, sort_keys=True))
+    pins['attestation_path'] = str(path)
+    pins['trusted_keys'] = [public.hex().lower()] if trusted else ['ab' * 32]
+    return path
+
+
 def codes(manifest, root, pins):
+    pins = dict(pins)
+    pins['_root'] = root
+    if pins.get('attestation', True):
+        attestation(manifest, pins, tamper=pins.get('tamper'), trusted=pins.get('trusted', True))
+    pins.pop('_root', None)
+    pins.pop('attestation', None)
+    pins.pop('tamper', None)
+    pins.pop('trusted', None)
     return [code for code, _detail in gate_mod.validate(manifest, root, pins)]
 
 
@@ -189,7 +226,7 @@ class StageGatePinnedTests(unittest.TestCase):
                                      '--pin-manifest-sha256', pins['manifest_sha256'],
                                      '--pin-requirements-sha256', pins['requirements_sha256'],
                                      '--require-ref', 'refs/remotes/origin/main',
-                                     '--pin-ref-sha', pins['ref_sha']],
+                                     '--pin-ref-sha', pins['ref_sha'], '--allow-weak-pin'],
                                     cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(pinned.returncode, 0, pinned.stdout + pinned.stderr)
 
@@ -261,6 +298,50 @@ class StageGateHardeningTests(unittest.TestCase):
             pins = {'manifest_sha256': manifest['manifest_sha256'], 'requirements_sha256': requirements_sha,
                     'require_ref': 'refs/remotes/origin/main', 'ref_sha': candidate}
             self.assertIn('evidence_result_missing', codes(manifest, root, pins))
+
+
+
+class StageGateAttestationTests(unittest.TestCase):
+    def test_signed_attestation_enables_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            self.assertEqual(codes(manifest, root, pins), [])
+
+    def test_missing_attestation_blocks_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            pins['attestation'] = False
+            self.assertIn('attestation_missing', codes(manifest, root, pins))
+
+    def test_untrusted_key_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            pins['trusted'] = False
+            self.assertIn('attestation_untrusted_key', codes(manifest, root, pins))
+
+    def test_tampered_manifest_digest_breaks_attestation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            pins['tamper'] = 'manifest'
+            self.assertIn('attestation_mismatch', codes(manifest, root, pins))
+
+    def test_forged_signature_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            pins['tamper'] = 'signature'
+            self.assertIn('attestation_bad_signature', codes(manifest, root, pins))
+
+    def test_future_issued_at_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            pins['tamper'] = 'time'
+            self.assertIn('attestation_time', codes(manifest, root, pins))
 
 
 if __name__ == '__main__':
