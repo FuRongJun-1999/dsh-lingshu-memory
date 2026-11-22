@@ -267,6 +267,13 @@ def read_json(path):
     return json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=no_duplicates)
 
 
+def production_path_ok(raw):
+    if type(raw) is not str or not raw or '\\' in raw or ':' in raw:
+        return False
+    parts = pathlib.PurePosixPath(raw).parts
+    return bool(parts) and '..' not in parts and not raw.startswith('/')
+
+
 def check_production(manifest, root, out):
     if manifest['scope'] != 'production':
         return
@@ -276,25 +283,37 @@ def check_production(manifest, root, out):
         return
     for key_path, key_sha in (('acceptance_status_path', 'acceptance_status_sha256'), ('release_gate_path', 'release_gate_sha256')):
         raw = evidence[key_path]
-        if type(raw) is not str or not raw or raw.startswith('/') or '..' in pathlib.PurePosixPath(raw).parts:
-            out.append(('production_unbound', key_path))
+        if not production_path_ok(raw):
+            out.append(('production_path_invalid', str(raw)))
             return
-        path = root / raw
-        if not path.is_file():
-            out.append(('production_unbound', 'missing ' + raw))
+    blobs = {}
+    for key_path, key_sha in (('acceptance_status_path', 'acceptance_status_sha256'), ('release_gate_path', 'release_gate_sha256')):
+        raw = evidence[key_path]
+        payload = committed_bytes(root, manifest['candidate_sha'], raw)
+        if payload is None:
+            out.append(('production_uncommitted', raw))
             return
-        if hashlib.sha256(path.read_bytes()).hexdigest() != evidence[key_sha]:
+        if hashlib.sha256(payload).hexdigest() != evidence[key_sha]:
             out.append(('production_unbound', 'digest mismatch ' + raw))
             return
+        blobs[raw] = payload
+    gate_state = None
+    acceptance = None
     try:
-        gate_state = read_json(root / evidence['release_gate_path'])
-        acceptance = read_json(root / evidence['acceptance_status_path'])
-    except (OSError, ValueError) as error:
-        out.append(('production_unbound', 'unreadable evidence: ' + str(error)))
+        gate_state = json.loads(blobs[evidence['release_gate_path']].decode('utf-8'), object_pairs_hook=no_duplicates)
+        acceptance = json.loads(blobs[evidence['acceptance_status_path']].decode('utf-8'), object_pairs_hook=no_duplicates)
+    except (UnicodeDecodeError, ValueError):
+        out.append(('production_malformed', 'committed evidence is not valid json'))
         return
-    if type(gate_state) is not dict or gate_state.get('production', {}).get('state') != 'PASS':
+    if type(gate_state) is not dict or type(gate_state.get('production')) is not dict:
+        out.append(('production_malformed', 'release gate shape'))
+        return
+    if type(acceptance) is not dict:
+        out.append(('production_malformed', 'acceptance shape'))
+        return
+    if gate_state['production'].get('state') != 'PASS':
         out.append(('production_unbound', 'release gate is not PASS'))
-    if type(acceptance) is not dict or acceptance.get('production') != 'PASS':
+    if acceptance.get('production') != 'PASS':
         out.append(('production_unbound', 'acceptance status is not PASS'))
 
 

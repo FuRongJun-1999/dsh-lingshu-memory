@@ -199,12 +199,13 @@ class StageGatePinnedTests(unittest.TestCase):
             write_lf(root / 'notes.txt', 'n' + chr(10))
             commit_all(root, 'two')
             candidate = git(root, 'rev-parse', 'HEAD').stdout.strip()
-            git(root, 'branch', '-f', 'trunk', candidate)
+            git(root, 'update-ref', 'refs/remotes/origin/main', candidate)
             committed = gate_mod.committed_bytes(root, base, 'requirements.json')
             requirements_sha = hashlib.sha256(committed).hexdigest() if committed is not None else '0' * 64
             manifest = payload(root, base, candidate, requirements_sha)
             pins = {'manifest_sha256': manifest['manifest_sha256'], 'requirements_sha256': requirements_sha,
-                    'require_ref': 'refs/remotes/origin/main', 'ref_sha': candidate}
+                    'require_ref': 'refs/remotes/origin/main', 'ref_sha': candidate,
+                    'reviewer_keys': [signer.public_key(REVIEW_SEED).hex()], 'attestation': False}
             self.assertIn('evidence_failure_text', codes(manifest, root, pins))
 
     def test_window_before_candidate_commit_is_rejected(self):
@@ -417,6 +418,65 @@ class StageGateEvidencePathTests(unittest.TestCase):
                 body['gates'][0]['raw_log'] = 'scripts/spec.log'
             manifest, pins = setup(root, mutate)
             self.assertIn('gate_raw_path', codes(manifest, root, pins))
+
+
+
+class StageGateProductionEvidenceTests(unittest.TestCase):
+    def _production_manifest(self, root, acceptance, gate_state, declared=None):
+        manifest, pins = setup(root)
+        write_lf(root / 'acc.json', json.dumps(acceptance))
+        write_lf(root / 'gate.json', json.dumps(gate_state))
+        commit_all(root, 'production evidence')
+        tip = git(root, 'rev-parse', 'HEAD').stdout.strip()
+        git(root, 'update-ref', 'refs/remotes/origin/main', tip)
+        manifest['scope'] = 'production'
+        manifest['candidate_sha'] = tip
+        pins['ref_sha'] = tip
+        manifest['production_evidence'] = {
+            'acceptance_status_path': 'acc.json',
+            'acceptance_status_sha256': declared[0] if declared else hashlib.sha256((root / 'acc.json').read_bytes()).hexdigest(),
+            'release_gate_path': 'gate.json',
+            'release_gate_sha256': declared[1] if declared else hashlib.sha256((root / 'gate.json').read_bytes()).hexdigest(),
+        }
+        rebuilt = {k: v for k, v in manifest.items() if k != 'manifest_sha256'}
+        manifest = gate_mod.build_manifest(rebuilt)
+        pins['manifest_sha256'] = manifest['manifest_sha256']
+        return manifest, pins
+
+    def test_committed_production_evidence_can_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = self._production_manifest(root, {'production': 'PASS'}, {'production': {'state': 'PASS'}})
+            code = codes(manifest, root, pins)
+            self.assertNotIn('production_unbound', code)
+            self.assertNotIn('production_uncommitted', code)
+
+    def test_working_tree_only_evidence_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = self._production_manifest(root, {'production': 'PASS'}, {'production': {'state': 'PASS'}})
+            write_lf(root / 'acc.json', json.dumps({'production': 'PASS', 'note': 'uncommitted edit'}))
+            manifest['production_evidence']['acceptance_status_sha256'] = hashlib.sha256((root / 'acc.json').read_bytes()).hexdigest()
+            rebuilt = {k: v for k, v in manifest.items() if k != 'manifest_sha256'}
+            manifest = gate_mod.build_manifest(rebuilt)
+            pins['manifest_sha256'] = manifest['manifest_sha256']
+            self.assertIn('production_unbound', codes(manifest, root, pins))
+
+    def test_malformed_production_evidence_is_named(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = self._production_manifest(root, {'production': 'PASS'}, {'production': 'PASS'})
+            self.assertIn('production_malformed', codes(manifest, root, pins))
+
+    def test_production_path_traversal_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = self._production_manifest(root, {'production': 'PASS'}, {'production': {'state': 'PASS'}})
+            manifest['production_evidence']['acceptance_status_path'] = '../acc.json'
+            rebuilt = {k: v for k, v in manifest.items() if k != 'manifest_sha256'}
+            manifest = gate_mod.build_manifest(rebuilt)
+            pins['manifest_sha256'] = manifest['manifest_sha256']
+            self.assertIn('production_path_invalid', codes(manifest, root, pins))
 
 
 if __name__ == '__main__':

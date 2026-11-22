@@ -28,6 +28,8 @@ MUTANTS = [
     ('skip_attestation_signature', "if not attestation_valid:", 'if False:'),
     ('skip_trusted_key', "if type(key) is not str or HEX64.match(key.lower()) is None or key.lower() not in trusted:", 'if False:'),
     ('skip_review_signature', 'if not review_valid:', 'if False:'),
+    ('skip_production_committed', 'if payload is None:', 'if False:'),
+    ('skip_production_malformed', "if type(gate_state) is not dict or type(gate_state.get('production')) is not dict:", 'if False:'),
 ]
 
 KINDS = {'skip_manifest_pin': 'pin', 'skip_requirements_pin': 'reqpin', 'skip_anchor_contained': 'anchor',
@@ -35,7 +37,8 @@ KINDS = {'skip_manifest_pin': 'pin', 'skip_requirements_pin': 'reqpin', 'skip_an
          'skip_ref_prefix': 'localref', 'skip_ref_sha': 'movedref', 'skip_base_in_ref': 'baseout',
          'skip_drift': 'drift', 'skip_result_line': 'noresult', 'skip_attestation_required': 'noattest',
          'skip_attestation_signature': 'forged', 'skip_trusted_key': 'strangerkey',
-         'skip_review_signature': 'reviewsig'}
+         'skip_review_signature': 'reviewsig', 'skip_production_committed': 'prodcommitted',
+         'skip_production_malformed': 'prodmalformed'}
 EXPECTED = {'skip_manifest_pin': 'manifest_unpinned', 'skip_requirements_pin': 'requirements_unpinned',
             'skip_anchor_contained': 'anchor_not_contained', 'skip_failure_text': 'evidence_failure_text',
             'skip_window_early': 'review_window_early', 'skip_naive_window': 'review_window_naive',
@@ -45,7 +48,9 @@ EXPECTED = {'skip_manifest_pin': 'manifest_unpinned', 'skip_requirements_pin': '
             'skip_attestation_required': 'attestation_missing',
             'skip_attestation_signature': 'attestation_bad_signature',
             'skip_trusted_key': 'attestation_untrusted_key',
-            'skip_review_signature': 'review_bad_signature'}
+            'skip_review_signature': 'review_bad_signature',
+            'skip_production_committed': 'production_uncommitted',
+            'skip_production_malformed': 'production_malformed'}
 
 
 def git(root, *args):
