@@ -1,4 +1,4 @@
-"""Independent expectations for the stage manifest gate (schema v3 + external pins)."""
+"""Independent expectations for the stage manifest gate (schema v3, external pins, v5 hardening)."""
 import hashlib
 import json
 import pathlib
@@ -35,10 +35,11 @@ def commit_all(root, message):
         raise AssertionError(result.stdout + result.stderr)
 
 
-def evidence(root, gate='spec', command='python scripts/check_all.py', exit_code=0, body='ok'):
+def evidence(root, gate='spec', command='python scripts/check_all.py', exit_code=0, body='ok', result=True):
     path = root / 'evidence' / (gate + '.log')
     header = json.dumps({'gate': gate, 'command': command, 'exit_code': exit_code}, sort_keys=True)
-    write_lf(path, header + chr(10) + body + chr(10))
+    tail = ('RESULT: PASS gate=' + gate + ' exit=0') if result else ''
+    write_lf(path, header + chr(10) + body + chr(10) + tail + chr(10))
     return path
 
 
@@ -67,7 +68,7 @@ def payload(root, base, candidate, requirements_sha, mutate=None):
     return manifest
 
 
-def setup(root, mutate=None, requirements_in_base=True, ref='refs/heads/trunk'):
+def setup(root, mutate=None, requirements_in_base=True, ref='refs/remotes/origin/main'):
     git(root, 'init', '-q')
     evidence(root)
     if requirements_in_base:
@@ -80,13 +81,14 @@ def setup(root, mutate=None, requirements_in_base=True, ref='refs/heads/trunk'):
     write_lf(root / 'notes.txt', 'n2' + chr(10))
     commit_all(root, 'two')
     candidate = git(root, 'rev-parse', 'HEAD').stdout.strip()
-    git(root, 'branch', '-f', 'trunk', candidate)
+    git(root, 'update-ref', ref, candidate)
     committed = gate_mod.committed_bytes(root, base, 'requirements.json')
     requirements_sha = hashlib.sha256(committed).hexdigest() if committed is not None else '0' * 64
     manifest = payload(root, base, candidate, requirements_sha, mutate)
     pins = {'manifest_sha256': manifest['manifest_sha256'],
             'requirements_sha256': requirements_sha,
-            'require_ref': ref}
+            'require_ref': ref,
+            'ref_sha': candidate}
     return manifest, pins
 
 
@@ -125,7 +127,7 @@ class StageGatePinnedTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
             manifest, pins = setup(root)
-            git(root, 'branch', '-f', 'trunk', manifest['base_sha'])
+            git(root, 'update-ref', 'refs/remotes/origin/main', manifest['base_sha'])
             self.assertIn('anchor_not_contained', codes(manifest, root, pins))
 
     def test_missing_external_ref_is_rejected(self):
@@ -152,7 +154,7 @@ class StageGatePinnedTests(unittest.TestCase):
             requirements_sha = hashlib.sha256(committed).hexdigest() if committed is not None else '0' * 64
             manifest = payload(root, base, candidate, requirements_sha)
             pins = {'manifest_sha256': manifest['manifest_sha256'], 'requirements_sha256': requirements_sha,
-                    'require_ref': 'refs/heads/trunk'}
+                    'require_ref': 'refs/remotes/origin/main', 'ref_sha': candidate}
             self.assertIn('evidence_failure_text', codes(manifest, root, pins))
 
     def test_window_before_candidate_commit_is_rejected(self):
@@ -186,9 +188,79 @@ class StageGatePinnedTests(unittest.TestCase):
             pinned = subprocess.run([sys.executable, '-B', 'scripts/stage_gate.py', '--manifest', str(path),
                                      '--pin-manifest-sha256', pins['manifest_sha256'],
                                      '--pin-requirements-sha256', pins['requirements_sha256'],
-                                     '--require-ref', 'refs/heads/trunk'],
+                                     '--require-ref', 'refs/remotes/origin/main',
+                                     '--pin-ref-sha', pins['ref_sha']],
                                     cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(pinned.returncode, 0, pinned.stdout + pinned.stderr)
+
+
+
+class StageGateHardeningTests(unittest.TestCase):
+    def test_naive_window_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            def mutate(body):
+                body['reviewed_by']['window_start'] = '2026-01-01T00:00:00'
+                body['reviewed_by']['window_end'] = '2026-01-02T00:00:00'
+            manifest, pins = setup(root, mutate)
+            self.assertIn('review_window_naive', codes(manifest, root, pins))
+
+    def test_local_branch_ref_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            pins['require_ref'] = 'refs/heads/main'
+            self.assertIn('anchor_ref_invalid', codes(manifest, root, pins))
+
+    def test_moved_ref_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            pins['ref_sha'] = manifest['base_sha']
+            self.assertIn('anchor_ref_moved', codes(manifest, root, pins))
+
+    def test_base_outside_ref_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            orphan = root / 'orphan.txt'
+            write_lf(orphan, 'x' + chr(10))
+            git(root, 'checkout', '-q', '--orphan', 'other')
+            commit_all(root, 'orphan root')
+            other = git(root, 'rev-parse', 'HEAD').stdout.strip()
+            manifest['base_sha'] = other
+            self.assertIn('anchor_base_outside_ref', codes(manifest, root, pins))
+
+    def test_requirements_drift_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            write_lf(root / 'requirements.json', json.dumps({'required_gate_ids': ['spec', 'zzz'], 'min_level': 'I2'}))
+            commit_all(root, 'drifted registry')
+            drifted = git(root, 'rev-parse', 'HEAD').stdout.strip()
+            git(root, 'update-ref', 'refs/remotes/origin/main', drifted)
+            manifest['candidate_sha'] = drifted
+            pins['ref_sha'] = drifted
+            self.assertIn('requirements_drift', codes(manifest, root, pins))
+
+    def test_missing_result_line_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            git(root, 'init', '-q')
+            write_lf(root / 'requirements.json', json.dumps({'required_gate_ids': ['spec'], 'min_level': 'I2'}))
+            evidence(root, result=False)
+            commit_all(root, 'one')
+            base = git(root, 'rev-parse', 'HEAD').stdout.strip()
+            write_lf(root / 'notes.txt', 'n' + chr(10))
+            commit_all(root, 'two')
+            candidate = git(root, 'rev-parse', 'HEAD').stdout.strip()
+            git(root, 'update-ref', 'refs/remotes/origin/main', candidate)
+            committed = gate_mod.committed_bytes(root, base, 'requirements.json')
+            requirements_sha = hashlib.sha256(committed).hexdigest()
+            manifest = payload(root, base, candidate, requirements_sha)
+            pins = {'manifest_sha256': manifest['manifest_sha256'], 'requirements_sha256': requirements_sha,
+                    'require_ref': 'refs/remotes/origin/main', 'ref_sha': candidate}
+            self.assertIn('evidence_result_missing', codes(manifest, root, pins))
 
 
 if __name__ == '__main__':

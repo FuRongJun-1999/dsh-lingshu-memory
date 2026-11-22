@@ -6,6 +6,7 @@ import argparse
 import datetime
 import hashlib
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -24,7 +25,7 @@ GATE_FIELDS = {'id', 'command', 'exit_code', 'raw_log', 'raw_log_sha256', 'indep
 CLAIM_FIELDS = {'id', 'statement', 'level', 'scope', 'gate_ids'}
 REVIEW_FIELDS = {'implementer_id', 'reviewer_id', 'role', 'independent', 'session', 'window_start', 'window_end'}
 HEADER_FIELDS = {'gate', 'command', 'exit_code'}
-FAILURE_MARKERS = ('FAILED', 'ERROR:', 'FAIL:')
+FAILURE_MARKERS = ('failed', 'fail', 'error', 'traceback', 'exit status 1', 'exit status 2', 'exit status 3', 'err!')
 PRODUCTION_FIELDS = {'acceptance_status_path', 'acceptance_status_sha256', 'release_gate_path', 'release_gate_sha256'}
 
 
@@ -49,12 +50,20 @@ def no_duplicates(pairs):
     return seen
 
 
+GIT_ENV = {'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': os.devnull}
+
+
 def git(root, *args, text=True):
-    return subprocess.run(['git', *args], cwd=root, capture_output=True, text=text, encoding='utf-8' if text else None, errors=None if text else None, shell=False)
+    env = dict(os.environ, **GIT_ENV)
+    return subprocess.run(['git', '--no-replace-objects', '-c', 'core.fsmonitor=false',
+                           '-c', 'core.hooksPath=' + os.devnull, *args], cwd=root, capture_output=True,
+                          text=text, encoding='utf-8' if text else None, env=env, shell=False)
 
 
 def committed_bytes(root, candidate, raw):
-    result = subprocess.run(['git', 'cat-file', 'blob', candidate + ':' + raw], cwd=root, capture_output=True, shell=False)
+    env = dict(os.environ, **GIT_ENV)
+    result = subprocess.run(['git', '--no-replace-objects', 'cat-file', 'blob', candidate + ':' + raw],
+                            cwd=root, capture_output=True, env=env, shell=False)
     return result.stdout if result.returncode == 0 else None
 
 
@@ -102,10 +111,14 @@ def check_evidence(gate, manifest, root, out, seen):
         out.append(('evidence_mismatch', gid))
         return
     body = payload.split(b'\n', 1)[1].decode('utf-8', 'replace') if b'\n' in payload else ''
+    lowered_body = body.lower()
     for marker in FAILURE_MARKERS:
-        if marker in body:
+        if marker in lowered_body:
             out.append(('evidence_failure_text', gid))
             break
+    lines = [line.strip() for line in body.splitlines() if line.strip()]
+    if not lines or lines[-1] != 'RESULT: PASS gate=' + gid + ' exit=0':
+        out.append(('evidence_result_missing', gid))
 
 
 def check_gates(manifest, root, out, requirements):
@@ -286,13 +299,29 @@ def check_pins(manifest, root, pins, out):
     if type(manifest_pin) is not str or type(manifest['manifest_sha256']) is not str or manifest_pin != manifest['manifest_sha256']:
         out.append(('manifest_unpinned', 'manifest digest must be pinned externally'))
     ref = pins.get('require_ref')
-    if ref:
-        if git(root, 'rev-parse', '--verify', ref).returncode != 0:
-            out.append(('anchor_ref_missing', ref))
-        elif git(root, 'merge-base', '--is-ancestor', manifest['candidate_sha'], ref).returncode != 0:
-            out.append(('anchor_not_contained', ref))
-    else:
+    if type(ref) is not str or not ref.strip():
         out.append(('anchor_ref_missing', 'no external ref pinned'))
+        return requirements
+    if not ref.startswith(('refs/remotes/', 'refs/tags/')):
+        out.append(('anchor_ref_invalid', repr(ref)))
+        return requirements
+    head = git(root, 'rev-parse', '--verify', ref)
+    if head.returncode != 0:
+        out.append(('anchor_ref_missing', ref))
+        return requirements
+    tip = head.stdout.strip()
+    pin_ref = pins.get('ref_sha')
+    if type(pin_ref) is not str or pin_ref != tip:
+        out.append(('anchor_ref_moved', ref + ' -> ' + tip))
+    if git(root, 'merge-base', '--is-ancestor', manifest['candidate_sha'], ref).returncode != 0:
+        out.append(('anchor_not_contained', ref))
+    if git(root, 'merge-base', '--is-ancestor', manifest['base_sha'], ref).returncode != 0:
+        out.append(('anchor_base_outside_ref', manifest['base_sha']))
+    for rev in (manifest['candidate_sha'], tip):
+        other = committed_bytes(root, rev, 'requirements.json')
+        if other is None or other != payload:
+            out.append(('requirements_drift', rev))
+            break
     return requirements
 
 
@@ -308,13 +337,19 @@ def check_window(manifest, root, out):
     except ValueError:
         out.append(('review_window_format', 'ISO-8601 required'))
         return
+    if start_at.tzinfo is None or end_at.tzinfo is None:
+        out.append(('review_window_naive', 'timezone offset required'))
+        return
     commit_time = git(root, 'show', '-s', '--format=%cI', manifest['candidate_sha']).stdout.strip()
     try:
         committed_at = datetime.datetime.fromisoformat(commit_time)
     except ValueError:
         return
-    if start_at < committed_at:
-        out.append(('review_window_early', 'window starts before candidate commit'))
+    try:
+        if start_at < committed_at:
+            out.append(('review_window_early', 'window starts before candidate commit'))
+    except TypeError:
+        out.append(('review_window_compare', 'offset-naive and offset-aware cannot be compared'))
     if end_at.tzinfo is not None and end_at > datetime.datetime.now(datetime.timezone.utc):
         out.append(('review_window_future', 'window ends after validation time'))
 
@@ -374,6 +409,7 @@ def main(argv=None):
     parser.add_argument('--pin-manifest-sha256', default='')
     parser.add_argument('--pin-requirements-sha256', default='')
     parser.add_argument('--require-ref', default='')
+    parser.add_argument('--pin-ref-sha', default='')
     args = parser.parse_args(argv)
     path = pathlib.Path(args.manifest)
     root = path.parent
@@ -384,12 +420,17 @@ def main(argv=None):
         return 2
     pins = {'manifest_sha256': args.pin_manifest_sha256,
             'requirements_sha256': args.pin_requirements_sha256,
-            'require_ref': args.require_ref}
-    failures = validate(manifest, root, pins)
+            'require_ref': args.require_ref,
+            'ref_sha': args.pin_ref_sha}
+    try:
+        failures = validate(manifest, root, pins)
+    except Exception as error:
+        print('FAIL validator_error:', error)
+        return 2
     for code, detail in failures:
         print('FAIL', code + ':', detail)
     print('STAGE MANIFEST:', 'PASS' if not failures else 'FAIL')
-    print('CHECKS RUN: schema,digest,commits,pins,anchor,gates,evidence,requirements,claims,review,window,production,not_claimed')
+    print('CHECKS RUN: schema,digest,commits,pins,anchor,ref-sha,base-in-ref,requirements-drift,gates,evidence,result-line,claims,review,window,production,not_claimed')
     return 0 if not failures else 1
 
 

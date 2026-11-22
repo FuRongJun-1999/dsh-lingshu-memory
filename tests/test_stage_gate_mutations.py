@@ -14,16 +14,27 @@ PAST = '2020-01-01T00:00:00Z'
 MUTANTS = [
     ('skip_manifest_pin', "if type(manifest_pin) is not str or type(manifest['manifest_sha256']) is not str or manifest_pin != manifest['manifest_sha256']:", 'if False:'),
     ('skip_requirements_pin', "if type(pinned) is not str or hashlib.sha256(payload).hexdigest() != pinned:", 'if False:'),
-    ('skip_anchor_contained', "elif git(root, 'merge-base', '--is-ancestor', manifest['candidate_sha'], ref).returncode != 0:", 'elif False:'),
-    ('skip_failure_text', 'if marker in body:', 'if False:'),
+    ('skip_anchor_contained', "if git(root, 'merge-base', '--is-ancestor', manifest['candidate_sha'], ref).returncode != 0:", 'if False:'),
+    ('skip_failure_text', 'if marker in lowered_body:', 'if False:'),
     ('skip_window_early', 'if start_at < committed_at:', 'if False:'),
+    ('skip_naive_window', 'if start_at.tzinfo is None or end_at.tzinfo is None:', 'if False:'),
+    ('skip_ref_prefix', "if not ref.startswith(('refs/remotes/', 'refs/tags/')):", 'if False:'),
+    ('skip_ref_sha', 'if type(pin_ref) is not str or pin_ref != tip:', 'if False:'),
+    ('skip_base_in_ref', "if git(root, 'merge-base', '--is-ancestor', manifest['base_sha'], ref).returncode != 0:", 'if False:'),
+    ('skip_drift', 'if other is None or other != payload:', 'if False:'),
+    ('skip_result_line', "if not lines or lines[-1] != 'RESULT: PASS gate=' + gid + ' exit=0':", 'if False:'),
 ]
 
 KINDS = {'skip_manifest_pin': 'pin', 'skip_requirements_pin': 'reqpin', 'skip_anchor_contained': 'anchor',
-         'skip_failure_text': 'failed', 'skip_window_early': 'early'}
+         'skip_failure_text': 'failed', 'skip_window_early': 'early', 'skip_naive_window': 'naive',
+         'skip_ref_prefix': 'localref', 'skip_ref_sha': 'movedref', 'skip_base_in_ref': 'baseout',
+         'skip_drift': 'drift', 'skip_result_line': 'noresult'}
 EXPECTED = {'skip_manifest_pin': 'manifest_unpinned', 'skip_requirements_pin': 'requirements_unpinned',
             'skip_anchor_contained': 'anchor_not_contained', 'skip_failure_text': 'evidence_failure_text',
-            'skip_window_early': 'review_window_early'}
+            'skip_window_early': 'review_window_early', 'skip_naive_window': 'review_window_naive',
+            'skip_ref_prefix': 'anchor_ref_invalid', 'skip_ref_sha': 'anchor_ref_moved',
+            'skip_base_in_ref': 'anchor_base_outside_ref', 'skip_drift': 'requirements_drift',
+            'skip_result_line': 'evidence_result_missing'}
 
 
 def git(root, *args):
@@ -49,16 +60,20 @@ def build(root, module, kind):
     write_lf(root / 'requirements.json', json.dumps({'required_gate_ids': ['spec'], 'min_level': 'I2'}))
     body_text = 'FAILED (3 errors)' if kind == 'failed' else 'ok'
     header = json.dumps({'gate': 'spec', 'command': 'cmd', 'exit_code': 0}, sort_keys=True)
-    write_lf(root / 'evidence/spec.log', header + chr(10) + body_text + chr(10))
+    tail = '' if kind == 'noresult' else ('RESULT: PASS gate=spec exit=0' + chr(10))
+    write_lf(root / 'evidence/spec.log', header + chr(10) + body_text + chr(10) + tail)
     commit(root, 'one')
     base = git(root, 'rev-parse', 'HEAD').stdout.strip()
     write_lf(root / 'notes.txt', 'n' + chr(10))
     commit(root, 'two')
     candidate = git(root, 'rev-parse', 'HEAD').stdout.strip()
-    git(root, 'branch', '-f', 'trunk', candidate)
+    git(root, 'update-ref', 'refs/remotes/origin/main', candidate)
     requirements_sha = hashlib.sha256(module.committed_bytes(root, base, 'requirements.json')).hexdigest()
     window_start = '2019-01-01T00:00:00Z' if kind == 'early' else '2026-01-01T00:00:00Z'
     window_end = '2019-01-02T00:00:00Z' if kind == 'early' else '2026-01-02T00:00:00Z'
+    if kind == 'naive':
+        window_start = '2026-01-01T00:00:00'
+        window_end = '2026-01-02T00:00:00'
     payload = {
         'schema': 'stage-manifest/3',
         'stage_id': 'stage-x',
@@ -78,13 +93,24 @@ def build(root, module, kind):
     manifest = module.build_manifest(payload)
     pins = {'manifest_sha256': manifest['manifest_sha256'],
             'requirements_sha256': requirements_sha,
-            'require_ref': 'refs/heads/trunk'}
+            'require_ref': 'refs/remotes/origin/main',
+            'ref_sha': candidate}
     if kind == 'pin':
         pins['manifest_sha256'] = ''
     elif kind == 'reqpin':
         pins['requirements_sha256'] = 'f' * 64
     elif kind == 'anchor':
-        git(root, 'branch', '-f', 'trunk', base)
+        git(root, 'update-ref', 'refs/remotes/origin/main', base)
+    elif kind == 'localref':
+        pins['require_ref'] = 'refs/heads/master'
+    elif kind == 'movedref':
+        pins['ref_sha'] = base
+    elif kind == 'baseout':
+        git(root, 'checkout', '-q', '--orphan', 'solo')
+        commit(root, 'solo')
+        manifest['base_sha'] = git(root, 'rev-parse', 'HEAD').stdout.strip()
+    elif kind == 'drift':
+        write_lf(root / 'requirements.json', json.dumps({'required_gate_ids': ['spec', 'zzz'], 'min_level': 'I2'}))
     return manifest, pins
 
 
