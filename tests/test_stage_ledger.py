@@ -1,6 +1,7 @@
 """The stage ledger is machine-checked, and every failure branch is covered."""
 import importlib.util
 import pathlib
+import tempfile
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -96,6 +97,30 @@ class LedgerBranchTests(unittest.TestCase):
         rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1), tests=100 + index) for index in range(10)]
         rows[5] = row('stage-0.1-v5', '{:040x}'.format(6), tests=1)
         self.assertIn('tests_not_monotonic:stage-0.1-v5', check(document(*rows)))
+    def test_doc_overclaim_is_flagged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / 'docs').mkdir()
+            (root / 'docs' / 'CLAIM.md').write_text('本系统生产可用。' + chr(10), encoding='utf-8')
+            problems = load().scan_docs(root)
+            self.assertIn('doc_overclaim:CLAIM.md:1', problems)
+
+    def test_negated_doc_claim_is_allowed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / 'docs').mkdir()
+            (root / 'docs' / 'BOUND.md').write_text('本轮不代表生产可用，也不授权上线。' + chr(10), encoding='utf-8')
+            self.assertEqual(load().scan_docs(root), [])
+
+    def test_dropped_forbidden_token_is_flagged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / 'docs').mkdir()
+            (root / 'docs' / 'WEAK.md').write_text('这不禁止说：生产放行。' + chr(10), encoding='utf-8')
+            self.assertIn('dropped_token:WEAK.md', load().scan_docs(root))
+
+    def test_real_docs_pass_the_scanner(self):
+        self.assertEqual(load().scan_docs(load().ROOT), [])
     def test_unknown_commit_is_flagged(self):
         self.assertIn('unknown_commit:stage-0.1-v0', check(full_document(), exists=False))
 
@@ -131,7 +156,7 @@ class LedgerBranchTests(unittest.TestCase):
 class LedgerFreezeTests(unittest.TestCase):
     def test_forbidden_oracle_is_not_weakened(self):
         module = load()
-        frozen = {'productionpass', 'productionready', '生产通过', '生产就绪', '可上线', '生产放行'}
+        frozen = {'productionpass', 'productionready', '生产通过', '生产就绪', '可上线', '生产可用'}
         self.assertLessEqual(frozen, set(module.FROZEN_FORBIDDEN))
 
     def test_ledger_path_is_pinned(self):

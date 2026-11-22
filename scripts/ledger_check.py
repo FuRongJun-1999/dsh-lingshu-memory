@@ -4,6 +4,7 @@ Kept deliberately small: the checker itself is a trust root, so every failure
 branch is covered by tests and the wording oracle is frozen there."""
 import re
 import subprocess
+from itertools import chain
 import unicodedata
 from pathlib import Path
 
@@ -16,7 +17,7 @@ MIN_ROWS = 10
 GATES = ('NOT_RUN/BLOCK',)
 FORBIDDEN = ('production pass', 'production approved', 'production-approved', 'production ready',
              'production-ready', 'ga-ready', 'general availability', 'prod-ready', 'release-ready',
-             '生产通过', '生产放行', '生产就绪', '生产可用', '可投产', '投产就绪', '可上线', '已上线',
+             '生产通过', '生产就绪', '生产可用', '可投产', '投产就绪', '可上线', '已上线',
              '可发布', '已独立验证', '已由第三方验证')
 DROP = dict.fromkeys(map(ord, '\u200b\u200c\u200d\u2060\ufeff'), None)
 
@@ -27,6 +28,8 @@ def squash(text):
 
 
 FROZEN_FORBIDDEN = tuple(squash(word) for word in FORBIDDEN)
+DROPPED_FORBIDDEN = tuple(squash(word) for word in ('生产放行', '已经生产可用', '可投入使用'))
+NEGATION = tuple(squash(word) for word in ('不', '未', '非', '禁止', '不得', '不等于', '而不是', '未完成', '仍为', 'not', 'no', 'never'))
 
 
 def rows(text):
@@ -62,6 +65,25 @@ def head_commit(root):
                             capture_output=True, text=True, encoding='utf-8', errors='replace')
     return result.stdout.strip() if result.returncode == 0 else ''
 
+
+def scan_docs(root):
+    problems = []
+    files = sorted(list((root / 'docs').glob('*.md')) + list(root.glob('*.md')))
+    for path in files:
+        if path.name == 'STAGE_LEDGER.md':
+            continue
+        text = path.read_text(encoding='utf-8')
+        for token in DROPPED_FORBIDDEN:
+            if token and token in squash(text):
+                problems.append('dropped_token:' + path.name)
+        for number, line in enumerate(text.splitlines(), 1):
+            squashed = squash(line)
+            if not any(word in squashed for word in chain(FROZEN_FORBIDDEN)):
+                continue
+            if any(word in squashed for word in NEGATION):
+                continue
+            problems.append('doc_overclaim:' + path.name + ':' + str(number))
+    return problems
 
 def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None):
     exists = exists or (lambda commit: commit_exists(root, commit))
@@ -124,6 +146,7 @@ def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None)
     chain_text = chain.read_text(encoding='utf-8') if chain.is_file() else ''
     if 'ledger_check.py' not in chain_text:
         problems.append('ledger_not_wired')
+    problems.extend(scan_docs(root))
     return problems
 
 
