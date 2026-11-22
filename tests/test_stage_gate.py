@@ -1,4 +1,5 @@
-"""Independent expectations for the stage evidence manifest gate (stage-0.1)."""
+"""Independent expectations for the stage manifest gate (schema v2)."""
+import copy
 import hashlib
 import json
 import pathlib
@@ -9,155 +10,209 @@ import unittest
 from framework.spec import ROOT
 import scripts.stage_gate as gate_mod
 
+FIELDS_BASE = {
+    'schema': 'stage-manifest/2',
+    'stage_id': 'stage-0.1',
+    'candidate_sha': 'a' * 40,
+    'base_sha': 'b' * 40,
+    'scope': 'isolated',
+    'required_min_level': 'I2',
+    'required_gate_ids': ['spec'],
+    'not_claimed': ['production', 'm6-migration'],
+    'reviewed_by': {
+        'implementer_id': 'dsh-implementer',
+        'reviewer_id': 'independent-verifier-1',
+        'role': 'independent-verifier',
+        'independent': True,
+        'session': 'session-b',
+        'window_start': '2026-11-22T15:00:00Z',
+        'window_end': '2026-11-22T15:30:00Z',
+    },
+}
 
-def build(root, **overrides):
+
+def make(root, mutate=None):
     log = root / 'logs/spec.txt'
     log.parent.mkdir(parents=True, exist_ok=True)
-    log.write_text('ok\n', encoding='utf-8')
-    manifest = {
-        'schema': 'stage-manifest/1',
-        'stage_id': 'stage-0.1',
-        'candidate_sha': 'a' * 40,
-        'base_sha': 'b' * 40,
-        'scope': 'isolated',
-        'claims': [{'id': 'spec-tools', 'statement': 'specification tools pass', 'level': 'I2', 'scope': 'isolated', 'gate_ids': ['spec']}],
-        'required_gates': [{'id': 'spec', 'command': 'python scripts/check_all.py', 'exit_code': 0, 'raw_log': 'logs/spec.txt', 'raw_log_sha256': hashlib.sha256(log.read_bytes()).hexdigest(), 'independence': 'I2', 'status': 'PASS'}],
-        'not_claimed': ['production', 'm6-migration'],
-        'reviewed_by': {'role': 'verifier', 'implementer': False, 'independent': True},
-    }
-    for key, value in overrides.items():
-        if value is None:
-            manifest.pop(key, None)
-        else:
-            manifest[key] = value
-    return manifest
+    log.write_text('ok' + chr(10), encoding='utf-8')
+    body = copy.deepcopy(FIELDS_BASE)
+    body['gates'] = [{'id': 'spec', 'command': 'python scripts/check_all.py', 'exit_code': 0,
+                      'raw_log': 'logs/spec.txt',
+                      'raw_log_sha256': hashlib.sha256(log.read_bytes()).hexdigest(),
+                      'independence': 'I2', 'status': 'PASS'}]
+    body['claims'] = [{'id': 'spec-tools', 'statement': 'specification tools pass', 'level': 'I2',
+                       'scope': 'isolated', 'gate_ids': ['spec']}]
+    if mutate is not None:
+        mutate(body, root)
+    return gate_mod.build_manifest(body)
 
 
 def codes(manifest, root):
     return [code for code, _detail in gate_mod.validate(manifest, root)]
 
 
-class StageGateTests(unittest.TestCase):
+class StageGateV2Tests(unittest.TestCase):
     def test_valid_isolated_manifest_passes(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            self.assertEqual(codes(build(root), root), [])
+            self.assertEqual(codes(make(root), root), [])
 
-    def test_gate_not_run_blocks_promotion(self):
+    def test_manifest_digest_detects_tampering(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['required_gates'][0]['status'] = 'NOT_RUN'
-            self.assertIn('gate_not_run', codes(manifest, root))
+            manifest = make(root)
+            manifest['required_min_level'] = 'I0'
+            self.assertIn('manifest_digest', codes(manifest, root))
 
-    def test_gate_unknown_blocks_promotion(self):
+    def test_production_scope_requires_external_evidence(self):
+        def mutate(body, root):
+            body['scope'] = 'production'
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['required_gates'][0]['status'] = 'unknown'
-            self.assertIn('gate_not_run', codes(manifest, root))
+            manifest = make(root, mutate)
+            self.assertIn('production_unbound', codes(manifest, root))
 
-    def test_nonzero_exit_blocks_promotion(self):
+    def test_production_scope_rejects_blocking_release_gate(self):
+        def mutate(body, root):
+            body['scope'] = 'production'
+            body['production_evidence'] = {'acceptance_status_sha256': 'c' * 64,
+                                           'release_gate_state': 'BLOCK',
+                                           'release_gate_sha256': 'd' * 64}
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['required_gates'][0]['exit_code'] = 1
-            self.assertIn('gate_exit', codes(manifest, root))
+            manifest = make(root, mutate)
+            self.assertIn('production_unbound', codes(manifest, root))
 
-    def test_missing_raw_log_is_not_evidence(self):
+    def test_required_gate_ids_must_match_declared_gates(self):
+        def mutate(body, root):
+            body['required_gate_ids'] = ['spec', 'shadow']
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            (root / 'logs/spec.txt').unlink()
-            self.assertIn('gate_raw_missing', codes(manifest, root))
+            self.assertIn('gate_missing', codes(make(root, mutate), root))
 
-    def test_raw_log_sha_mismatch_is_rejected(self):
+    def test_undeclared_gate_is_rejected(self):
+        def mutate(body, root):
+            body['gates'].append(dict(body['gates'][0], id='extra'))
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            (root / 'logs/spec.txt').write_text('tampered\n', encoding='utf-8')
-            self.assertIn('gate_raw_sha', codes(manifest, root))
+            self.assertIn('gate_extra', codes(make(root, mutate), root))
 
-    def test_claim_cannot_exceed_its_gate_level(self):
+    def test_gate_below_minimum_level_is_rejected(self):
+        def mutate(body, root):
+            body['gates'][0]['independence'] = 'I1'
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['claims'][0]['level'] = 'I3'
-            self.assertIn('claim_level_exceeds_gate', codes(manifest, root))
+            self.assertIn('gate_level_too_low', codes(make(root, mutate), root))
 
-    def test_claim_referencing_unknown_gate_is_rejected(self):
+    def test_not_run_gate_blocks_promotion(self):
+        def mutate(body, root):
+            body['gates'][0]['status'] = 'NOT_RUN'
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['claims'][0]['gate_ids'] = ['absent']
-            self.assertIn('claim_unknown_gate', codes(manifest, root))
+            self.assertIn('gate_not_run', codes(make(root, mutate), root))
 
-    def test_isolated_scope_rejects_production_claim_scope(self):
+    def test_backslash_and_drive_paths_are_rejected(self):
+        for raw in ('logs\\spec.txt', 'C:/logs/spec.txt'):
+            with self.subTest(raw=raw):
+                def mutate(body, root, raw=raw):
+                    body['gates'][0]['raw_log'] = raw
+                with tempfile.TemporaryDirectory() as tmp:
+                    root = pathlib.Path(tmp)
+                    self.assertIn('gate_raw_path', codes(make(root, mutate), root))
+
+    def test_traversal_outside_root_is_rejected(self):
+        def mutate(body, root):
+            body['gates'][0]['raw_log'] = '../escape.txt'
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp) / 'root'
+            root.mkdir()
+            self.assertIn('gate_raw_path', codes(make(root, mutate), root))
+
+    def test_status_file_cannot_be_evidence(self):
+        def mutate(body, root):
+            body['gates'][0]['raw_log'] = 'spec/acceptance_status.json'
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['claims'][0]['scope'] = 'production'
-            self.assertIn('claim_scope_escalation', codes(manifest, root))
+            self.assertIn('gate_readonly_status', codes(make(root, mutate), root))
 
-    def test_isolated_scope_rejects_production_wording(self):
+    def test_self_signed_reviewer_id_is_rejected(self):
+        def mutate(body, root):
+            body['reviewed_by']['reviewer_id'] = body['reviewed_by']['implementer_id']
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['claims'][0]['statement'] = 'production ready for release'
-            self.assertIn('claim_production_wording', codes(manifest, root))
+            self.assertIn('review_self_signed', codes(make(root, mutate), root))
 
-    def test_self_signed_review_is_rejected(self):
+    def test_integer_one_cannot_impersonate_independence(self):
+        def mutate(body, root):
+            body['reviewed_by']['independent'] = 1
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['reviewed_by']['implementer'] = True
-            self.assertIn('review_self_signed', codes(manifest, root))
+            self.assertIn('review_not_independent', codes(make(root, mutate), root))
 
-    def test_non_independent_review_is_rejected(self):
+    def test_implementer_role_is_rejected(self):
+        def mutate(body, root):
+            body['reviewed_by']['role'] = 'implementer'
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['reviewed_by']['independent'] = False
-            self.assertIn('review_not_independent', codes(manifest, root))
+            self.assertIn('review_role', codes(make(root, mutate), root))
 
-    def test_isolated_scope_must_disclaim_production(self):
+    def test_review_window_must_be_ordered(self):
+        def mutate(body, root):
+            body['reviewed_by']['window_end'] = body['reviewed_by']['window_start']
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['not_claimed'] = ['performance']
-            self.assertIn('not_claimed_missing', codes(manifest, root))
+            self.assertIn('review_window', codes(make(root, mutate), root))
 
-    def test_duplicate_gate_ids_are_rejected(self):
+    def test_claim_below_minimum_level_is_rejected(self):
+        def mutate(body, root):
+            body['claims'][0]['level'] = 'I0'
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['required_gates'].append(dict(manifest['required_gates'][0]))
-            self.assertIn('gate_duplicate', codes(manifest, root))
+            self.assertIn('claim_level_too_low', codes(make(root, mutate), root))
 
-    def test_candidate_equals_base_is_rejected(self):
+    def test_duplicate_claim_ids_are_rejected(self):
+        def mutate(body, root):
+            body['claims'].append(dict(body['claims'][0]))
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['candidate_sha'] = manifest['base_sha']
-            self.assertIn('commit_id', codes(manifest, root))
+            self.assertIn('claim_duplicate', codes(make(root, mutate), root))
 
-    def test_status_file_cannot_be_used_as_gate_evidence(self):
+    def test_isolated_scope_cannot_claim_production(self):
+        def mutate(body, root):
+            body['claims'][0]['scope'] = 'production'
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
-            manifest['required_gates'][0]['raw_log'] = 'spec/acceptance.status.json'
-            self.assertIn('gate_readonly_status', codes(manifest, root))
+            self.assertIn('claim_scope_escalation', codes(make(root, mutate), root))
 
-    def test_cli_exit_codes_follow_verdict(self):
+    def test_production_ready_wording_is_rejected(self):
+        for phrase in ('ready for production', '生产就绪'):
+            with self.subTest(phrase=phrase):
+                def mutate(body, root, phrase=phrase):
+                    body['claims'][0]['statement'] = phrase
+                with tempfile.TemporaryDirectory() as tmp:
+                    root = pathlib.Path(tmp)
+                    self.assertIn('claim_production_wording', codes(make(root, mutate), root))
+
+    def test_claim_gate_level_must_cover_claim(self):
+        def mutate(body, root):
+            body['claims'][0]['level'] = 'I3'
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            manifest = build(root)
+            self.assertIn('claim_level_exceeds_gate', codes(make(root, mutate), root))
+
+    def test_cli_distinguishes_fail_from_validator_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            good = make(root)
             path = root / 'manifest.json'
-            path.write_text(json.dumps(manifest), encoding='utf-8')
-            good = subprocess.run([sys.executable, '-B', 'scripts/stage_gate.py', '--manifest', str(path)], cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
-            self.assertEqual(good.returncode, 0, good.stdout)
-            manifest['required_gates'][0]['status'] = 'NOT_RUN'
-            path.write_text(json.dumps(manifest), encoding='utf-8')
+            path.write_text(json.dumps(good, sort_keys=True), encoding='utf-8')
+            ok = subprocess.run([sys.executable, '-B', 'scripts/stage_gate.py', '--manifest', str(path)], cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
+            self.assertEqual(ok.returncode, 0, ok.stdout + ok.stderr)
+            path.write_text('{"schema": "stage-manifest/2", "schema": "stage-manifest/2"}', encoding='utf-8')
+            dup = subprocess.run([sys.executable, '-B', 'scripts/stage_gate.py', '--manifest', str(path)], cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
+            self.assertEqual(dup.returncode, 2, dup.stdout)
+            good['gates'][0]['status'] = 'NOT_RUN'
+            path.write_text(json.dumps(gate_mod.build_manifest({k: v for k, v in good.items() if k != 'manifest_sha256'}), sort_keys=True), encoding='utf-8')
             bad = subprocess.run([sys.executable, '-B', 'scripts/stage_gate.py', '--manifest', str(path)], cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(bad.returncode, 1)
             self.assertIn('gate_not_run', bad.stdout)
