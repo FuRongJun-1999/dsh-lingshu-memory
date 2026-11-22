@@ -384,5 +384,40 @@ class StageGateReviewSignatureTests(unittest.TestCase):
             self.assertIn('review_bad_signature', codes(manifest, root, pins))
 
 
+
+class StageGateEvidencePathTests(unittest.TestCase):
+    def test_absolute_evidence_path_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            def mutate(body):
+                body['gates'][0]['raw_log'] = 'C:/tmp/x.log'
+            manifest, pins = setup(root, mutate)
+            self.assertIn('gate_raw_path', codes(manifest, root, pins))
+
+    def test_parent_traversal_evidence_path_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            def mutate(body):
+                body['gates'][0]['raw_log'] = 'evidence/../notes.txt'
+            manifest, pins = setup(root, mutate)
+            self.assertIn('gate_raw_path', codes(manifest, root, pins))
+
+    def test_json_evidence_path_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            def mutate(body):
+                body['gates'][0]['raw_log'] = 'evidence/spec.json'
+            manifest, pins = setup(root, mutate)
+            self.assertIn('gate_raw_path', codes(manifest, root, pins))
+
+    def test_script_prefix_evidence_path_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            def mutate(body):
+                body['gates'][0]['raw_log'] = 'scripts/spec.log'
+            manifest, pins = setup(root, mutate)
+            self.assertIn('gate_raw_path', codes(manifest, root, pins))
+
+
 if __name__ == '__main__':
     unittest.main()

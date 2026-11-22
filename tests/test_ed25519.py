@@ -30,5 +30,28 @@ class Ed25519VectorTests(unittest.TestCase):
         self.assertFalse(ed25519.verify(other, b'', SIGNATURE))
 
 
+
+class Ed25519SmallOrderTests(unittest.TestCase):
+    def test_identity_public_key_cannot_forge_signatures(self):
+        identity = bytes([1]) + bytes(31)
+        base = ed25519._encode_point(ed25519.BASE)
+        forged = base + (1).to_bytes(32, 'little')
+        self.assertFalse(ed25519.verify(identity, b'anything', forged))
+
+    def test_small_order_r_is_rejected(self):
+        seed = bytes(range(32))
+        public = ed25519.public_key(seed)
+        identity_point = ed25519._encode_point((0, 1))
+        forged = identity_point + (1).to_bytes(32, 'little')
+        self.assertFalse(ed25519.verify(public, b'anything', forged))
+
+    def test_non_canonical_scalar_is_rejected(self):
+        seed = bytes(range(32))
+        public = ed25519.public_key(seed)
+        signature = ed25519.sign(seed, b'm')
+        oversized = signature[:32] + ed25519.L.to_bytes(32, 'little')
+        self.assertFalse(ed25519.verify(public, b'm', oversized))
+
+
 if __name__ == '__main__':
     unittest.main()

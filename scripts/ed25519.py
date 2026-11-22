@@ -111,6 +111,8 @@ def verify(public, message, signature):
     s = int.from_bytes(signature[32:], 'little')
     if s >= L:
         return False
+    if _multiply(point, 8) == (0, 1) or _multiply(r_point, 8) == (0, 1):
+        return False
     challenge = int.from_bytes(hashlib.sha512(signature[:32] + public + message).digest(), 'little') % L
     left = _multiply(BASE, s)
     right = _add(r_point, _multiply(point, challenge))

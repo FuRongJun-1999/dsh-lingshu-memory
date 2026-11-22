@@ -222,7 +222,7 @@ def review_payload(manifest):
     body['reviewed_by'] = reviewed
     return canonical(body)
 
-def check_review(manifest, pins, out):
+def check_review(manifest, pins, out, performed):
     reviewer = manifest['reviewed_by']
     if type(reviewer) is not dict or set(reviewer) != REVIEW_FIELDS:
         out.append(('review_schema', 'reviewed_by field set mismatch'))
@@ -258,6 +258,7 @@ def check_review(manifest, pins, out):
     except Exception as error:
         out.append(('review_bad_signature', 'verification failed: ' + str(error)))
         return
+    performed.append('review-signature')
     if not review_valid:
         out.append(('review_bad_signature', 'reviewer signature does not verify'))
 
@@ -431,6 +432,7 @@ def check_window(manifest, root, out):
     try:
         committed_at = datetime.datetime.fromisoformat(commit_time)
     except ValueError:
+        out.append(('review_window_unknown', 'candidate commit time unavailable'))
         return
     try:
         if start_at < committed_at:
@@ -440,14 +442,18 @@ def check_window(manifest, root, out):
     if end_at.tzinfo is not None and end_at > datetime.datetime.now(datetime.timezone.utc):
         out.append(('review_window_future', 'window ends after validation time'))
 
-def validate(manifest, root, pins):
+def validate(manifest, root, pins, performed=None):
+    if performed is None:
+        performed = []
     if type(manifest) is not dict:
         return [('schema', 'manifest must be an object')]
     expected = FIELDS | ({'production_evidence'} if 'production_evidence' in manifest else set())
     if set(manifest) != expected:
         return [('schema', 'field set mismatch ' + repr(sorted(set(manifest) ^ expected)))]
     out = []
+    performed.append('schema')
     body = {key: value for key, value in manifest.items() if key != 'manifest_sha256'}
+    performed.append('digest')
     if type(manifest['manifest_sha256']) is not str or digest(body) != manifest['manifest_sha256']:
         out.append(('manifest_digest', 'manifest digest mismatch'))
     if manifest['schema'] != 'stage-manifest/3':
@@ -464,16 +470,23 @@ def validate(manifest, root, pins):
         out.append(('scope', repr(manifest['scope'])))
     if level_of(manifest['required_min_level']) is None:
         out.append(('required_min_level', repr(manifest['required_min_level'])))
+    performed.append('commits')
     if git(root, 'cat-file', '-e', manifest['candidate_sha'] + '^{commit}').returncode != 0:
         out.append(('git_candidate_missing', manifest['candidate_sha']))
     elif git(root, 'merge-base', '--is-ancestor', manifest['base_sha'], manifest['candidate_sha']).returncode != 0:
         out.append(('git_base_not_ancestor', manifest['base_sha']))
     requirements = check_pins(manifest, root, pins, out)
+    performed.extend(['pins', 'anchor'])
     check_attestation(manifest, pins, out)
+    performed.append('attestation')
     levels = check_gates(manifest, root, out, requirements or {})
+    performed.extend(['gates', 'evidence', 'result-line', 'requirements'])
     check_claims(manifest, out, levels)
-    check_review(manifest, pins, out)
+    performed.append('claims')
+    check_review(manifest, pins, out, performed)
+    performed.append('review')
     check_window(manifest, root, out)
+    performed.extend(['window', 'production'])
     check_production(manifest, root, out)
     not_claimed = manifest['not_claimed']
     if type(not_claimed) is not list or not all(type(x) is str and x for x in not_claimed):
@@ -518,8 +531,9 @@ def main(argv=None):
             'trusted_keys': args.trusted_key,
             'allow_weak_pin': args.allow_weak_pin,
             'reviewer_keys': args.reviewer_key}
+    performed = []
     try:
-        failures = validate(manifest, root, pins)
+        failures = validate(manifest, root, pins, performed)
     except Exception as error:
         print('FAIL validator_error:', error)
         return 2
@@ -528,7 +542,7 @@ def main(argv=None):
     print('STAGE MANIFEST:', 'PASS' if not failures else 'FAIL')
     if args.allow_weak_pin and not args.attestation:
         print('WARNING weak_pin: running without a signed attestation')
-    print('CHECKS RUN: schema,digest,commits,pins,anchor,ref-sha,base-in-ref,requirements-drift,attestation,gates,evidence,result-line,claims,review,review-signature,window,production,not_claimed')
+    print('CHECKS RUN:', ','.join(dict.fromkeys(performed)))
     return 0 if not failures else 1
 
 
