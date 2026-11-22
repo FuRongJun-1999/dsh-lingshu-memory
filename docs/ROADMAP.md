@@ -14,3 +14,5 @@
 状态只在实测后更新，保留未知与未执行，不把首批工具绿表述为重构结束。
 
 新增[上下文C0-C5](<CONTEXT_LOOP.md>)：同仓DSH先行，当前C0契约与[隔离存储C1](<CONTEXT_STORE.md>)已建立；[C2隔离动作环](<CONTEXT_ACTION_LOOP.md>)本地已验证；[C3归一化事件重放](<CONTEXT_REPLAY.md>)本地已验证；[C4固定合成基准](<CONTEXT_BENCHMARK.md>)已实测；[C5隔离闭环验收](<CONTEXT_ACCEPTANCE.md>)已实跑通过，不代表通用生产M5完成。
+
+阶段封版与自指验证见[自指迭代与分阶段封版协议](<SELF_ITERATION_VALIDATION.md>)（proposal）：stage-0 仅定义流程与独立性分级，未改变 core 版本、release gate 或生产资格。
