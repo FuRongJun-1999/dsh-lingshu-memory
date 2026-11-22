@@ -11,7 +11,8 @@
 4. `gates` 列只能是 `NOT_RUN`（生产运行时门禁）或 `BLOCK`（发布门禁），本仓库当前两者都是这两值。
 5. 行必须按提交祖先序排列（后一行的提交须包含前一行的提交），以此检出历史改写与插队。
 6. 每行的提交里必须确有 `scripts/stage_gate.py`（行与提交内容绑定，防止追认伪造阶段）；`tests` 必须为正且单调不减。
-7. 行数不得少于 10 行（`MIN_ROWS`），防止“只留好看的行”。
+7. 行数不得少于 12 行（`MIN_ROWS`），防止“只留好看的行”。
+8. 台账不得落后超过 6 个提交（`MAX_LAG`），否则报 `ledger_stale`——防止“台账停在旧阶段”。
 
 ## 冻结记录
 
@@ -27,6 +28,8 @@
 | stage-0.1-v10 | 58d02a9af58dc3170c4c6f53b7d45ab1f5758aa2 | 300 | I1 | NOT_RUN/BLOCK | 可机检阶段台账与证据上限声明 |
 | stage-0.1-v11 | 4ed9d8b4e6902c3ef60ddf0bbe2f65bb193363bb | 301 | I1 | NOT_RUN/BLOCK | 台账入主链与祖先序校验 |
 | stage-0.1-v12 | 2c0403dc6a866e6a94a3e688488f1d5ff2fe4d8c | 316 | I1 | NOT_RUN/BLOCK | 等级上限 I1、措辞归一化、22 分支覆盖 |
+| stage-0.1-v13 | c7ce8a47c8afd23c73a0d29ae2b1d4f4b3179c18 | 319 | I1 | NOT_RUN/BLOCK | 台账行与提交产物绑定、测试数单调 |
+| stage-0.1-v14 | e4dc23ee7e845387ad9864707935f87ac5294d6c | 323 | I1 | NOT_RUN/BLOCK | 全文档越界声明扫描与撤词检测 |
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
 

@@ -29,7 +29,7 @@ def document(*lines, boundary=None, risks='共因风险说明'):
     return chr(10).join(parts)
 
 
-def check(text, exists=True, ancestor=True, head=HEAD, wired=True, artifact=True):
+def check(text, exists=True, ancestor=True, head=HEAD, wired=True, artifact=True, lag=0):
     module = load()
     root = module.ROOT
     chain = module.ROOT / 'scripts' / 'check_all.py'
@@ -41,13 +41,14 @@ def check(text, exists=True, ancestor=True, head=HEAD, wired=True, artifact=True
                                 exists=lambda commit: exists,
                                 ancestor=lambda older, newer: ancestor,
                                 head=head,
-                                artifact=lambda commit: artifact)
+                                artifact=lambda commit: artifact,
+                                lag=lambda commit: lag)
     finally:
         module.Path.read_text = real_read
 
 
 def full_document(**overrides):
-    rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1), tests=100 + index) for index in range(10)]
+    rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1), tests=100 + index) for index in range(12)]
     return document(*rows, **overrides)
 
 
@@ -85,6 +86,12 @@ class LedgerBranchTests(unittest.TestCase):
             rows[7] = row('stage-0.1-v7', '{:040x}'.format(8), tests=107, note=note)
             self.assertIn('overclaim:stage-0.1-v7', check(document(*rows)), note)
 
+    def test_stale_ledger_is_flagged(self):
+        codes = check(full_document(), lag=99)
+        self.assertTrue(any(code.startswith('ledger_stale') for code in codes), codes)
+
+    def test_fresh_ledger_is_accepted(self):
+        self.assertNotIn('ledger_stale', check(full_document(), lag=3))
     def test_missing_artifact_is_flagged(self):
         self.assertIn('missing_artifact:stage-0.1-v0', check(full_document(), artifact=False))
 

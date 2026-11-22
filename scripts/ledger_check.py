@@ -13,7 +13,8 @@ LEDGER = ROOT / 'docs' / 'STAGE_LEDGER.md'
 ROW = re.compile(r'^\|\s*(stage-[0-9.]+-v\d+)\s*\|\s*([0-9a-f]{40})\s*\|\s*(\d+)\s*\|\s*(I[0-4])\s*\|\s*([A-Z_]+/[A-Z_]+)\s*\|\s*(.+?)\s*\|$')
 GRADES = ('I0', 'I1', 'I2', 'I3', 'I4')
 MAX_GRADE = 'I1'
-MIN_ROWS = 10
+MIN_ROWS = 12
+MAX_LAG = 6
 GATES = ('NOT_RUN/BLOCK',)
 FORBIDDEN = ('production pass', 'production approved', 'production-approved', 'production ready',
              'production-ready', 'ga-ready', 'general availability', 'prod-ready', 'release-ready',
@@ -60,6 +61,17 @@ def artifact_present(root, commit, path):
     return result.returncode == 0
 
 
+def commits_behind(root, commit):
+    result = subprocess.run(['git', 'rev-list', '--count', commit + '..HEAD'], cwd=root,
+                            capture_output=True, text=True, encoding='utf-8', errors='replace')
+    if result.returncode != 0:
+        return 0
+    try:
+        return int(result.stdout.strip() or '0')
+    except ValueError:
+        return 0
+
+
 def head_commit(root):
     result = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=root,
                             capture_output=True, text=True, encoding='utf-8', errors='replace')
@@ -85,11 +97,12 @@ def scan_docs(root):
             problems.append('doc_overclaim:' + path.name + ':' + str(number))
     return problems
 
-def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None):
+def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None, lag=None):
     exists = exists or (lambda commit: commit_exists(root, commit))
     ancestor = ancestor or (lambda older, newer: is_ancestor(root, older, newer))
     head = head if head is not None else head_commit(root)
     artifact = artifact or (lambda commit: artifact_present(root, commit, 'scripts/stage_gate.py'))
+    lag = lag or (lambda commit: commits_behind(root, commit))
     problems = []
     entries = rows(text)
     if not entries:
@@ -128,6 +141,10 @@ def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None)
             problems.append('tests_not_monotonic:' + current['stage'])
     if entries and head and ancestor(entries[-1]['commit'], head) is False:
         problems.append('row_not_in_history:' + entries[-1]['stage'])
+    if entries:
+        behind = lag(entries[-1]['commit'])
+        if behind > MAX_LAG:
+            problems.append('ledger_stale:{} commits behind'.format(behind))
     for required in ('## 当前边界声明', '## 已知共因风险'):
         if required not in text:
             problems.append('missing_section:' + required)
