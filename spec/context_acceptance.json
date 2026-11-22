@@ -275,6 +275,7 @@
     "tests/test_contracts_v2.py": "3174d4f97ddd9942f932a33ea0902c4d836384133688539bddaeb2f60df51adf",
     "tests/test_contracts_v2_mutations.py": "71c1460b5d612d49cd0f7e74ccc48b6979e919c601be8a2f8dfa6a9381242799",
     "tests/test_controller_mutations.py": "4363eef2d6412a968c9ae49240f4d85a9b37b938f72a16d8a791c0baffba65ad",
+    "tests/test_ed25519.py": "f93acd1489a66066fcb2936af78ff9be7d6934a639fb80360efb65caba27d6c9",
     "tests/test_lifecycle.py": "22d7dbbd42cfeac54f4373c03a14a8433abce46e29f4f2188e544ab85c766373",
     "tests/test_lifecycle_mutations.py": "850c2f995c4e95b80366c47d46aac1943a60ec86848cfb01d7b38c5603b3a9ea",
     "tests/test_migration.py": "023a85fd2c605ed3d06b011b89bdd4e570c18220a1365eb9157728088e62369c",
@@ -298,8 +299,8 @@
     "tests/test_source_boundary.py": "bbba9557378adacf1ed6cff9a56c1735d2713634766357d4babdd62491d6581f",
     "tests/test_source_boundary_mutations.py": "20f6b24da7d0bced4d072c4a3827eb2c252dfc318ee644a7befbc86085e866a1",
     "tests/test_spec_tree.py": "96eb81c4c7c519afbbd162663fd4ec5b8acf4ce98c99c2fafd69d32f9f7081c6",
-    "tests/test_stage_gate.py": "fb85cb1ee1712190843733c5b7e13c31ca50b0863fe1981b9289bfe38552acdb",
-    "tests/test_stage_gate_mutations.py": "736abff96cf84a01a5019d1a0d022894ee8f05249c5e1adcd04a64c403e2a034",
+    "tests/test_stage_gate.py": "574e441281f0c82eb201cfd9175e39525954b7b23576a4d249c81a9e6896945c",
+    "tests/test_stage_gate_mutations.py": "f1915e1e15ee0282e58da9043bc2704f60e0ebc641020389ae35caa2cb1dba3d",
     "tests/test_writer_receipt.py": "24cff9f460f7a4d4b70995517f155257f4fe3d3f0131e667214c3a4218751cc6",
     "tests/test_writer_status.py": "f9062a9a9d2d7009816ed6bdcb0d98d1838531a5281638168abbdadb1d9da553"
   },

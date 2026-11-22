@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 import pathlib
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -24,15 +25,17 @@ MUTANTS = [
     ('skip_drift', 'if other is None or other != payload:', 'if False:'),
     ('skip_result_line', "if not lines or lines[-1] != 'RESULT: PASS gate=' + gid + ' exit=0':", 'if False:'),
     ('skip_attestation_required', "out.append(('attestation_missing', 'no signed attestation supplied'))", 'pass'),
-    ('skip_attestation_signature', "if not valid:", 'if False:'),
+    ('skip_attestation_signature', "if not attestation_valid:", 'if False:'),
     ('skip_trusted_key', "if type(key) is not str or HEX64.match(key.lower()) is None or key.lower() not in trusted:", 'if False:'),
+    ('skip_review_signature', 'if not review_valid:', 'if False:'),
 ]
 
 KINDS = {'skip_manifest_pin': 'pin', 'skip_requirements_pin': 'reqpin', 'skip_anchor_contained': 'anchor',
          'skip_failure_text': 'failed', 'skip_window_early': 'early', 'skip_naive_window': 'naive',
          'skip_ref_prefix': 'localref', 'skip_ref_sha': 'movedref', 'skip_base_in_ref': 'baseout',
          'skip_drift': 'drift', 'skip_result_line': 'noresult', 'skip_attestation_required': 'noattest',
-         'skip_attestation_signature': 'forged', 'skip_trusted_key': 'strangerkey'}
+         'skip_attestation_signature': 'forged', 'skip_trusted_key': 'strangerkey',
+         'skip_review_signature': 'reviewsig'}
 EXPECTED = {'skip_manifest_pin': 'manifest_unpinned', 'skip_requirements_pin': 'requirements_unpinned',
             'skip_anchor_contained': 'anchor_not_contained', 'skip_failure_text': 'evidence_failure_text',
             'skip_window_early': 'review_window_early', 'skip_naive_window': 'review_window_naive',
@@ -41,7 +44,8 @@ EXPECTED = {'skip_manifest_pin': 'manifest_unpinned', 'skip_requirements_pin': '
             'skip_result_line': 'evidence_result_missing',
             'skip_attestation_required': 'attestation_missing',
             'skip_attestation_signature': 'attestation_bad_signature',
-            'skip_trusted_key': 'attestation_untrusted_key'}
+            'skip_trusted_key': 'attestation_untrusted_key',
+            'skip_review_signature': 'review_bad_signature'}
 
 
 def git(root, *args):
@@ -81,6 +85,8 @@ def build(root, module, kind):
     if kind == 'naive':
         window_start = '2026-01-01T00:00:00'
         window_end = '2026-01-02T00:00:00'
+    review_seed = bytes(range(32, 64))
+    review_public = module.ed25519_module().public_key(review_seed)
     payload = {
         'schema': 'stage-manifest/3',
         'stage_id': 'stage-x',
@@ -95,13 +101,23 @@ def build(root, module, kind):
         'not_claimed': ['production', 'm6-migration'],
         'reviewed_by': {'implementer_id': 'i', 'reviewer_id': 'v', 'role': 'independent-verifier',
                         'independent': True, 'session': 's', 'window_start': window_start,
-                        'window_end': window_end},
+                        'window_end': window_end, 'reviewer_keyid': review_public.hex(),
+                        'signature': ''},
     }
+    projection = dict(payload)
+    reviewed = {key: value for key, value in projection['reviewed_by'].items() if key != 'signature'}
+    reviewed['reviewer_keyid'] = review_public.hex()
+    projection['reviewed_by'] = reviewed
+    payload['reviewed_by']['signature'] = module.ed25519_module().sign(
+        review_seed, module.canonical(projection)).hex()
+    if kind == 'reviewsig':
+        payload['claims'][0]['statement'] = 'tampered after signing'
     manifest = module.build_manifest(payload)
     pins = {'manifest_sha256': manifest['manifest_sha256'],
             'requirements_sha256': requirements_sha,
             'require_ref': 'refs/remotes/origin/main',
-            'ref_sha': candidate}
+            'ref_sha': candidate,
+            'reviewer_keys': [review_public]}
     if kind == 'pin':
         pins['manifest_sha256'] = ''
     elif kind == 'reqpin':
@@ -154,6 +170,7 @@ class StageGateMutationTests(unittest.TestCase):
                     work.mkdir()
                     mutant = work / 'stage_gate.py'
                     mutant.write_text(original.replace(old, new, 1), encoding='utf-8')
+                    shutil.copy(GATE.with_name('ed25519.py'), work / 'ed25519.py')
                     spec = importlib.util.spec_from_file_location('_gate_mut', mutant)
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)

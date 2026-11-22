@@ -24,7 +24,7 @@ HEX64 = re.compile(r'[0-9a-f]{64}\Z')
 FIELDS = {'schema', 'stage_id', 'candidate_sha', 'base_sha', 'scope', 'required_min_level', 'gates', 'claims', 'not_claimed', 'reviewed_by', 'manifest_sha256'}
 GATE_FIELDS = {'id', 'command', 'exit_code', 'raw_log', 'raw_log_sha256', 'independence', 'status'}
 CLAIM_FIELDS = {'id', 'statement', 'level', 'scope', 'gate_ids'}
-REVIEW_FIELDS = {'implementer_id', 'reviewer_id', 'role', 'independent', 'session', 'window_start', 'window_end'}
+REVIEW_FIELDS = {'implementer_id', 'reviewer_id', 'role', 'independent', 'session', 'window_start', 'window_end', 'reviewer_keyid', 'signature'}
 HEADER_FIELDS = {'gate', 'command', 'exit_code'}
 FAILURE_MARKERS = ('failed', 'fail', 'error', 'traceback', 'exit status 1', 'exit status 2', 'exit status 3', 'err!')
 PRODUCTION_FIELDS = {'acceptance_status_path', 'acceptance_status_sha256', 'release_gate_path', 'release_gate_sha256'}
@@ -216,7 +216,13 @@ def check_claims(manifest, out, levels):
                     out.append(('claim_level_exceeds_gate', cid + ':' + str(gid)))
 
 
-def check_review(manifest, out):
+def review_payload(manifest):
+    body = {key: value for key, value in manifest.items() if key != 'manifest_sha256'}
+    reviewed = {key: value for key, value in body['reviewed_by'].items() if key != 'signature'}
+    body['reviewed_by'] = reviewed
+    return canonical(body)
+
+def check_review(manifest, pins, out):
     reviewer = manifest['reviewed_by']
     if type(reviewer) is not dict or set(reviewer) != REVIEW_FIELDS:
         out.append(('review_schema', 'reviewed_by field set mismatch'))
@@ -237,6 +243,23 @@ def check_review(manifest, out):
     end = reviewer['window_end']
     if type(start) is not str or type(end) is not str or not start.strip() or not end.strip() or not start < end:
         out.append(('review_window', 'window_start must precede window_end'))
+    keys = [str(item).lower() for item in (pins.get('reviewer_keys') or [])]
+    keyid = reviewer['reviewer_keyid']
+    if type(keyid) is not str or HEX64.match(keyid.lower()) is None or keyid.lower() not in keys:
+        out.append(('review_key_untrusted', repr(keyid)))
+        return
+    signature = reviewer['signature']
+    if type(signature) is not str or re.fullmatch(r'[0-9a-f]{128}', signature.lower()) is None:
+        out.append(('review_bad_signature', 'signature must be 128 hex characters'))
+        return
+    try:
+        verifier = ed25519_module()
+        review_valid = verifier.verify(bytes.fromhex(keyid), review_payload(manifest), bytes.fromhex(signature))
+    except Exception as error:
+        out.append(('review_bad_signature', 'verification failed: ' + str(error)))
+        return
+    if not review_valid:
+        out.append(('review_bad_signature', 'reviewer signature does not verify'))
 
 
 def read_json(path):
@@ -323,11 +346,11 @@ def check_attestation(manifest, pins, out):
     body = {name: data[name] for name in ATTESTATION_FIELDS - {'signature'}}
     try:
         verifier = ed25519_module()
-        valid = verifier.verify(bytes.fromhex(key), canonical(body), bytes.fromhex(signature))
+        attestation_valid = verifier.verify(bytes.fromhex(key), canonical(body), bytes.fromhex(signature))
     except Exception as error:
         out.append(('attestation_schema', 'verification failed: ' + str(error)))
         return
-    if not valid:
+    if not attestation_valid:
         out.append(('attestation_bad_signature', 'signature does not verify'))
         return
     if data['manifest_sha256'] != manifest.get('manifest_sha256'):
@@ -449,7 +472,7 @@ def validate(manifest, root, pins):
     check_attestation(manifest, pins, out)
     levels = check_gates(manifest, root, out, requirements or {})
     check_claims(manifest, out, levels)
-    check_review(manifest, out)
+    check_review(manifest, pins, out)
     check_window(manifest, root, out)
     check_production(manifest, root, out)
     not_claimed = manifest['not_claimed']
@@ -478,6 +501,7 @@ def main(argv=None):
     parser.add_argument('--attestation', default='')
     parser.add_argument('--trusted-key', action='append', default=[])
     parser.add_argument('--allow-weak-pin', action='store_true')
+    parser.add_argument('--reviewer-key', action='append', default=[])
     args = parser.parse_args(argv)
     path = pathlib.Path(args.manifest)
     root = path.parent
@@ -492,7 +516,8 @@ def main(argv=None):
             'ref_sha': args.pin_ref_sha,
             'attestation_path': args.attestation,
             'trusted_keys': args.trusted_key,
-            'allow_weak_pin': args.allow_weak_pin}
+            'allow_weak_pin': args.allow_weak_pin,
+            'reviewer_keys': args.reviewer_key}
     try:
         failures = validate(manifest, root, pins)
     except Exception as error:
@@ -503,7 +528,7 @@ def main(argv=None):
     print('STAGE MANIFEST:', 'PASS' if not failures else 'FAIL')
     if args.allow_weak_pin and not args.attestation:
         print('WARNING weak_pin: running without a signed attestation')
-    print('CHECKS RUN: schema,digest,commits,pins,anchor,ref-sha,base-in-ref,requirements-drift,attestation,gates,evidence,result-line,claims,review,window,production,not_claimed')
+    print('CHECKS RUN: schema,digest,commits,pins,anchor,ref-sha,base-in-ref,requirements-drift,attestation,gates,evidence,result-line,claims,review,review-signature,window,production,not_claimed')
     return 0 if not failures else 1
 
 

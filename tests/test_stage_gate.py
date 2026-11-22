@@ -10,6 +10,7 @@ from framework.spec import ROOT
 import scripts.ed25519 as signer
 import scripts.stage_gate as gate_mod
 SEED = bytes(range(32))
+REVIEW_SEED = bytes(range(32, 64))
 
 PAST = '2020-01-01T00:00:00Z'
 WINDOW_START = '2026-01-01T00:00:00Z'
@@ -45,6 +46,15 @@ def evidence(root, gate='spec', command='python scripts/check_all.py', exit_code
     return path
 
 
+def sign_review(body):
+    projection = dict(body)
+    reviewed = {key: value for key, value in projection['reviewed_by'].items() if key != 'signature'}
+    reviewed['reviewer_keyid'] = signer.public_key(REVIEW_SEED).hex()
+    projection['reviewed_by'] = reviewed
+    body['reviewed_by']['reviewer_keyid'] = reviewed['reviewer_keyid']
+    body['reviewed_by']['signature'] = signer.sign(REVIEW_SEED, gate_mod.canonical(projection)).hex()
+
+
 def payload(root, base, candidate, requirements_sha, mutate=None):
     body = {
         'schema': 'stage-manifest/3',
@@ -62,10 +72,12 @@ def payload(root, base, candidate, requirements_sha, mutate=None):
         'not_claimed': ['production', 'm6-migration'],
         'reviewed_by': {'implementer_id': 'impl', 'reviewer_id': 'ver', 'role': 'independent-verifier',
                         'independent': True, 'session': 's', 'window_start': WINDOW_START,
-                        'window_end': WINDOW_END},
+                        'window_end': WINDOW_END, 'reviewer_keyid': signer.public_key(REVIEW_SEED).hex(),
+                        'signature': '0' * 128},
     }
     if mutate is not None:
         mutate(body)
+    sign_review(body)
     manifest = gate_mod.build_manifest(body)
     return manifest
 
@@ -90,7 +102,8 @@ def setup(root, mutate=None, requirements_in_base=True, ref='refs/remotes/origin
     pins = {'manifest_sha256': manifest['manifest_sha256'],
             'requirements_sha256': requirements_sha,
             'require_ref': ref,
-            'ref_sha': candidate}
+            'ref_sha': candidate,
+            'reviewer_keys': [signer.public_key(REVIEW_SEED).hex()]}
     return manifest, pins
 
 
@@ -226,7 +239,9 @@ class StageGatePinnedTests(unittest.TestCase):
                                      '--pin-manifest-sha256', pins['manifest_sha256'],
                                      '--pin-requirements-sha256', pins['requirements_sha256'],
                                      '--require-ref', 'refs/remotes/origin/main',
-                                     '--pin-ref-sha', pins['ref_sha'], '--allow-weak-pin'],
+                                     '--pin-ref-sha', pins['ref_sha'],
+                                     '--reviewer-key', signer.public_key(REVIEW_SEED).hex(),
+                                     '--allow-weak-pin'],
                                     cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(pinned.returncode, 0, pinned.stdout + pinned.stderr)
 
@@ -342,6 +357,31 @@ class StageGateAttestationTests(unittest.TestCase):
             manifest, pins = setup(root)
             pins['tamper'] = 'time'
             self.assertIn('attestation_time', codes(manifest, root, pins))
+
+
+
+class StageGateReviewSignatureTests(unittest.TestCase):
+    def test_signed_review_is_required(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            manifest['reviewed_by']['signature'] = ''
+            self.assertIn('review_bad_signature', codes(manifest, root, pins))
+
+    def test_untrusted_reviewer_key_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            pins['reviewer_keys'] = ['ab' * 32]
+            self.assertIn('review_key_untrusted', codes(manifest, root, pins))
+
+    def test_tampered_gate_list_breaks_review_signature(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest, pins = setup(root)
+            manifest['gates'][0]['status'] = 'PASS'
+            manifest['claims'][0]['statement'] = 'tools pass, reviewed'
+            self.assertIn('review_bad_signature', codes(manifest, root, pins))
 
 
 if __name__ == '__main__':
