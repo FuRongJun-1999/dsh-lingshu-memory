@@ -34,7 +34,7 @@ strict/power须平台实证才能启用：正文文件与发布目录先持久�
 当前 shadow_runtime 为合成后端实现 token-scoped schema-v2 intent；它不是 TRANSACTIONS.md 的生产CAS/WAL实现。
 
 - intent 和 pending token 先落盘；随后写 immutable MD/meta；有效的 manifest 原子替换是该 shadow 事务的提交判定。单文件 os.replace 不等于多文件原子提交。
-- 进程重启后，在处理新请求/回执/索引重建前扫描 schema-v2 intent。manifest仍匹配提交前摘要：将已写sidecar恢复到before image，删除可校验且未发布的新revision文件，intent标记aborted；原token保持unknown，绝不转为absent或释放同token。
+- 进程重启后，在处理新请求/回执/索引重建/记录核验前扫描 schema-v2 intent。manifest仍匹配提交前摘要：将已写sidecar恢复到before image，删除可校验且未发布的新revision文件，intent标记aborted；原token保持unknown，绝不转为absent或释放同token。回滚要在第一次改盘前核对 token、所有 sidecar 与正文；证据矛盾时保持盘面。记录核验只对 manifest 当前登记的已提交修订出具证明，也允许核验已遗忘的当前修订以申请恢复。
 - manifest匹配after image：校验已提交MD/meta，重建JSON派生index，使用原writer/timestamp幂等补齐payload-free audit行，最终化token回执并完成intent。
 - manifest既非before也非after，或intent/meta/hash与真源冲突：fail closed为完整性错误，不猜测或补造成功。缺失manifest但仍有truth文件也拒绝重建。
 - 崩溃测试使用fault_hook抛出进程级异常并创建新store实例；不是真实SIGKILL、VM强停、目录fsync、短写或掉电试验。Govern档目前durable=False；不提升M2/M3或power保证。

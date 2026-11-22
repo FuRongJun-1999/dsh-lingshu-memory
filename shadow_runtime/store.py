@@ -225,6 +225,15 @@ class ShadowMarkdownStore:
         return intent
 
     def _rollback_transaction(self, intent: dict) -> None:
+        scope = intent["scope"]
+        token, corrupt = self._load_token_record(scope["tenant"], scope["principal"], scope["operation"], scope["token"])
+        pending = {"commit_status": "unknown", "fingerprint": intent["fingerprint"], "history_complete": False,
+                   "negative_basis": "unassessed", "fencing_epoch": 0, "node_id": intent["node_id"],
+                   "revision": intent["revision"], "content_sha": intent["content_sha"], "receipt": None}
+        if corrupt or (token is not None and canonical({k: token[k] for k in pending}) != canonical(pending)):
+            raise ValueError("INTEGRITY_FAILURE: token contradicts uncommitted transaction")
+        # Validate all rollback inputs before the first disk mutation.
+        changes = []
         for change in reversed(intent["meta_changes"]):
             path = self._meta_path(intent["node_id"], change["revision"])
             before, after = change["before"], change["after"]
@@ -233,11 +242,11 @@ class ShadowMarkdownStore:
                 if current is not None:
                     if current != after:
                         raise ValueError("INTEGRITY_FAILURE: unexpected metadata during rollback")
-                    path.unlink()
+                    changes.append((path, None))
             elif current == before:
                 continue
             elif current is None or current == after:
-                self._write_json_atomic(path, before, durable=False, stage="rollback_meta")
+                changes.append((path, before))
             else:
                 raise ValueError("INTEGRITY_FAILURE: metadata cannot be rolled back")
         new_md = intent["new_md"]
@@ -246,11 +255,12 @@ class ShadowMarkdownStore:
             if path.exists():
                 if _sha_bytes(path.read_bytes()) != new_md["content_sha"]:
                     raise ValueError("INTEGRITY_FAILURE: body cannot be rolled back")
+                changes.append((path, None))
+        for path, before in changes:
+            if before is None:
                 path.unlink()
-        scope = intent["scope"]
-        token, corrupt = self._load_token_record(scope["tenant"], scope["principal"], scope["operation"], scope["token"])
-        if corrupt or (token is not None and token["commit_status"] == "committed"):
-            raise ValueError("INTEGRITY_FAILURE: token contradicts uncommitted transaction")
+            else:
+                self._write_json_atomic(path, before, durable=False, stage="rollback_meta")
         intent["state"] = "aborted"
         self._save_intent(intent, stage="intent_abort")
 
@@ -921,12 +931,17 @@ class ShadowMarkdownStore:
                       scope: str, method_allowed: bool, credential_exists: bool,
                       credential_time: int, verified_at: int) -> bool:
         with self._lock():
+            self._recover_pending_transactions()
+            entry = self._load_manifest_or_init()["nodes"].get(node_id)
+            if entry is None or entry["active_revision"] != expected_revision:
+                return False
             metap = self._meta_path(node_id, expected_revision)
             if not metap.exists():
-                return False
+                raise ValueError("INTEGRITY_FAILURE: missing verification subject metadata")
             meta = self._read_meta_verified(metap)
             mdp = self._md_path(node_id, expected_revision)
             if (meta["node_id"] != node_id or meta["revision"] != expected_revision
+                    or meta["tenant"] != entry["tenant"] or meta["state"] != entry["state"]
                     or not mdp.exists() or _sha_bytes(mdp.read_bytes()) != meta["content_sha"]):
                 raise ValueError("INTEGRITY_FAILURE: verification subject mismatch")
             source_id = meta["source_attribution"]["source_id"]

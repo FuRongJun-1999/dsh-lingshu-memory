@@ -313,6 +313,65 @@ class ShadowRuntimeR01ToR09Tests(unittest.TestCase):
             self.assertNotIn("manifest.json", {path.name for path in pathlib.Path(tmp_cancel).glob("manifest.json")})
             self.assertEqual(s.execute(write_req("cancel-only", "late body"), ctx("alice"), 11)["error_code"], "CANCELLED")
 
+    def test_review_verify_recovers_before_creating_proof(self):
+        for point, committed in (("meta:after_replace", False), ("manifest:after_replace", True)):
+            with self.subTest(point=point), tempfile.TemporaryDirectory() as tmp:
+                store = ShadowMarkdownStore(tmp, synthetic=True)
+                def crash(stage, _path):
+                    if stage == point:
+                        raise InjectedCrash(stage)
+                with self.assertRaises(InjectedCrash):
+                    store.execute(write_req("verify-first", "fixture body"), ctx(), 10, fault_hook=crash)
+                reopened = ShadowMarkdownStore(tmp, synthetic=True)
+                result = reopened.verify_record(node_id="node-1", expected_revision=1, verifier_id="fixture-reviewer",
+                                                scope="restore", method_allowed=True, credential_exists=True,
+                                                credential_time=5, verified_at=11)
+                root = pathlib.Path(tmp)
+                self.assertIs(result, committed)
+                self.assertEqual(len(list((root / "verifications").glob("*.json"))), int(committed))
+                self.assertEqual(len(list((root / "nodes").rglob("*.md"))), int(committed))
+                self.assertEqual(reopened.recover_token_state(tenant="t1", principal="alice",
+                                 operation="Write.create", caller_token="verify-first")["commit_status"],
+                                 "committed" if committed else "unknown")
+
+    def test_review_rollback_checks_all_evidence_before_disk_mutation(self):
+        for conflict in ("committed_token", "body_digest"):
+            with self.subTest(conflict=conflict), tempfile.TemporaryDirectory() as tmp:
+                root = pathlib.Path(tmp)
+                store = ShadowMarkdownStore(tmp, synthetic=True)
+                before = {}
+                def checkpoint(stage, _path):
+                    if stage == "manifest:before_replace":
+                        mp = root / "manifest.json"
+                        ip = next((root / "intents").glob("*.json"))
+                        before.update({mp: mp.read_bytes(), ip: ip.read_bytes()})
+                        if conflict == "body_digest":
+                            raise InjectedCrash(stage)
+                request = write_req("rollback-guard", "fixture body")
+                if conflict == "committed_token":
+                    self.assertEqual(store.execute(request, ctx(), 10, fault_hook=checkpoint)["outcome"], "ok")
+                    self.assertEqual(len(before), 2)
+                    for path, data in before.items():
+                        path.write_bytes(data)
+                    reason = "token contradicts"
+                else:
+                    with self.assertRaises(InjectedCrash):
+                        store.execute(request, ctx(), 10, fault_hook=checkpoint)
+                    body = next((root / "nodes").rglob("*.md"))
+                    body.write_bytes(body.read_bytes() + b"!")
+                    reason = "body cannot be rolled back"
+                def snapshot():
+                    return {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*")
+                            if p.is_file() and p.suffix != ".lock"}
+                observed = snapshot()
+                self.assertEqual(len([p for p in observed if p.startswith("nodes")]), 2)
+                with self.assertRaisesRegex(ValueError, reason):
+                    ShadowMarkdownStore(tmp, synthetic=True).recover_token_state(
+                        tenant="t1", principal="alice", operation="Write.create", caller_token="rollback-guard")
+                after = snapshot()
+                self.assertEqual(after.keys(), observed.keys())
+                self.assertEqual(sorted(p for p in observed if after[p] != observed[p]), [])
+
     def test_write_manifest_index_crash_recovery(self):
         cases = (
             ("manifest:before_replace", 1, "unknown", False),
