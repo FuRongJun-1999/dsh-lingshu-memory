@@ -124,7 +124,7 @@ planned -> implementing -> candidate-frozen -> independently-verified -> accepte
 
 封版只冻结某候选的源码与适用证据，不是自动合并、自动发布或生产授权。若发布阶段标签，标签必须指向已验收的精确提交，并附同一 manifest 摘要。
 
-可执行阶段门（校验 manifest 字段、claim→evidence→level→scope 绑定、required 门禁未运行、摘要不一致、隔离范围出现生产措辞）目前**尚未实现**，列为 stage-0.1 必需项；在它落地前，任何代码阶段的接受只能按人工 manifest 并标注该缺口。
+可执行阶段门已实现为 `scripts/stage_gate.py`：校验 manifest 字段集、claim→gate 级别绑定、required 门禁未运行、原始日志摘要与实际文件一致、隔离范围内出现生产措辞、复核者自签与状态文件被当作证据。用法 `python scripts/stage_gate.py --manifest <stage-manifest.json>`，退出码非零即阻断；该工具只读，不写 acceptance/release 记录。独立样例与变异自证见 `tests/test_stage_gate.py`、`tests/test_stage_gate_mutations.py`。
 
 ## 7. 首阶段与后续顺序
 

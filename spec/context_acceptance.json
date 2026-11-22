@@ -298,6 +298,8 @@
     "tests/test_source_boundary.py": "bbba9557378adacf1ed6cff9a56c1735d2713634766357d4babdd62491d6581f",
     "tests/test_source_boundary_mutations.py": "20f6b24da7d0bced4d072c4a3827eb2c252dfc318ee644a7befbc86085e866a1",
     "tests/test_spec_tree.py": "96eb81c4c7c519afbbd162663fd4ec5b8acf4ce98c99c2fafd69d32f9f7081c6",
+    "tests/test_stage_gate.py": "525d97cb80feae1eb195b6a1d4a2e5eb1f3505fc5d0021a43ad2f78a3a0211ab",
+    "tests/test_stage_gate_mutations.py": "894b38a45c0ee67bbbdf9d652f6687154923e5800accdcdaec20b9874f83da1d",
     "tests/test_writer_receipt.py": "24cff9f460f7a4d4b70995517f155257f4fe3d3f0131e667214c3a4218751cc6",
     "tests/test_writer_status.py": "f9062a9a9d2d7009816ed6bdcb0d98d1838531a5281638168abbdadb1d9da553"
   },
