@@ -37,7 +37,7 @@ python -X utf8 -B scripts/check_all.py
 
 ## 反伪阳性和独立裁定
 
-[验收负例](<../tests/test_acceptance.py>)拒空/skip/expectedFailure/不可达断言/失败、伪passed和非整数计数、重复映射、源码报告漂移、无动作ready/错locator/重复事件夹事实。[5类验收器变异](<../tests/test_acceptance_mutations.py>)要求原版拒绝同一故障、变异版漏检，未靠前置无关检查“误杀”计成功。总181测试本地PASS；C4的39cases及7评价器变异、C3的11事件变异、C2的12控制器变异、C1的6存储变异继续通过；有限覆盖不证明穷尽。
+[验收负例](<../tests/test_acceptance.py>)拒空/skip/expectedFailure/不可达断言/失败、伪passed和非整数计数、重复映射、源码报告漂移、无动作ready/错locator/重复事件夹事实。[5类验收器变异](<../tests/test_acceptance_mutations.py>)要求原版拒绝同一故障、变异版漏检，未靠前置无关检查“误杀”计成功。总245测试本地PASS（最终 scripts/check_all.py 结果）；C4的39cases及7评价器变异、C3的11事件变异、C2的12控制器变异、C1的6存储变异继续通过；有限覆盖不证明穷尽。
 
 蜂巢独立规则裁定：范围可作为隔离交付关闭门槛，但要求义务/测试/实跑绑定、demo语义断言、边界不越权三条件，已逐项落实。本裁定非源码审计或独立实测认证；此前C3/C4源码审查空助手轮不计成功。
 

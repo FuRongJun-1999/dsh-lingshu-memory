@@ -35,6 +35,21 @@ def _sha_bytes(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+_META_FIELDS = frozenset({
+    "node_id", "revision", "tenant", "content_sha", "declared_sensitivity",
+    "creation_readers", "current_readers", "source_edges", "condition_space",
+    "bitemporal", "source_attribution", "state",
+})
+
+
+def _seal_meta(value: dict) -> dict:
+    body = {k: copy.deepcopy(v) for k, v in value.items() if k != "meta_sha"}
+    if set(body) != _META_FIELDS:
+        raise ValueError("INTEGRITY_FAILURE: invalid meta fields")
+    body["meta_sha"] = _sha_obj(body)
+    return body
+
+
 def _node_dir_key(node_id: str) -> str:
     return hashlib.sha256(node_id.encode("utf-8")).hexdigest()[:32]
 
@@ -99,6 +114,15 @@ class ShadowMarkdownStore:
     def _read_json_strict(self, path: pathlib.Path) -> dict:
         return parse(path.read_text(encoding="utf-8"))
 
+    def _read_meta_verified(self, path: pathlib.Path) -> dict:
+        meta = self._read_json_strict(path)
+        if type(meta) is not dict or set(meta) != _META_FIELDS | {"meta_sha"}:
+            raise ValueError("INTEGRITY_FAILURE: meta schema")
+        body = {k: v for k, v in meta.items() if k != "meta_sha"}
+        if type(meta["meta_sha"]) is not str or _sha_obj(body) != meta["meta_sha"]:
+            raise ValueError("INTEGRITY_FAILURE: meta sha")
+        return meta
+
     def _write_json_atomic(self, path: pathlib.Path, obj: dict, *, durable: bool, fault_hook=None, stage: str = "json") -> None:
         text = json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
         atomic_write_text(path, text, durable=durable, fault_hook=fault_hook, stage_prefix=stage)
@@ -112,12 +136,14 @@ class ShadowMarkdownStore:
             return "missing"
         return "ok" if chain_state == receipt_state == "ok" else "failed"
 
-    def _finalize_audit(self, ctx, req, receipt, now, *, durable, fault_hook):
+    def _finalize_audit(self, ctx, req, receipt, now, *, durable, fault_hook, writer_id=None):
         try:
             self.audit.append(
-                writer_id=self._writer_id, ts=now, tenant=ctx["tenant"], principal=ctx["principal"],
+                writer_id=self._writer_id if writer_id is None else writer_id, ts=now, tenant=ctx["tenant"], principal=ctx["principal"],
                 op=req["kind"], node_id=receipt["node_id"], revision=receipt["revision"],
-                payload_sha=receipt["content_sha"], durable=durable, fault_hook=fault_hook,
+                payload_sha=receipt["content_sha"],
+                transaction_id=_token_key_sha(ctx["tenant"], ctx["principal"], req["kind"], req["caller_token"]),
+                durable=durable, fault_hook=fault_hook,
             )
         except Exception:
             receipt["audit_state"] = "failed"
@@ -129,7 +155,7 @@ class ShadowMarkdownStore:
             {"commit_status": "committed", "fingerprint": receipt["fingerprint"], "history_complete": True,
              "negative_basis": "unassessed", "fencing_epoch": 0, "node_id": receipt["node_id"],
              "revision": receipt["revision"], "content_sha": receipt["content_sha"], "receipt": receipt},
-            durable=durable,
+            durable=durable, fault_hook=fault_hook,
         )
         return receipt["audit_state"] == "ok"
 
@@ -137,11 +163,179 @@ class ShadowMarkdownStore:
         st = inspect_audit(self.root / "audit/audit.jsonl", expected_tenant=tenant)["state"]
         return self._transaction_audit(st, receipt["audit_state"])
 
+    def _intent_matches(self, path: pathlib.Path) -> tuple[dict | None, bool]:
+        try:
+            obj = self._read_json_strict(path)
+            if type(obj) is not dict or obj.get("schema_version") != 2:
+                return None, False
+            required = {"schema_version", "state", "tx_id", "scope", "fingerprint", "node_id", "revision", "content_sha", "before_manifest", "before_manifest_sha", "after_manifest", "after_manifest_sha", "meta_changes", "new_md", "receipt", "timestamp", "durable", "intent_sha"}
+            if set(obj) != required or type(obj["intent_sha"]) is not str:
+                return None, True
+            body = {k: v for k, v in obj.items() if k != "intent_sha"}
+            if _sha_obj(body) != obj["intent_sha"]:
+                return None, True
+            if _sha_obj(obj["before_manifest"]) != obj["before_manifest_sha"] or _sha_obj(obj["after_manifest"]) != obj["after_manifest_sha"]:
+                return None, True
+            if obj["state"] not in ("prepared", "complete", "aborted") or type(obj["durable"]) is not bool:
+                return None, True
+            scope = obj["scope"]
+            if type(scope) is not dict or set(scope) != {"tenant", "principal", "operation", "token"}:
+                return None, True
+            if _token_key_sha(scope["tenant"], scope["principal"], scope["operation"], scope["token"])[:16] != obj["tx_id"]:
+                return None, True
+            return obj, False
+        except Exception:
+            return None, True
+
+    def _save_intent(self, intent: dict, *, fault_hook=None, stage: str = "intent") -> dict:
+        sealed = copy.deepcopy(intent)
+        sealed.pop("intent_sha", None)
+        sealed["intent_sha"] = _sha_obj(sealed)
+        self._write_json_atomic(self._intent_path(sealed["tx_id"]), sealed, durable=sealed["durable"], fault_hook=fault_hook, stage=stage)
+        intent.clear()
+        intent.update(sealed)
+        return sealed
+
+    def _prepare_transaction(self, *, req: dict, ctx: dict, now: int, fp: str,
+                             before_manifest: dict, after_manifest: dict, meta_changes: list,
+                             new_md: dict | None, receipt: dict, durable: bool,
+                             fault_hook=None) -> dict:
+        if not self._manifest_path().exists():
+            self._save_manifest(before_manifest, durable=durable, fault_hook=None)
+        token, operation = req["caller_token"], req["kind"]
+        tx_id = _token_key_sha(ctx["tenant"], ctx["principal"], operation, token)[:16]
+        intent = {
+            "schema_version": 2, "state": "prepared", "tx_id": tx_id,
+            "scope": {"tenant": ctx["tenant"], "principal": ctx["principal"], "operation": operation, "token": token},
+            "fingerprint": fp, "node_id": receipt["node_id"], "revision": receipt["revision"],
+            "content_sha": receipt["content_sha"], "before_manifest": copy.deepcopy(before_manifest),
+            "before_manifest_sha": _sha_obj(before_manifest), "after_manifest": copy.deepcopy(after_manifest),
+            "after_manifest_sha": _sha_obj(after_manifest), "meta_changes": copy.deepcopy(meta_changes),
+            "new_md": copy.deepcopy(new_md), "receipt": copy.deepcopy(receipt), "timestamp": now,
+            "durable": durable,
+        }
+        self._save_intent(intent, fault_hook=fault_hook, stage="intent")
+        self._save_token_record(
+            ctx["tenant"], ctx["principal"], operation, token,
+            {"commit_status": "unknown", "fingerprint": fp, "history_complete": False,
+             "negative_basis": "unassessed", "fencing_epoch": 0, "node_id": receipt["node_id"],
+             "revision": receipt["revision"], "content_sha": receipt["content_sha"], "receipt": None},
+            durable=durable, fault_hook=fault_hook,
+        )
+        return intent
+
+    def _rollback_transaction(self, intent: dict) -> None:
+        scope = intent["scope"]
+        token, corrupt = self._load_token_record(scope["tenant"], scope["principal"], scope["operation"], scope["token"])
+        pending = {"commit_status": "unknown", "fingerprint": intent["fingerprint"], "history_complete": False,
+                   "negative_basis": "unassessed", "fencing_epoch": 0, "node_id": intent["node_id"],
+                   "revision": intent["revision"], "content_sha": intent["content_sha"], "receipt": None}
+        if corrupt or (token is not None and canonical({k: token[k] for k in pending}) != canonical(pending)):
+            raise ValueError("INTEGRITY_FAILURE: token contradicts uncommitted transaction")
+        # Validate all rollback inputs before the first disk mutation.
+        changes = []
+        for change in reversed(intent["meta_changes"]):
+            path = self._meta_path(intent["node_id"], change["revision"])
+            before, after = change["before"], change["after"]
+            current = self._read_meta_verified(path) if path.exists() else None
+            if before is None:
+                if current is not None:
+                    if current != after:
+                        raise ValueError("INTEGRITY_FAILURE: unexpected metadata during rollback")
+                    changes.append((path, None))
+            elif current == before:
+                continue
+            elif current is None or current == after:
+                changes.append((path, before))
+            else:
+                raise ValueError("INTEGRITY_FAILURE: metadata cannot be rolled back")
+        new_md = intent["new_md"]
+        if new_md is not None:
+            path = self._md_path(intent["node_id"], new_md["revision"])
+            if path.exists():
+                if _sha_bytes(path.read_bytes()) != new_md["content_sha"]:
+                    raise ValueError("INTEGRITY_FAILURE: body cannot be rolled back")
+                changes.append((path, None))
+        for path, before in changes:
+            if before is None:
+                path.unlink()
+            else:
+                self._write_json_atomic(path, before, durable=False, stage="rollback_meta")
+        intent["state"] = "aborted"
+        self._save_intent(intent, stage="intent_abort")
+
+    def _verify_transaction_files(self, intent: dict) -> None:
+        for change in intent["meta_changes"]:
+            path = self._meta_path(intent["node_id"], change["revision"])
+            if not path.exists() or self._read_meta_verified(path) != change["after"]:
+                raise ValueError("INTEGRITY_FAILURE: committed metadata mismatch")
+        new_md = intent["new_md"]
+        if new_md is not None:
+            path = self._md_path(intent["node_id"], new_md["revision"])
+            if not path.exists() or _sha_bytes(path.read_bytes()) != new_md["content_sha"]:
+                raise ValueError("INTEGRITY_FAILURE: committed body mismatch")
+
+    def _finish_transaction(self, intent: dict, *, fault_hook=None) -> tuple[dict, bool]:
+        manifest = self._load_manifest_or_init()
+        if _sha_obj(manifest) != intent["after_manifest_sha"]:
+            raise ValueError("INTEGRITY_FAILURE: transaction manifest is not committed")
+        self._verify_transaction_files(intent)
+        self._rebuild_index_locked(manifest, durable=intent["durable"], fault_hook=fault_hook)
+        scope = intent["scope"]
+        receipt = copy.deepcopy(intent["receipt"])
+        audit_ok = self._finalize_audit(
+            {"tenant": scope["tenant"], "principal": scope["principal"]},
+            {"kind": scope["operation"], "caller_token": scope["token"]},
+            receipt, intent["timestamp"], durable=intent["durable"], fault_hook=fault_hook, writer_id=receipt["writer_id"],
+        )
+        intent["state"] = "complete"
+        self._save_intent(intent, fault_hook=fault_hook, stage="intent_complete")
+        return receipt, audit_ok
+
+    def _run_prepared_transaction(self, intent: dict, new_md_content: dict | None, *, fault_hook=None) -> tuple[dict, bool]:
+        if intent["new_md"] is not None:
+            if type(new_md_content) is not dict or new_md_content.get("revision") != intent["new_md"]["revision"]:
+                raise ValueError("INTEGRITY_FAILURE: missing new revision content")
+            content = new_md_content["content"]
+            if _sha_bytes(content.encode("utf-8")) != intent["new_md"]["content_sha"]:
+                raise ValueError("INTEGRITY_FAILURE: new revision content mismatch")
+            target = self._md_path(intent["node_id"], intent["new_md"]["revision"])
+            ensure_dir_durable(target.parent, durable=intent["durable"])
+            atomic_write_text(target, content, durable=intent["durable"], fault_hook=fault_hook, stage_prefix="md")
+        for change in intent["meta_changes"]:
+            self._write_json_atomic(self._meta_path(intent["node_id"], change["revision"]), change["after"], durable=intent["durable"], fault_hook=fault_hook, stage="meta")
+        self._save_manifest(intent["after_manifest"], durable=intent["durable"], fault_hook=fault_hook)
+        return self._finish_transaction(intent, fault_hook=fault_hook)
+
+    def _recover_pending_transactions(self) -> None:
+        self._load_manifest_or_init()
+        for path in sorted((self.root / "intents").glob("*.json")):
+            intent, corrupt = self._intent_matches(path)
+            if intent is None:
+                if corrupt:
+                    raise ValueError("INTEGRITY_FAILURE: corrupt transaction intent")
+                continue
+            if intent["state"] in ("complete", "aborted"):
+                continue
+            current = self._load_manifest_or_init()
+            current_sha = _sha_obj(current)
+            if current_sha == intent["before_manifest_sha"]:
+                self._rollback_transaction(intent)
+            elif current_sha == intent["after_manifest_sha"]:
+                self._finish_transaction(intent)
+            else:
+                raise ValueError("INTEGRITY_FAILURE: transaction manifest diverged")
+
     def _load_intent_for_scope(self, tenant: str, principal: str, operation: str, token: str) -> tuple[dict | None, bool]:
         tx_id = _token_key_sha(tenant, principal, operation, token)[:16]
         ip = self._intent_path(tx_id)
         if not ip.exists():
             return None, False
+        intent, corrupt = self._intent_matches(ip)
+        if intent is not None:
+            if intent["scope"] != {"tenant": tenant, "principal": principal, "operation": operation, "token": token}:
+                return None, True
+            return intent, False
         try:
             obj = self._read_json_strict(ip)
             req_keys = {"tx_id", "scope", "fingerprint", "node_id", "revision", "content_sha", "state"}
@@ -156,6 +350,9 @@ class ShadowMarkdownStore:
     def _load_manifest_or_init(self) -> dict:
         mp = self._manifest_path()
         if not mp.exists():
+            data_dirs = ("nodes", "intents", "verifications")
+            if any((self.root / name).exists() and any(path.is_file() for path in (self.root / name).rglob("*")) for name in data_dirs):
+                raise ValueError("INTEGRITY_FAILURE: missing manifest with stored records")
             return {
                 "schema_version": 1,
                 "node_seq": 0,
@@ -215,15 +412,22 @@ class ShadowMarkdownStore:
         nodes: dict[str, Node] = {}
         metas: dict[str, dict] = {}
         for nid, entry in manifest_body["nodes"].items():
+            if (type(entry) is not dict or set(entry) != {"active_revision", "tenant", "state"}
+                    or type(entry["active_revision"]) is not int or entry["active_revision"] < 1
+                    or type(entry["tenant"]) is not str or not entry["tenant"]
+                    or type(entry["state"]) is not str or entry["state"] not in ("active", "tombstoned")):
+                raise ValueError("INTEGRITY_FAILURE: manifest node entry")
             rev = entry["active_revision"]
             mp = self._meta_path(nid, rev)
             mdp = self._md_path(nid, rev)
             if not mp.exists() or not mdp.exists():
                 raise ValueError("INTEGRITY_FAILURE: missing truth revision for " + nid)
-            meta = self._read_json_strict(mp)
+            meta = self._read_meta_verified(mp)
             raw_md = mdp.read_bytes()
-            if _sha_bytes(raw_md) != meta["content_sha"] or meta["node_id"] != nid or meta["revision"] != rev:
-                raise ValueError("INTEGRITY_FAILURE: content sha mismatch for " + nid)
+            if (_sha_bytes(raw_md) != meta["content_sha"] or meta["node_id"] != nid
+                    or meta["revision"] != rev or meta["tenant"] != entry["tenant"]
+                    or meta["state"] != entry["state"]):
+                raise ValueError("INTEGRITY_FAILURE: meta/manifest mismatch for " + nid)
             edges = tuple(Edge(e["node_id"], e["relation"], e["revision"], e["content_sha"]) for e in meta["source_edges"])
             nodes[nid] = Node(
                 meta["tenant"], rev, meta["content_sha"], meta["declared_sensitivity"],
@@ -256,6 +460,7 @@ class ShadowMarkdownStore:
     def rebuild_index(self, *, durable: bool = False) -> dict:
         """Rebuild the derived JSON inverted index strictly from immutable MD + meta truth."""
         with self._lock():
+            self._recover_pending_transactions()
             manifest_body = self._load_manifest_or_init()
             return self._rebuild_index_locked(manifest_body, durable=durable)
 
@@ -282,6 +487,7 @@ class ShadowMarkdownStore:
     def recover_token_state(self, *, tenant: str, principal: str, operation: str, caller_token: str) -> dict:
         """Strictly recover historical state for a token scope without ever fabricating absent on empty disk."""
         with self._lock():
+            self._recover_pending_transactions()
             return self.recover_token_state_unlocked(
                 tenant=tenant, principal=principal, operation=operation, caller_token=caller_token,
             )
@@ -304,6 +510,7 @@ class ShadowMarkdownStore:
 
         kind = req["kind"]
         with self._lock():
+            self._recover_pending_transactions()
             if kind in ("Write.create", "Write.modify"):
                 return self._write_locked(req, ctx, now, request_id, fault_hook=fault_hook)
             if kind == "Operation.cancel":
@@ -495,92 +702,38 @@ class ShadowMarkdownStore:
 
         cond = extract_condition_space(req["condition_space"])
         bitemp = time_bundle(req["bitemporal"])
-        tx_id = _token_key_sha(ctx["tenant"], ctx["principal"], kind, req["caller_token"])[:16]
-        intent_obj = {
-            "tx_id": tx_id,
-            "scope": {"tenant": ctx["tenant"], "principal": ctx["principal"], "operation": kind, "token": req["caller_token"]},
-            "fingerprint": fp,
-            "node_id": node_id,
-            "revision": rev,
-            "content_sha": content_sha,
-            "state": "prepared",
-        }
-        # Step 1: Write durable tx_intent & pending token
-        self._write_json_atomic(self._intent_path(tx_id), intent_obj, durable=durable, fault_hook=fault_hook, stage="intent")
-        self._save_token_record(
-            ctx["tenant"], ctx["principal"], kind, req["caller_token"],
-            {
-                "commit_status": "unknown", "fingerprint": fp, "history_complete": False,
-                "negative_basis": "unassessed", "fencing_epoch": 0, "node_id": node_id,
-                "revision": rev, "content_sha": content_sha, "receipt": None,
-            },
+        meta_after = _seal_meta({
+            "node_id": node_id, "revision": rev, "tenant": ctx["tenant"], "content_sha": content_sha,
+            "declared_sensitivity": req["declared_sensitivity"], "creation_readers": sorted(creation_readers),
+            "current_readers": sorted(readers), "source_edges": copy.deepcopy(req["source_edges"]),
+            "condition_space": cond, "bitemporal": bitemp,
+            "source_attribution": copy.deepcopy(req["source_attribution"]), "state": "active",
+        })
+        before_manifest = copy.deepcopy(manifest_body)
+        after_manifest = copy.deepcopy(manifest_body)
+        if kind == "Write.create":
+            after_manifest["node_seq"] = new_seq
+        after_manifest["content_generation"] += 1
+        after_manifest["graph_epoch"] += 1
+        after_manifest["nodes"][node_id] = {"active_revision": rev, "tenant": ctx["tenant"], "state": "active"}
+        receipt = {"writer_id": self._writer_id, "commit_status": "committed", "fingerprint": fp,
+                   "node_id": node_id, "revision": rev, "content_sha": content_sha,
+                   "durability_actual": "power" if durable else "process", "audit_state": "missing"}
+        intent = self._prepare_transaction(
+            req=req, ctx=ctx, now=now, fp=fp, before_manifest=before_manifest,
+            after_manifest=after_manifest,
+            meta_changes=[{"revision": rev, "before": None, "after": meta_after}],
+            new_md={"revision": rev, "content_sha": content_sha}, receipt=receipt,
             durable=durable, fault_hook=fault_hook,
         )
-
-        # Step 2: Write immutable Markdown truth file + JSON metadata sidecar
-        ensure_dir_durable(md_target.parent, durable=durable)
-        atomic_write_text(md_target, req["content"], durable=durable, fault_hook=fault_hook, stage_prefix="md")
-        meta_obj = {
-            "node_id": node_id,
-            "revision": rev,
-            "tenant": ctx["tenant"],
-            "content_sha": content_sha,
-            "declared_sensitivity": req["declared_sensitivity"],
-            "creation_readers": sorted(creation_readers),
-            "current_readers": sorted(readers),
-            "source_edges": copy.deepcopy(req["source_edges"]),
-            "condition_space": cond,
-            "bitemporal": bitemp,
-            "source_attribution": copy.deepcopy(req["source_attribution"]),
-            "state": "active",
-        }
-        self._write_json_atomic(meta_target, meta_obj, durable=durable, fault_hook=fault_hook, stage="meta")
-
-        # Step 3: Seal committed token receipt
-        durability_actual = "power" if durable else "process"
-        receipt = {
-            "writer_id": self._writer_id,
-            "commit_status": "committed",
-            "fingerprint": fp,
-            "node_id": node_id,
-            "revision": rev,
-            "content_sha": content_sha,
-            "durability_actual": durability_actual,
-            "audit_state": "missing",
-        }
-        self._save_token_record(
-            ctx["tenant"], ctx["principal"], kind, req["caller_token"],
-            {
-                "commit_status": "committed", "fingerprint": fp, "history_complete": True,
-                "negative_basis": "unassessed", "fencing_epoch": 0, "node_id": node_id,
-                "revision": rev, "content_sha": content_sha, "receipt": receipt,
-            },
-            durable=durable, fault_hook=fault_hook,
-        )
-
-        # Step 4: Atomically install manifest projection & rebuild derived index
-        manifest_body["node_seq"] = new_seq
-        manifest_body["content_generation"] += 1
-        manifest_body["graph_epoch"] += 1
-        manifest_body["nodes"][node_id] = {"active_revision": rev, "tenant": ctx["tenant"], "state": "active"}
-        self._save_manifest(manifest_body, durable=durable, fault_hook=fault_hook)
-        self._rebuild_index_locked(manifest_body, durable=durable, fault_hook=fault_hook)
-
-        # Step 5: Append payload-free audit AFTER body/manifest/token; failure surfaces honestly (never rolls back committed body!)
-        if not self._finalize_audit(ctx, req, receipt, now, durable=durable, fault_hook=fault_hook):
-            return validate_full_response({
-                "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "error",
-                "error_code": "AUDIT_FAILED", "next_action": "reconcile_audit",
-                "snapshot_ref": None, "policy_generation": manifest_body["policy_generation"], "records": None, "next_cursor": None,
-                "target": {"commit_status": "committed", "audit": "failed", "projection": "active", "negative_basis": "unassessed"},
-                "historical_receipt": receipt, "selfcheck_aggregate": None,
-            })
-
+        receipt, audit_ok = self._run_prepared_transaction(intent, {"revision": rev, "content": req["content"]}, fault_hook=fault_hook)
         return validate_full_response({
-            "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "ok",
-            "error_code": None, "next_action": "return_original",
-            "snapshot_ref": None, "policy_generation": manifest_body["policy_generation"], "records": None, "next_cursor": None,
-            "target": {"commit_status": "committed", "audit": "ok", "projection": "active", "negative_basis": "unassessed"},
+            "version": "0.2-full", "request_id": rid, "scope": "mutation",
+            "outcome": "ok" if audit_ok else "error", "error_code": None if audit_ok else "AUDIT_FAILED",
+            "next_action": "return_original" if audit_ok else "reconcile_audit",
+            "snapshot_ref": None, "policy_generation": after_manifest["policy_generation"],
+            "records": None, "next_cursor": None,
+            "target": {"commit_status": "committed", "audit": "ok" if audit_ok else "failed", "projection": "active", "negative_basis": "unassessed"},
             "historical_receipt": receipt, "selfcheck_aggregate": None,
         })
 
@@ -754,8 +907,16 @@ class ShadowMarkdownStore:
             matching = True
             if body_ok:
                 try:
-                    meta = self._read_json_strict(metap)
-                    if _sha_bytes(mdp.read_bytes()) != tok_rec["content_sha"] or meta["content_sha"] != tok_rec["content_sha"]:
+                    meta = self._read_meta_verified(metap)
+                    if (_sha_bytes(mdp.read_bytes()) != tok_rec["content_sha"]
+                            or meta["content_sha"] != tok_rec["content_sha"]
+                            or meta["node_id"] != nid or meta["revision"] != rev):
+                        matching = False
+                    entry = self._load_manifest_or_init()["nodes"].get(nid)
+                    if (type(entry) is not dict or type(entry.get("active_revision")) is not int
+                            or entry.get("tenant") != meta["tenant"]
+                            or entry["active_revision"] < rev
+                            or (entry["active_revision"] == rev and entry.get("state") != meta["state"])):
                         matching = False
                 except Exception:
                     matching = False
@@ -770,10 +931,19 @@ class ShadowMarkdownStore:
                       scope: str, method_allowed: bool, credential_exists: bool,
                       credential_time: int, verified_at: int) -> bool:
         with self._lock():
+            self._recover_pending_transactions()
+            entry = self._load_manifest_or_init()["nodes"].get(node_id)
+            if entry is None or entry["active_revision"] != expected_revision:
+                return False
             metap = self._meta_path(node_id, expected_revision)
             if not metap.exists():
-                return False
-            meta = self._read_json_strict(metap)
+                raise ValueError("INTEGRITY_FAILURE: missing verification subject metadata")
+            meta = self._read_meta_verified(metap)
+            mdp = self._md_path(node_id, expected_revision)
+            if (meta["node_id"] != node_id or meta["revision"] != expected_revision
+                    or meta["tenant"] != entry["tenant"] or meta["state"] != entry["state"]
+                    or not mdp.exists() or _sha_bytes(mdp.read_bytes()) != meta["content_sha"]):
+                raise ValueError("INTEGRITY_FAILURE: verification subject mismatch")
             source_id = meta["source_attribution"]["source_id"]
             ok = verification_eligible(
                 subject_revision=meta["revision"],
@@ -860,6 +1030,14 @@ class ShadowMarkdownStore:
                     "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
                     "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
                 })
+            if tok_rec["commit_status"] != "committed":
+                return validate_full_response({
+                    "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "unknown",
+                    "error_code": "RECOVERY_UNCERTAIN", "next_action": "query_same_token",
+                    "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
+                    "target": {"commit_status": "unknown", "audit": "unknown", "projection": "unknown", "negative_basis": "unassessed"},
+                    "historical_receipt": None, "selfcheck_aggregate": None,
+                })
             can_r = can_read_with_epoch_cache(self.model, node_id, nodes, tenant=ctx["tenant"], principal=ctx["principal"], clearance=ctx["clearance"], graph_epoch=manifest_body["graph_epoch"], cache=self.cache)
             proj = metas[node_id]["state"] if can_r else "unknown"
             audit_norm = self._audit_status_norm(ctx["tenant"], tok_rec["receipt"])
@@ -873,6 +1051,26 @@ class ShadowMarkdownStore:
                 "historical_receipt": copy.deepcopy(tok_rec["receipt"]), "selfcheck_aggregate": None,
             })
 
+        intent_rec, intent_corrupt = self._load_intent_for_scope(ctx["tenant"], ctx["principal"], kind, req["caller_token"])
+        if intent_corrupt:
+            return validate_full_response({
+                "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "unknown",
+                "error_code": "INTEGRITY_FAILURE", "next_action": "query_same_token",
+                "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
+                "target": {"commit_status": "unknown", "audit": "unknown", "projection": "unknown", "negative_basis": "unassessed"},
+                "historical_receipt": None, "selfcheck_aggregate": None,
+            })
+        if intent_rec is not None:
+            conflict = intent_rec.get("fingerprint") != fp
+            return validate_full_response({
+                "version": "0.2-full", "request_id": rid, "scope": "mutation",
+                "outcome": "error" if conflict else "unknown",
+                "error_code": "TOKEN_PAYLOAD_CONFLICT" if conflict else "RECOVERY_UNCERTAIN",
+                "next_action": "fix_input" if conflict else "query_same_token",
+                "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
+                "target": None if conflict else {"commit_status": "unknown", "audit": "unknown", "projection": "unknown", "negative_basis": "unassessed"},
+                "historical_receipt": None, "selfcheck_aggregate": None,
+            })
         cur_meta = metas.get(node_id)
         authorized = cur_meta is not None and cur_meta["tenant"] == ctx["tenant"] and ctx["principal"] in cur_meta["creation_readers"] and ctx["clearance"] >= cur_meta["declared_sensitivity"]
         if not authorized:
@@ -902,11 +1100,15 @@ class ShadowMarkdownStore:
                 "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
             })
 
+        before_manifest = copy.deepcopy(manifest_body)
+        meta_changes = []
+        new_md_content = None
+        new_md = None
         if action in ("forget", "restore"):
             new_state = "tombstoned" if action == "forget" else "active"
             updated_meta = copy.deepcopy(cur_meta)
             updated_meta["state"] = new_state
-            self._write_json_atomic(self._meta_path(node_id, cur_meta["revision"]), updated_meta, durable=False, fault_hook=fault_hook, stage="meta")
+            meta_changes.append({"revision": cur_meta["revision"], "before": copy.deepcopy(cur_meta), "after": _seal_meta(updated_meta)})
             manifest_body["content_generation"] += 1
             manifest_body["graph_epoch"] += 1
             manifest_body["nodes"][node_id]["state"] = new_state
@@ -917,7 +1119,7 @@ class ShadowMarkdownStore:
             updated_meta = copy.deepcopy(cur_meta)
             updated_meta["declared_sensitivity"] = req["declared_sensitivity"]
             updated_meta["current_readers"] = sorted(set(req["reader_ceiling"]))
-            self._write_json_atomic(self._meta_path(node_id, cur_meta["revision"]), updated_meta, durable=False, fault_hook=fault_hook, stage="meta")
+            meta_changes.append({"revision": cur_meta["revision"], "before": copy.deepcopy(cur_meta), "after": _seal_meta(updated_meta)})
             manifest_body["policy_generation"] += 1
             manifest_body["graph_epoch"] += 1
             new_rev = cur_meta["revision"]
@@ -949,19 +1151,21 @@ class ShadowMarkdownStore:
                 })
             cond = extract_condition_space(rep["condition_space"])
             bitemp = time_bundle(rep["bitemporal"])
-            atomic_write_text(self._md_path(node_id, new_rev), rep["content"], durable=False, fault_hook=fault_hook, stage_prefix="md")
-            new_meta = {
+            new_meta = _seal_meta({
                 "node_id": node_id, "revision": new_rev, "tenant": ctx["tenant"], "content_sha": sha,
                 "declared_sensitivity": rep["declared_sensitivity"], "creation_readers": list(cur_meta["creation_readers"]),
                 "current_readers": sorted(set(rep["reader_ceiling"])), "source_edges": copy.deepcopy(rep["source_edges"]),
                 "condition_space": cond, "bitemporal": bitemp, "source_attribution": copy.deepcopy(rep["source_attribution"]),
                 "state": "active",
-            }
-            self._write_json_atomic(self._meta_path(node_id, new_rev), new_meta, durable=False, fault_hook=fault_hook, stage="meta")
+            })
             old_meta = copy.deepcopy(cur_meta)
             old_meta["state"] = "superseded"
-            self._write_json_atomic(self._meta_path(node_id, old_rev), old_meta, durable=False)
-            manifest_body["node_seq"] = max(manifest_body["node_seq"], new_rev)
+            meta_changes.extend([
+                {"revision": new_rev, "before": None, "after": new_meta},
+                {"revision": old_rev, "before": copy.deepcopy(cur_meta), "after": _seal_meta(old_meta)},
+            ])
+            new_md = {"revision": new_rev, "content_sha": sha}
+            new_md_content = {"revision": new_rev, "content": rep["content"]}
             manifest_body["content_generation"] += 1
             manifest_body["graph_epoch"] += 1
             manifest_body["nodes"][node_id]["active_revision"] = new_rev
@@ -973,43 +1177,32 @@ class ShadowMarkdownStore:
             "commit_status": "committed", "fingerprint": fp, "node_id": node_id,
             "revision": new_rev, "content_sha": sha, "durability_actual": "process", "audit_state": "missing",
         }
-        self._save_token_record(
-            ctx["tenant"], ctx["principal"], kind, req["caller_token"],
-            {
-                "commit_status": "committed", "fingerprint": fp, "history_complete": True,
-                "negative_basis": "unassessed", "fencing_epoch": 0, "node_id": node_id,
-                "revision": new_rev, "content_sha": sha, "receipt": receipt,
-            },
-            durable=False, fault_hook=fault_hook,
+        intent = self._prepare_transaction(
+            req=req, ctx=ctx, now=now, fp=fp, before_manifest=before_manifest,
+            after_manifest=manifest_body, meta_changes=meta_changes, new_md=new_md,
+            receipt=receipt, durable=False, fault_hook=fault_hook,
         )
-        self._save_manifest(manifest_body, durable=False, fault_hook=fault_hook)
-        self._rebuild_index_locked(manifest_body, durable=False, fault_hook=fault_hook)
-        if not self._finalize_audit(ctx, req, receipt, now, durable=False, fault_hook=fault_hook):
-            return validate_full_response({
-                "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "error",
-                "error_code": "AUDIT_FAILED", "next_action": "reconcile_audit",
-                "snapshot_ref": None, "policy_generation": manifest_body["policy_generation"], "records": None, "next_cursor": None,
-                "target": {"commit_status": "committed", "audit": "failed", "projection": proj, "negative_basis": "unassessed"},
-                "historical_receipt": receipt, "selfcheck_aggregate": None,
-            })
+        receipt, audit_ok = self._run_prepared_transaction(intent, new_md_content, fault_hook=fault_hook)
         return validate_full_response({
-            "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "ok",
-            "error_code": None, "next_action": "return_original",
-            "snapshot_ref": None, "policy_generation": manifest_body["policy_generation"], "records": None, "next_cursor": None,
-            "target": {"commit_status": "committed", "audit": "ok", "projection": proj, "negative_basis": "unassessed"},
+            "version": "0.2-full", "request_id": rid, "scope": "mutation",
+            "outcome": "ok" if audit_ok else "error", "error_code": None if audit_ok else "AUDIT_FAILED",
+            "next_action": "return_original" if audit_ok else "reconcile_audit",
+            "snapshot_ref": None, "policy_generation": manifest_body["policy_generation"],
+            "records": None, "next_cursor": None,
+            "target": {"commit_status": "committed", "audit": "ok" if audit_ok else "failed", "projection": proj, "negative_basis": "unassessed"},
             "historical_receipt": receipt, "selfcheck_aggregate": None,
         })
 
     def _selfcheck_locked(self, req: dict, rid: str) -> dict:
         from framework.api import aggregate_checks
-        checks = [{"id": cid, "status": "PASS" if cid.startswith("C") else "NOT_RUN"} for cid in req["check_ids"]]
+        checks = [{"id": cid, "status": "NOT_RUN"} for cid in req["check_ids"]]
         agg = aggregate_checks(req["check_ids"], checks)
         manifest_body = self._load_manifest_or_init()
         return validate_full_response({
             "version": "0.2-full", "request_id": rid, "scope": "selfcheck",
-            "outcome": "ok" if agg == "PASS" else "unknown",
-            "error_code": None if agg == "PASS" else "RECOVERY_UNCERTAIN",
-            "next_action": "none" if agg == "PASS" else "query_same_token",
+            "outcome": "unknown",
+            "error_code": "CONDITION_DEFERRED",
+            "next_action": "refresh_snapshot",
             "snapshot_ref": req["snapshot_ref"], "policy_generation": manifest_body["policy_generation"],
             "records": None, "next_cursor": None, "target": None, "historical_receipt": None,
             "selfcheck_aggregate": agg,

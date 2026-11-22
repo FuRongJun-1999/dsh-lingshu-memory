@@ -43,6 +43,11 @@ class ShadowRuntimeMutationTests(unittest.TestCase):
             ("ignore_corrupt_index", 'if idx is None and manifest_body["nodes"]:', "if False:"),
             ("skip_cancel_fence_on_write", 'if action == "return_original_cancel":', "if False:"),
             ("skip_proof_sha_check", 'if _sha_obj(body) != proof["proof_sha"]:', "if False:"),
+            ("skip_meta_sha_check", 'if type(meta["meta_sha"]) is not str or _sha_obj(body) != meta["meta_sha"]:', "if False:"),
+            ("skip_manifest_state_binding", 'or meta["state"] != entry["state"]):', 'or False):'),
+            ("selfcheck_fake_c_pass", '"status": "NOT_RUN"} for cid in req["check_ids"]', '"status": "PASS"} for cid in req["check_ids"]'),
+            ("skip_transaction_recovery", '        with self._lock():\n            self._recover_pending_transactions()\n            return self.recover_token_state_unlocked(', '        with self._lock():\n            pass\n            return self.recover_token_state_unlocked('),
+            ("skip_p1_index_rebuild", '        self._rebuild_index_locked(manifest, durable=intent["durable"], fault_hook=fault_hook)', '        pass'),
         ]
         orig_s = pathlib.Path(store_mod.__file__).read_text(encoding="utf-8")
         with tempfile.TemporaryDirectory() as tmp:
@@ -59,7 +64,13 @@ class ShadowRuntimeMutationTests(unittest.TestCase):
                     ts2.loader.exec_module(tm2)
                     tm2.ShadowMarkdownStore = ms.ShadowMarkdownStore
                     tm2.InjectedCrash = ms.InjectedCrash
-                    res_s = unittest.TextTestRunner(stream=io.StringIO()).run(unittest.defaultTestLoader.loadTestsFromTestCase(tm2.ShadowRuntimeR01ToR09Tests))
+                    method_name = "test_write_manifest_index_crash_recovery" if name in ("skip_transaction_recovery", "skip_p1_index_rebuild") else None
+                    suite = (unittest.defaultTestLoader.loadTestsFromName(method_name, tm2.ShadowRuntimeR01ToR09Tests)
+                             if method_name else unittest.defaultTestLoader.loadTestsFromTestCase(tm2.ShadowRuntimeR01ToR09Tests))
+                    res_s = unittest.TextTestRunner(stream=io.StringIO()).run(suite)
+                    failed_names = {case._testMethodName for case, _ in res_s.failures + res_s.errors}
+                    if name == "selfcheck_fake_c_pass":
+                        self.assertIn("test_selfcheck_never_reports_unimplemented_checks_as_pass", failed_names)
                     self.assertFalse(res_s.wasSuccessful(), "mutant survived: " + name)
 
 

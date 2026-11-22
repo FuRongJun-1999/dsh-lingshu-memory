@@ -290,6 +290,272 @@ class ShadowRuntimeR01ToR09Tests(unittest.TestCase):
             self.assertEqual(bad_cor["error_code"], "INTEGRITY_FAILURE")
             self.assertEqual(rev2_md.read_text(encoding="utf-8"), "already-there")
 
+    def test_missing_manifest_with_stored_records_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp_truth:
+            s = ShadowMarkdownStore(tmp_truth, synthetic=True)
+            self.assertEqual(s.execute(write_req("truth", "manifest truth body"), ctx("alice"), 10)["outcome"], "ok")
+            (pathlib.Path(tmp_truth) / "manifest.json").unlink()
+            with self.assertRaisesRegex(ValueError, "missing manifest with stored records"):
+                ShadowMarkdownStore(tmp_truth, synthetic=True).recover_token_state(tenant="t1", principal="alice", operation="Write.create", caller_token="truth")
+        with tempfile.TemporaryDirectory() as tmp_intent:
+            s = ShadowMarkdownStore(tmp_intent, synthetic=True)
+            def crash_after_intent(stage, _path):
+                if stage == "intent:after_replace":
+                    raise InjectedCrash(stage)
+            with self.assertRaises(InjectedCrash):
+                s.execute(write_req("intent-only", "not-published"), ctx("alice"), 10, fault_hook=crash_after_intent)
+            (pathlib.Path(tmp_intent) / "manifest.json").unlink()
+            with self.assertRaisesRegex(ValueError, "missing manifest with stored records"):
+                ShadowMarkdownStore(tmp_intent, synthetic=True).recover_token_state(tenant="t1", principal="alice", operation="Write.create", caller_token="intent-only")
+        with tempfile.TemporaryDirectory() as tmp_cancel:
+            s = ShadowMarkdownStore(tmp_cancel, synthetic=True)
+            self.assertEqual(s.execute({"kind": "Operation.cancel", "target_operation": "Write.create", "caller_token": "cancel-only", "fencing_epoch": 2, "reason": "abort"}, ctx("alice"), 10)["error_code"], "CANCELLED")
+            self.assertNotIn("manifest.json", {path.name for path in pathlib.Path(tmp_cancel).glob("manifest.json")})
+            self.assertEqual(s.execute(write_req("cancel-only", "late body"), ctx("alice"), 11)["error_code"], "CANCELLED")
+
+    def test_review_verify_recovers_before_creating_proof(self):
+        for point, committed in (("meta:after_replace", False), ("manifest:after_replace", True)):
+            with self.subTest(point=point), tempfile.TemporaryDirectory() as tmp:
+                store = ShadowMarkdownStore(tmp, synthetic=True)
+                def crash(stage, _path):
+                    if stage == point:
+                        raise InjectedCrash(stage)
+                with self.assertRaises(InjectedCrash):
+                    store.execute(write_req("verify-first", "fixture body"), ctx(), 10, fault_hook=crash)
+                reopened = ShadowMarkdownStore(tmp, synthetic=True)
+                result = reopened.verify_record(node_id="node-1", expected_revision=1, verifier_id="fixture-reviewer",
+                                                scope="restore", method_allowed=True, credential_exists=True,
+                                                credential_time=5, verified_at=11)
+                root = pathlib.Path(tmp)
+                self.assertIs(result, committed)
+                self.assertEqual(len(list((root / "verifications").glob("*.json"))), int(committed))
+                self.assertEqual(len(list((root / "nodes").rglob("*.md"))), int(committed))
+                self.assertEqual(reopened.recover_token_state(tenant="t1", principal="alice",
+                                 operation="Write.create", caller_token="verify-first")["commit_status"],
+                                 "committed" if committed else "unknown")
+
+    def test_review_rollback_checks_all_evidence_before_disk_mutation(self):
+        for conflict in ("committed_token", "body_digest"):
+            with self.subTest(conflict=conflict), tempfile.TemporaryDirectory() as tmp:
+                root = pathlib.Path(tmp)
+                store = ShadowMarkdownStore(tmp, synthetic=True)
+                before = {}
+                def checkpoint(stage, _path):
+                    if stage == "manifest:before_replace":
+                        mp = root / "manifest.json"
+                        ip = next((root / "intents").glob("*.json"))
+                        before.update({mp: mp.read_bytes(), ip: ip.read_bytes()})
+                        if conflict == "body_digest":
+                            raise InjectedCrash(stage)
+                request = write_req("rollback-guard", "fixture body")
+                if conflict == "committed_token":
+                    self.assertEqual(store.execute(request, ctx(), 10, fault_hook=checkpoint)["outcome"], "ok")
+                    self.assertEqual(len(before), 2)
+                    for path, data in before.items():
+                        path.write_bytes(data)
+                    reason = "token contradicts"
+                else:
+                    with self.assertRaises(InjectedCrash):
+                        store.execute(request, ctx(), 10, fault_hook=checkpoint)
+                    body = next((root / "nodes").rglob("*.md"))
+                    body.write_bytes(body.read_bytes() + b"!")
+                    reason = "body cannot be rolled back"
+                def snapshot():
+                    return {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*")
+                            if p.is_file() and p.suffix != ".lock"}
+                observed = snapshot()
+                self.assertEqual(len([p for p in observed if p.startswith("nodes")]), 2)
+                with self.assertRaisesRegex(ValueError, reason):
+                    ShadowMarkdownStore(tmp, synthetic=True).recover_token_state(
+                        tenant="t1", principal="alice", operation="Write.create", caller_token="rollback-guard")
+                after = snapshot()
+                self.assertEqual(after.keys(), observed.keys())
+                self.assertEqual(sorted(p for p in observed if after[p] != observed[p]), [])
+
+    def test_write_manifest_index_crash_recovery(self):
+        cases = (
+            ("manifest:before_replace", 1, "unknown", False),
+            ("manifest:after_replace", 1, "committed", True),
+            ("index:before_replace", 1, "committed", True),
+            ("audit:after_append", 1, "committed", True),
+            ("token:after_replace", 2, "committed", True),
+        )
+        for idx, (target, occurrence, expected_status, visible) in enumerate(cases):
+            with self.subTest(stage=target), tempfile.TemporaryDirectory() as tmp:
+                s = ShadowMarkdownStore(tmp, synthetic=True)
+                seen = [0]
+                def crash_hook(stage, _path):
+                    if stage == target:
+                        seen[0] += 1
+                        if seen[0] == occurrence:
+                            raise InjectedCrash(stage)
+                with self.assertRaises(InjectedCrash):
+                    s.execute(write_req("t-crash-%d" % idx, "crash-visible-body"), ctx("alice"), 10, fault_hook=crash_hook)
+                reopened = ShadowMarkdownStore(tmp, synthetic=True)
+                recovered = reopened.recover_token_state(tenant="t1", principal="alice", operation="Write.create", caller_token="t-crash-%d" % idx)
+                self.assertEqual(recovered["commit_status"], expected_status)
+                if visible:
+                    manifest = reopened._load_manifest_or_init()
+                    self.assertEqual(manifest["nodes"]["node-1"]["active_revision"], 1)
+                    self.assertIsNotNone(reopened._load_valid_index(manifest))
+                    self.assertEqual(inspect_audit(pathlib.Path(tmp) / "audit/audit.jsonl")["count"], 1)
+                    read = reopened.execute({"kind": "Read.get", "node_id": "node-1", "include_provenance": False,
+                                             "condition_query": cspace(), "time_axis": "effective", "time_point": Q}, ctx("alice"), 11)
+                    self.assertEqual(read["records"][0]["body"], "crash-visible-body")
+                else:
+                    manifest = reopened._load_manifest_or_init()
+                    self.assertNotIn("node-1", manifest["nodes"])
+                    self.assertEqual(list((pathlib.Path(tmp) / "nodes").rglob("rev_*.md")), [])
+                    self.assertFalse((pathlib.Path(tmp) / "audit/audit.jsonl").exists())
+
+    def test_govern_meta_crash_before_manifest_rolls_back(self):
+        for action in ("forget", "restore", "change_policy", "correct_revision"):
+            with self.subTest(action=action), tempfile.TemporaryDirectory() as tmp:
+                s = ShadowMarkdownStore(tmp, synthetic=True)
+                self.assertEqual(s.execute(write_req("base", "govern source"), ctx("alice"), 10)["outcome"], "ok")
+                revision = 1
+                original_state = "active"
+                if action == "restore":
+                    self.assertEqual(s.execute({"kind": "Govern.forget", "caller_token": "setup-forget", "node_id": "node-1", "expected_revision": 1, "reason": "setup"}, ctx("alice"), 11)["target"]["projection"], "tombstoned")
+                    self.assertTrue(s.verify_record(node_id="node-1", expected_revision=1, verifier_id="auditor-1", scope="restore", method_allowed=True, credential_exists=True, credential_time=5, verified_at=12))
+                    original_state = "tombstoned"
+                request = {"kind": "Govern." + action, "caller_token": "crash-" + action, "node_id": "node-1", "expected_revision": revision, "reason": "inject crash"}
+                if action == "change_policy":
+                    request.update({"declared_sensitivity": 2, "reader_ceiling": ["alice"]})
+                if action == "correct_revision":
+                    rep = {k: v for k, v in write_req("unused", "corrected body").items() if k not in ("kind", "caller_token", "durability_request")}
+                    request["replacement"] = rep
+                def crash_hook(stage, _path):
+                    if stage == "meta:after_replace":
+                        raise InjectedCrash(stage)
+                with self.assertRaises(InjectedCrash):
+                    s.execute(request, ctx("alice"), 20, fault_hook=crash_hook)
+                reopened = ShadowMarkdownStore(tmp, synthetic=True)
+                recovered = reopened.recover_token_state(tenant="t1", principal="alice", operation=request["kind"], caller_token=request["caller_token"])
+                self.assertEqual(recovered["commit_status"], "unknown")
+                manifest = reopened._load_manifest_or_init()
+                self.assertEqual(manifest["nodes"]["node-1"]["active_revision"], 1)
+                self.assertEqual(manifest["nodes"]["node-1"]["state"], original_state)
+                nodes, metas = reopened._build_graph_nodes(manifest)
+                self.assertEqual(metas["node-1"]["state"], original_state)
+                if action == "change_policy":
+                    self.assertEqual(metas["node-1"]["declared_sensitivity"], 1)
+                    self.assertEqual(metas["node-1"]["current_readers"], ["alice", "bob"])
+                if action == "correct_revision":
+                    self.assertFalse(reopened._md_path("node-1", 2).exists())
+                    self.assertFalse(reopened._meta_path("node-1", 2).exists())
+                self.assertEqual(inspect_audit(pathlib.Path(tmp) / "audit/audit.jsonl")["count"], 2 if action == "restore" else 1)
+
+    def test_govern_manifest_commit_crash_rolls_forward(self):
+        for action in ("forget", "restore", "change_policy", "correct_revision"):
+            with self.subTest(action=action), tempfile.TemporaryDirectory() as tmp:
+                s = ShadowMarkdownStore(tmp, synthetic=True)
+                self.assertEqual(s.execute(write_req("base", "govern committed source"), ctx("alice"), 10)["outcome"], "ok")
+                setup_audits = 1
+                if action == "restore":
+                    self.assertEqual(s.execute({"kind": "Govern.forget", "caller_token": "setup-forget", "node_id": "node-1", "expected_revision": 1, "reason": "setup"}, ctx("alice"), 11)["target"]["projection"], "tombstoned")
+                    self.assertTrue(s.verify_record(node_id="node-1", expected_revision=1, verifier_id="auditor-1", scope="restore", method_allowed=True, credential_exists=True, credential_time=5, verified_at=12))
+                    setup_audits = 2
+                request = {"kind": "Govern." + action, "caller_token": "commit-" + action, "node_id": "node-1", "expected_revision": 1, "reason": "commit then crash"}
+                expected_revision, expected_state = 1, ("tombstoned" if action == "forget" else "active")
+                if action == "change_policy":
+                    request.update({"declared_sensitivity": 2, "reader_ceiling": ["alice"]})
+                if action == "correct_revision":
+                    rep = {k: v for k, v in write_req("unused", "corrected committed body").items() if k not in ("kind", "caller_token", "durability_request")}
+                    request["replacement"] = rep
+                    expected_revision = 2
+                def crash_hook(stage, _path):
+                    if stage == "manifest:after_replace":
+                        raise InjectedCrash(stage)
+                with self.assertRaises(InjectedCrash):
+                    s.execute(request, ctx("alice"), 20, fault_hook=crash_hook)
+                reopened = ShadowMarkdownStore(tmp, synthetic=True)
+                recovered = reopened.recover_token_state(tenant="t1", principal="alice", operation=request["kind"], caller_token=request["caller_token"])
+                self.assertEqual(recovered["commit_status"], "committed")
+                manifest = reopened._load_manifest_or_init()
+                self.assertEqual(manifest["nodes"]["node-1"]["active_revision"], expected_revision)
+                self.assertEqual(manifest["nodes"]["node-1"]["state"], expected_state)
+                self.assertIsNotNone(reopened._load_valid_index(manifest))
+                nodes, metas = reopened._build_graph_nodes(manifest)
+                self.assertEqual(metas["node-1"]["state"], expected_state)
+                if action == "change_policy":
+                    self.assertEqual(metas["node-1"]["declared_sensitivity"], 2)
+                    self.assertEqual(metas["node-1"]["current_readers"], ["alice"])
+                if action == "correct_revision":
+                    self.assertEqual(metas["node-1"]["state"], "active")
+                    self.assertEqual(reopened._md_path("node-1", 2).read_text(encoding="utf-8"), "corrected committed body")
+                    self.assertEqual(reopened._read_meta_verified(reopened._meta_path("node-1", 1))["state"], "superseded")
+                self.assertEqual(inspect_audit(pathlib.Path(tmp) / "audit/audit.jsonl")["count"], setup_audits + 1)
+
+    def test_meta_source_edges_roundtrip_through_seal_and_graph(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            s = ShadowMarkdownStore(tmp, synthetic=True)
+            self.assertEqual(s.execute(write_req("t-source", "source body"), ctx("alice"), 10)["outcome"], "ok")
+            edge = {"node_id": "node-1", "relation": "derived", "revision": 1,
+                    "content_sha": hashlib.sha256(b"source body").hexdigest()}
+            request = write_req("t-derived", "derived body")
+            request["source_edges"] = [edge]
+            self.assertEqual(s.execute(request, ctx("alice"), 11)["outcome"], "ok")
+            nodes, metas = s._build_graph_nodes(s._load_manifest_or_init())
+            self.assertEqual(metas["node-2"]["source_edges"], [edge])
+            self.assertEqual(nodes["node-2"].edges[0].target, "node-1")
+
+    def test_selfcheck_never_reports_unimplemented_checks_as_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            s = ShadowMarkdownStore(tmp, synthetic=True)
+            response = s.execute({
+                "kind": "SelfCheck", "check_ids": ["C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10"],
+                "scope": "isolated-runtime", "snapshot_ref": "snap-1",
+            }, ctx("alice"), 10)
+            self.assertEqual(response["outcome"], "unknown")
+            self.assertEqual(response["error_code"], "CONDITION_DEFERRED")
+            self.assertEqual(response["next_action"], "refresh_snapshot")
+            self.assertEqual(response["selfcheck_aggregate"], "NOT_RUN")
+            self.assertNotEqual(response["selfcheck_aggregate"], "PASS")
+
+    def test_meta_checksum_and_manifest_state_binding_fail_closed(self):
+        read_req = {"kind": "Read.get", "node_id": "node-1", "include_provenance": False,
+                    "condition_query": cspace(), "time_axis": "effective", "time_point": Q}
+        for name, alter in (
+            ("missing_meta_sha", lambda meta: meta.pop("meta_sha", None)),
+            ("modified_reader_list", lambda meta: meta["current_readers"].append("mallory")),
+            ("modified_state_without_reseal", lambda meta: meta.__setitem__("state", "tombstoned")),
+            ("resealed_state_diverges_from_manifest", lambda meta: (
+                meta.__setitem__("state", "tombstoned"),
+                meta.__setitem__("meta_sha", hashlib.sha256(canonical({k: v for k, v in meta.items() if k != "meta_sha"})).hexdigest()),
+            )),
+        ):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as tmp:
+                s = ShadowMarkdownStore(tmp, synthetic=True)
+                self.assertEqual(s.execute(write_req("t-meta", "integrity body"), ctx("alice"), 10)["outcome"], "ok")
+                meta_path = s._meta_path("node-1", 1)
+                meta = json.loads(meta_path.read_text(encoding="utf-8"))
+                alter(meta)
+                meta_path.write_text(json.dumps(meta, ensure_ascii=False, sort_keys=True), encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "INTEGRITY_FAILURE"):
+                    s.execute(read_req, ctx("alice"), 11)
+                recovered = s.recover_token_state(tenant="t1", principal="alice", operation="Write.create", caller_token="t-meta")
+                self.assertEqual(recovered["commit_status"], "unknown")
+                self.assertTrue(recovered["integrity_failure"])
+
+    def test_meta_checksum_survives_policy_and_revision_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            s = ShadowMarkdownStore(tmp, synthetic=True)
+            self.assertEqual(s.execute(write_req("t-policy-base", "policy body"), ctx("alice"), 10)["outcome"], "ok")
+            policy = s.execute({"kind": "Govern.change_policy", "caller_token": "t-policy", "node_id": "node-1", "expected_revision": 1, "reason": "tighten", "declared_sensitivity": 2, "reader_ceiling": ["alice"]}, ctx("alice"), 11)
+            self.assertEqual(policy["outcome"], "ok")
+            s._build_graph_nodes(s._load_manifest_or_init())
+
+        with tempfile.TemporaryDirectory() as tmp:
+            s = ShadowMarkdownStore(tmp, synthetic=True)
+            self.assertEqual(s.execute(write_req("t-rev-base", "old body"), ctx("alice"), 10)["outcome"], "ok")
+            rep = {k: v for k, v in write_req("unused", "new body").items() if k not in ("kind", "caller_token", "durability_request")}
+            corrected = s.execute({"kind": "Govern.correct_revision", "caller_token": "t-rev", "node_id": "node-1", "expected_revision": 1, "reason": "correct typo", "replacement": rep}, ctx("alice"), 11)
+            self.assertEqual(corrected["outcome"], "ok")
+            s._build_graph_nodes(s._load_manifest_or_init())
+            old = s.recover_token_state(tenant="t1", principal="alice", operation="Write.create", caller_token="t-rev-base")
+            self.assertEqual(old["commit_status"], "committed")
+
     def test_r09_lock_busy_cross_process_and_query_budget(self):
         with tempfile.TemporaryDirectory() as tmp:
             s = ShadowMarkdownStore(tmp, synthetic=True, lock_timeout_s=0.1)
