@@ -33,6 +33,8 @@
 | stage-0.1-v15 | ec7d66021284fa2746d388fb2adb50fe072d9fae | 325 | I1 | NOT_RUN/BLOCK | 台账滞后检测 MAX_LAG=6 |
 | stage-0.1-v16 | 537ee8ddeb4b00bdf8f76b05a5cd1cab44a7a89b | 328 | I1 | NOT_RUN/BLOCK | 外部锚清单与机检约束 |
 | stage-0.1-v17 | 2c69ff0a7d3cc6324111ef05ba979a4c67f72752 | 333 | I1 | NOT_RUN/BLOCK | 组件级复核修复：真负例、fail-closed、复核台账 |
+| stage-0.1-v18 | 9d7933b8fe8265dbcca431ff80d77639876d65a1 | 336 | I1 | NOT_RUN/BLOCK | 同形字折叠与行为级接线断言 |
+| stage-0.1-v19 | e5cbe8ee2cca634c665a0f4cb3127fb0309a4319 | 338 | I1 | NOT_RUN/BLOCK | 复核签名与证明的域分离 |
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
 

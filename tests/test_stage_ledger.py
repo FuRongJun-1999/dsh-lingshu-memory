@@ -95,6 +95,33 @@ class LedgerBranchTests(unittest.TestCase):
             rows[7] = row('stage-0.1-v7', '{:040x}'.format(8), tests=107, note=note)
             self.assertIn('overclaim:stage-0.1-v7', check(document(*rows)), note)
 
+    def test_missing_freeze_doc_is_flagged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / 'docs').mkdir()
+            (root / 'scripts').mkdir()
+            (root / 'scripts' / 'check_all.py').write_text('ledger_check.py' + chr(10), encoding='utf-8')
+            problems = load().check_text(full_document(), root, exists=lambda c: True,
+                                          ancestor=lambda a, b: True, head=HEAD,
+                                          artifact=lambda c: True, lag=lambda c: 0, checker=lambda c: True)
+            self.assertIn('missing_freeze_doc', problems)
+
+    def test_freeze_doc_requires_its_sections(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / 'docs').mkdir()
+            (root / 'scripts').mkdir()
+            (root / 'scripts' / 'check_all.py').write_text('ledger_check.py' + chr(10), encoding='utf-8')
+            (root / 'docs' / 'STAGE_FREEZE.md').write_text('# 冻结' + chr(10) + '## 已证明' + chr(10), encoding='utf-8')
+            problems = load().check_text(full_document(), root, exists=lambda c: True,
+                                          ancestor=lambda a, b: True, head=HEAD,
+                                          artifact=lambda c: True, lag=lambda c: 0, checker=lambda c: True)
+            self.assertIn('freeze_section_missing:未证明', problems)
+            self.assertIn('freeze_without_anchor_reference', problems)
+
+    def test_real_freeze_doc_passes(self):
+        module = load()
+        self.assertEqual(module.check_text(module.LEDGER.read_text(encoding='utf-8'), module.ROOT), [])
     def test_missing_anchor_doc_is_flagged(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
@@ -128,11 +155,11 @@ class LedgerBranchTests(unittest.TestCase):
         codes = check(text)
         self.assertTrue(any(code.startswith('ledger_row_malformed') for code in codes), codes)
 
-    def test_negation_window_does_not_exempt_the_claim(self):
+    def test_trailing_negation_does_not_exempt_the_claim(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
             (root / 'docs').mkdir()
-            line = '这不是没问题：本版本 production ready，可以放心上线。'
+            line = '本版本 production ready，这不是结论。'
             (root / 'docs' / 'TRICK.md').write_text(line + chr(10), encoding='utf-8')
             self.assertTrue(any(code.startswith('doc_overclaim') for code in load().scan_docs(root)))
 

@@ -112,8 +112,12 @@ def scan_docs(root):
             hit = [word for word in chain(FROZEN_FORBIDDEN, DROPPED_FORBIDDEN) if word in squashed]
             if not hit:
                 continue
-            window = squash(line[max(0, len(line) // 2 - 6):])
-            if any(word in window for word in NEGATION):
+            exempt = False
+            for word in hit:
+                position = squashed.index(word) if word in squashed else -1
+                if position > 0 and any(neg in squashed[:position] for neg in NEGATION):
+                    exempt = True
+            if exempt:
                 continue
             problems.append('doc_overclaim:' + path.name + ':' + str(number))
     return problems
@@ -228,6 +232,18 @@ def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None,
                 problems.append('review_row_verdict:' + cells[0])
         if '共因' not in log_text:
             problems.append('review_log_missing_common_cause')
+    freeze_path = root / 'docs' / 'STAGE_FREEZE.md'
+    if not freeze_path.is_file():
+        problems.append('missing_freeze_doc')
+    else:
+        freeze_text = freeze_path.read_text(encoding='utf-8')
+        for heading in ('## 已证明', '## 未证明', '## 禁止的结论'):
+            if heading not in freeze_text:
+                problems.append('freeze_section_missing:' + heading.strip('# '))
+        if 'EXTERNAL_ANCHORS.md' not in freeze_text:
+            problems.append('freeze_without_anchor_reference')
+        if 'I1' not in freeze_text:
+            problems.append('freeze_without_ceiling')
     problems.extend(scan_docs(root))
     return problems
 
