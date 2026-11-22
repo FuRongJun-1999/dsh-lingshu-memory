@@ -21,11 +21,18 @@ FORBIDDEN = ('production pass', 'production approved', 'production-approved', 'p
              'production-ready', 'ga-ready', 'general availability', 'prod-ready', 'release-ready',
              '生产通过', '生产就绪', '生产可用', '可投产', '投产就绪', '可上线', '已上线',
              '可发布', '已独立验证', '已由第三方验证')
+CONFUSABLES = str.maketrans({
+    chr(0x0430): 'a', chr(0x0435): 'e', chr(0x043e): 'o', chr(0x0440): 'p',
+    chr(0x0441): 'c', chr(0x0443): 'y', chr(0x0445): 'x', chr(0x0456): 'i',
+    chr(0x0455): 's', chr(0x04cf): 'l', chr(0x0501): 'd', chr(0x03bd): 'v',
+    chr(0x03bf): 'o', chr(0x03b1): 'a', chr(0x03c1): 'p', chr(0x03c7): 'x',
+})
 DROP = dict.fromkeys(map(ord, '\u200b\u200c\u200d\u2060\ufeff'), None)
 
 
 def squash(text):
     stripped = unicodedata.normalize('NFKC', text).translate(DROP).casefold()
+    stripped = stripped.translate(CONFUSABLES)
     return re.sub(r'[^0-9a-z\u3400-\u9fff]+', '', stripped)
 
 

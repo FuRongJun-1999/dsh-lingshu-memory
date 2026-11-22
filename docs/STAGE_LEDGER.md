@@ -32,6 +32,7 @@
 | stage-0.1-v14 | e4dc23ee7e845387ad9864707935f87ac5294d6c | 323 | I1 | NOT_RUN/BLOCK | 全文档越界声明扫描与撤词检测 |
 | stage-0.1-v15 | ec7d66021284fa2746d388fb2adb50fe072d9fae | 325 | I1 | NOT_RUN/BLOCK | 台账滞后检测 MAX_LAG=6 |
 | stage-0.1-v16 | 537ee8ddeb4b00bdf8f76b05a5cd1cab44a7a89b | 328 | I1 | NOT_RUN/BLOCK | 外部锚清单与机检约束 |
+| stage-0.1-v17 | 2c69ff0a7d3cc6324111ef05ba979a4c67f72752 | 333 | I1 | NOT_RUN/BLOCK | 组件级复核修复：真负例、fail-closed、复核台账 |
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
 

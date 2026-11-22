@@ -1,6 +1,8 @@
 """The stage ledger is machine-checked, and every failure branch is covered."""
 import importlib.util
 import pathlib
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -15,6 +17,12 @@ def load():
     spec.loader.exec_module(module)
     return module
 
+
+def module_commands():
+    spec = importlib.util.spec_from_file_location('_check_all', ROOT / 'scripts' / 'check_all.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.COMMANDS
 
 def row(stage='stage-0.9-v1', commit=HEAD, tests=10, grade='I1', gates='NOT_RUN/BLOCK', note='ok'):
     return '| ' + stage + ' | ' + commit + ' | ' + str(tests) + ' | ' + grade + ' | ' + gates + ' | ' + note + ' |'
@@ -138,6 +146,18 @@ class LedgerBranchTests(unittest.TestCase):
         spec.loader.exec_module(module)
         flat = [' '.join(entry) for entry in module.COMMANDS]
         self.assertTrue(any('ledger_check.py' in entry for entry in flat), flat)
+    def test_homoglyph_claim_is_still_caught(self):
+        self.assertIn('productionready', load().squash('pr' + chr(0x043e) + 'duction-ready'))
+
+    def test_wiring_is_behavioural_not_substring(self):
+        result = subprocess.run([sys.executable, '-B', 'scripts/ledger_check.py'], cwd=ROOT,
+                                capture_output=True, text=True, encoding='utf-8', errors='replace')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn('STAGE LEDGER: PASS', result.stdout)
+
+    def test_check_all_commands_execute_the_ledger(self):
+        flat = [' '.join(entry) for entry in module_commands()]
+        self.assertTrue(any(entry.endswith('scripts/ledger_check.py') for entry in flat), flat)
     def test_stale_ledger_is_flagged(self):
         codes = check(full_document(), lag=99)
         self.assertTrue(any(code.startswith('ledger_stale') for code in codes), codes)
