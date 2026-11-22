@@ -38,19 +38,30 @@ class Ed25519SmallOrderTests(unittest.TestCase):
         forged = base + (1).to_bytes(32, 'little')
         self.assertFalse(ed25519.verify(identity, b'anything', forged))
 
-    def test_small_order_r_is_rejected(self):
-        seed = bytes(range(32))
-        public = ed25519.public_key(seed)
+    def test_small_order_r_is_rejected_by_the_r_check(self):
+        import hashlib
+        public = ed25519._encode_point(ed25519.BASE)
         identity_point = ed25519._encode_point((0, 1))
-        forged = identity_point + (1).to_bytes(32, 'little')
-        self.assertFalse(ed25519.verify(public, b'anything', forged))
+        message = b'anything'
+        challenge = int.from_bytes(hashlib.sha512(identity_point + public + message).digest(), 'little') % ed25519.L
+        forged = identity_point + challenge.to_bytes(32, 'little')
+        self.assertFalse(ed25519.verify(public, message, forged))
 
-    def test_non_canonical_scalar_is_rejected(self):
+    def test_scalar_shifted_by_l_is_rejected(self):
         seed = bytes(range(32))
         public = ed25519.public_key(seed)
         signature = ed25519.sign(seed, b'm')
-        oversized = signature[:32] + ed25519.L.to_bytes(32, 'little')
-        self.assertFalse(ed25519.verify(public, b'm', oversized))
+        s = int.from_bytes(signature[32:], 'little')
+        shifted = signature[:32] + (s + ed25519.L).to_bytes(32, 'little')
+        self.assertFalse(ed25519.verify(public, b'm', shifted))
+
+    def test_wrong_lengths_are_rejected(self):
+        seed = bytes(range(32))
+        public = ed25519.public_key(seed)
+        signature = ed25519.sign(seed, b'm')
+        self.assertFalse(ed25519.verify(public[:31], b'm', signature))
+        self.assertFalse(ed25519.verify(public, b'm', signature[:63]))
+        self.assertFalse(ed25519.verify(b'', b'm', signature))
 
 
 if __name__ == '__main__':

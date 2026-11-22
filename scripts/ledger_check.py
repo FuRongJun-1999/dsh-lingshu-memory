@@ -15,6 +15,7 @@ GRADES = ('I0', 'I1', 'I2', 'I3', 'I4')
 MAX_GRADE = 'I1'
 MIN_ROWS = 12
 MAX_LAG = 6
+CHECKER_STAGE = 10
 GATES = ('NOT_RUN/BLOCK',)
 FORBIDDEN = ('production pass', 'production approved', 'production-approved', 'production ready',
              'production-ready', 'ga-ready', 'general availability', 'prod-ready', 'release-ready',
@@ -43,6 +44,17 @@ def rows(text):
     return found
 
 
+def malformed_rows(text):
+    bad = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith('| stage-'):
+            continue
+        if not ROW.match(stripped):
+            bad.append(stripped[:80])
+    return bad
+
+
 def commit_exists(root, commit):
     result = subprocess.run(['git', 'cat-file', '-e', commit + '^{commit}'], cwd=root,
                             capture_output=True, text=True, encoding='utf-8', errors='replace')
@@ -65,11 +77,11 @@ def commits_behind(root, commit):
     result = subprocess.run(['git', 'rev-list', '--count', commit + '..HEAD'], cwd=root,
                             capture_output=True, text=True, encoding='utf-8', errors='replace')
     if result.returncode != 0:
-        return 0
+        return None
     try:
         return int(result.stdout.strip() or '0')
     except ValueError:
-        return 0
+        return None
 
 
 def head_commit(root):
@@ -90,18 +102,26 @@ def scan_docs(root):
                 problems.append('dropped_token:' + path.name)
         for number, line in enumerate(text.splitlines(), 1):
             squashed = squash(line)
-            if not any(word in squashed for word in chain(FROZEN_FORBIDDEN)):
+            hit = [word for word in chain(FROZEN_FORBIDDEN, DROPPED_FORBIDDEN) if word in squashed]
+            if not hit:
                 continue
-            if any(word in squashed for word in NEGATION):
+            window = squash(line[max(0, len(line) // 2 - 6):])
+            if any(word in window for word in NEGATION):
                 continue
             problems.append('doc_overclaim:' + path.name + ':' + str(number))
     return problems
 
-def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None, lag=None):
+def stage_number(stage):
+    match = re.search(r'-v([0-9]+)$', stage)
+    return int(match.group(1)) if match else 0
+
+
+def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None, lag=None, checker=None):
     exists = exists or (lambda commit: commit_exists(root, commit))
     ancestor = ancestor or (lambda older, newer: is_ancestor(root, older, newer))
     head = head if head is not None else head_commit(root)
     artifact = artifact or (lambda commit: artifact_present(root, commit, 'scripts/stage_gate.py'))
+    checker_artifact = checker or (lambda commit: artifact_present(root, commit, 'scripts/ledger_check.py'))
     lag = lag or (lambda commit: commits_behind(root, commit))
     problems = []
     entries = rows(text)
@@ -124,14 +144,17 @@ def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None,
             problems.append('bad_grade:' + entry['stage'])
         elif GRADES.index(entry['independence']) > GRADES.index(MAX_GRADE):
             problems.append('grade_ceiling:' + entry['stage'])
-        for word in FROZEN_FORBIDDEN:
-            if word and word in squash(entry['note']):
+        note_squashed = squash(entry['note'])
+        for word in chain(FROZEN_FORBIDDEN, DROPPED_FORBIDDEN):
+            if word and word in note_squashed:
                 problems.append('overclaim:' + entry['stage'])
                 break
         if not exists(entry['commit']):
             problems.append('unknown_commit:' + entry['stage'])
         elif not artifact(entry['commit']):
             problems.append('missing_artifact:' + entry['stage'])
+        elif stage_number(entry['stage']) >= CHECKER_STAGE and not checker_artifact(entry['commit']):
+            problems.append('missing_checker:' + entry['stage'])
         if entry['tests'] <= 0:
             problems.append('tests_not_positive:' + entry['stage'])
     for previous, current in zip(entries, entries[1:]):
@@ -139,12 +162,16 @@ def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None,
             problems.append('row_order:' + current['stage'])
         if current['tests'] < previous['tests']:
             problems.append('tests_not_monotonic:' + current['stage'])
-    if entries and head and ancestor(entries[-1]['commit'], head) is False:
+    if entries and head and ancestor(entries[-1]['commit'], head) is not True:
         problems.append('row_not_in_history:' + entries[-1]['stage'])
     if entries:
         behind = lag(entries[-1]['commit'])
-        if behind > MAX_LAG:
+        if behind is None:
+            problems.append('git_unavailable')
+        elif behind > MAX_LAG:
             problems.append('ledger_stale:{} commits behind'.format(behind))
+    for bad in malformed_rows(text):
+        problems.append('ledger_row_malformed:' + bad)
     for required in ('## 当前边界声明', '## 已知共因风险'):
         if required not in text:
             problems.append('missing_section:' + required)
@@ -159,8 +186,8 @@ def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None,
     for phrase in ('I2', 'I3', 'I4'):
         if phrase not in boundary:
             problems.append('boundary_missing:' + phrase)
-    chain = root / 'scripts' / 'check_all.py'
-    chain_text = chain.read_text(encoding='utf-8') if chain.is_file() else ''
+    chain_file = root / 'scripts' / 'check_all.py'
+    chain_text = chain_file.read_text(encoding='utf-8') if chain_file.is_file() else ''
     if 'ledger_check.py' not in chain_text:
         problems.append('ledger_not_wired')
     anchors = root / 'docs' / 'EXTERNAL_ANCHORS.md'
@@ -175,6 +202,25 @@ def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None,
             problems.append('anchor_missing_forbidden')
         if '当前状态' not in anchor_text:
             problems.append('anchor_missing_status')
+    log_path = root / 'docs' / 'REVIEW_LOG.md'
+    if not log_path.is_file():
+        problems.append('missing_review_log')
+    else:
+        log_text = log_path.read_text(encoding='utf-8')
+        log_rows = [line for line in log_text.splitlines() if re.match(r'^\|\s*\d+\s*\|', line.strip())]
+        if len(log_rows) < 5:
+            problems.append('review_log_too_short')
+        for line in log_rows:
+            cells = [cell.strip() for cell in line.strip().strip('|').split('|')]
+            if len(cells) < 5:
+                problems.append('review_row_malformed')
+                continue
+            if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', cells[1]):
+                problems.append('review_row_date:' + cells[0])
+            if not cells[3]:
+                problems.append('review_row_verdict:' + cells[0])
+        if '共因' not in log_text:
+            problems.append('review_log_missing_common_cause')
     problems.extend(scan_docs(root))
     return problems
 

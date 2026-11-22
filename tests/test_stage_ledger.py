@@ -29,7 +29,7 @@ def document(*lines, boundary=None, risks='共因风险说明'):
     return chr(10).join(parts)
 
 
-def check(text, exists=True, ancestor=True, head=HEAD, wired=True, artifact=True, lag=0):
+def check(text, exists=True, ancestor=True, head=HEAD, wired=True, artifact=True, lag=0, checker=True):
     module = load()
     root = module.ROOT
     chain = module.ROOT / 'scripts' / 'check_all.py'
@@ -42,7 +42,8 @@ def check(text, exists=True, ancestor=True, head=HEAD, wired=True, artifact=True
                                 ancestor=lambda older, newer: ancestor,
                                 head=head,
                                 artifact=lambda commit: artifact,
-                                lag=lambda commit: lag)
+                                lag=lambda commit: lag,
+                                checker=lambda commit: checker)
     finally:
         module.Path.read_text = real_read
 
@@ -95,7 +96,7 @@ class LedgerBranchTests(unittest.TestCase):
             text = full_document()
             problems = load().check_text(text, root, exists=lambda c: True,
                                           ancestor=lambda a, b: True, head=HEAD,
-                                          artifact=lambda c: True, lag=lambda c: 0)
+                                          artifact=lambda c: True, lag=lambda c: 0, checker=lambda c: True)
             self.assertIn('missing_anchor_doc', problems)
 
     def test_anchor_doc_sections_are_required(self):
@@ -114,6 +115,29 @@ class LedgerBranchTests(unittest.TestCase):
     def test_real_anchor_doc_passes(self):
         module = load()
         self.assertEqual(module.check_text(module.LEDGER.read_text(encoding='utf-8'), module.ROOT), [])
+    def test_malformed_table_row_is_flagged(self):
+        text = full_document() + chr(10) + '| stage-0.1-v99 | not-a-commit | 1 |' + chr(10)
+        codes = check(text)
+        self.assertTrue(any(code.startswith('ledger_row_malformed') for code in codes), codes)
+
+    def test_negation_window_does_not_exempt_the_claim(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / 'docs').mkdir()
+            line = '这不是没问题：本版本 production ready，可以放心上线。'
+            (root / 'docs' / 'TRICK.md').write_text(line + chr(10), encoding='utf-8')
+            self.assertTrue(any(code.startswith('doc_overclaim') for code in load().scan_docs(root)))
+
+    def test_checker_self_artifact_is_required(self):
+        self.assertTrue(load().artifact_present(load().ROOT, 'HEAD', 'scripts/ledger_check.py'))
+
+    def test_wiring_uses_module_level_commands(self):
+        import importlib
+        spec = importlib.util.spec_from_file_location('_check_all', ROOT / 'scripts' / 'check_all.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        flat = [' '.join(entry) for entry in module.COMMANDS]
+        self.assertTrue(any('ledger_check.py' in entry for entry in flat), flat)
     def test_stale_ledger_is_flagged(self):
         codes = check(full_document(), lag=99)
         self.assertTrue(any(code.startswith('ledger_stale') for code in codes), codes)
@@ -167,7 +191,7 @@ class LedgerBranchTests(unittest.TestCase):
         module = load()
         problems = module.check_text(document(*rows), module.ROOT,
                                      exists=lambda commit: True, ancestor=lambda older, newer: newer != HEAD,
-                                     head=HEAD, artifact=lambda commit: True)
+                                     head=HEAD, artifact=lambda commit: True, checker=lambda commit: True)
         self.assertIn('row_not_in_history:stage-0.1-v9', problems)
 
     def test_missing_section_is_flagged(self):

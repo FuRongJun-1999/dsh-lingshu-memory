@@ -31,6 +31,7 @@
 | stage-0.1-v13 | c7ce8a47c8afd23c73a0d29ae2b1d4f4b3179c18 | 319 | I1 | NOT_RUN/BLOCK | 台账行与提交产物绑定、测试数单调 |
 | stage-0.1-v14 | e4dc23ee7e845387ad9864707935f87ac5294d6c | 323 | I1 | NOT_RUN/BLOCK | 全文档越界声明扫描与撤词检测 |
 | stage-0.1-v15 | ec7d66021284fa2746d388fb2adb50fe072d9fae | 325 | I1 | NOT_RUN/BLOCK | 台账滞后检测 MAX_LAG=6 |
+| stage-0.1-v16 | 537ee8ddeb4b00bdf8f76b05a5cd1cab44a7a89b | 328 | I1 | NOT_RUN/BLOCK | 外部锚清单与机检约束 |
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
 
