@@ -1,25 +1,29 @@
-"""Validate a stage evidence manifest (self-verification protocol, schema v2).
+"""Validate a stage evidence manifest (self-verification protocol, schema v3).
 
-Read-only: never writes acceptance status, release gates or production records."""
+Read-only. Evidence is anchored to committed bytes; the validator never writes
+acceptance status, release gates or production records."""
 import argparse
 import hashlib
 import json
 import pathlib
 import re
 import subprocess
+import sys
 
 LEVELS = {'I0': 0, 'I1': 1, 'I2': 2, 'I3': 3, 'I4': 4}
 SCOPES = ('isolated', 'production')
 ROLES = ('independent-verifier', 'stage-gate-reviewer')
-DENY = ('status.json', 'release_gate', 'release-gate', 'acceptance')
-PRODUCTION_WORDS = ('production pass', 'production-pass', 'production ready', 'ready for production', '生产通过', '生产就绪', '生产可用', '可投入生产')
+EVIDENCE_PREFIX = 'evidence/'
+FORBIDDEN_PREFIX = ('scripts/', 'tests/', 'docs/', 'spec/', 'shadow_runtime/', 'framework/', 'sandbox_runtime/')
+PRODUCTION_WORDS = ('production pass', 'production-pass', 'production ready', 'production-ready', 'ready for production', 'ga ', 'general availability', '生产通过', '生产就绪', '生产可用', '可投入生产', '可上线')
 HEX40 = re.compile(r'[0-9a-f]{40}\Z')
 HEX64 = re.compile(r'[0-9a-f]{64}\Z')
-BASE_FIELDS = {'schema', 'stage_id', 'candidate_sha', 'base_sha', 'scope', 'required_min_level', 'required_gate_ids', 'gates', 'claims', 'not_claimed', 'reviewed_by', 'manifest_sha256'}
+FIELDS = {'schema', 'stage_id', 'candidate_sha', 'base_sha', 'scope', 'required_min_level', 'gates', 'claims', 'not_claimed', 'reviewed_by', 'manifest_sha256'}
 GATE_FIELDS = {'id', 'command', 'exit_code', 'raw_log', 'raw_log_sha256', 'independence', 'status'}
 CLAIM_FIELDS = {'id', 'statement', 'level', 'scope', 'gate_ids'}
 REVIEW_FIELDS = {'implementer_id', 'reviewer_id', 'role', 'independent', 'session', 'window_start', 'window_end'}
-PRODUCTION_FIELDS = {'acceptance_status_sha256', 'release_gate_state', 'release_gate_sha256'}
+HEADER_FIELDS = {'gate', 'command', 'exit_code'}
+PRODUCTION_FIELDS = {'acceptance_status_path', 'acceptance_status_sha256', 'release_gate_path', 'release_gate_sha256'}
 
 
 def canonical(body):
@@ -34,21 +38,76 @@ def level_of(value):
     return LEVELS.get(value) if type(value) is str else None
 
 
-def stream_sha(path):
-    handle_hash = hashlib.sha256()
-    with path.open('rb') as handle:
-        for chunk in iter(lambda: handle.read(65536), b''):
-            handle_hash.update(chunk)
-    return handle_hash.hexdigest()
+def no_duplicates(pairs):
+    seen = {}
+    for key, value in pairs:
+        if key in seen:
+            raise ValueError('duplicate key: ' + str(key))
+        seen[key] = value
+    return seen
 
 
-def check_gates(manifest, root, out):
+def git(root, *args, text=True):
+    return subprocess.run(['git', *args], cwd=root, capture_output=True, text=text, encoding='utf-8' if text else None, errors=None if text else None, shell=False)
+
+
+def committed_bytes(root, candidate, raw):
+    result = subprocess.run(['git', 'cat-file', 'blob', candidate + ':' + raw], cwd=root, capture_output=True, shell=False)
+    return result.stdout if result.returncode == 0 else None
+
+
+def header_of(payload):
+    first = payload.split(b'\n', 1)[0].decode('utf-8', 'replace')
+    try:
+        parsed = json.loads(first)
+    except ValueError:
+        return None
+    if type(parsed) is not dict or set(parsed) != HEADER_FIELDS:
+        return None
+    return parsed
+
+
+def check_evidence(gate, manifest, root, out, seen):
+    gid = gate['id']
+    raw = gate['raw_log']
+    if type(raw) is not str or not raw or '\\' in raw or ':' in raw or '..' in pathlib.PurePosixPath(raw).parts:
+        out.append(('gate_raw_path', gid))
+        return
+    if not raw.startswith(EVIDENCE_PREFIX) or raw.endswith('.json') or raw.startswith(FORBIDDEN_PREFIX):
+        out.append(('gate_raw_path', gid))
+        return
+    if raw in seen:
+        out.append(('gate_raw_reused', gid))
+        return
+    seen.add(raw)
+    target = root / raw
+    if not target.is_file() or target.is_symlink():
+        out.append(('gate_raw_missing', gid))
+        return
+    payload = committed_bytes(root, manifest['candidate_sha'], raw)
+    if payload is None:
+        out.append(('gate_raw_untracked', gid))
+        return
+    stored = gate['raw_log_sha256']
+    if type(stored) is not str or HEX64.match(stored) is None or hashlib.sha256(payload).hexdigest() != stored:
+        out.append(('gate_raw_sha', gid))
+        return
+    header = header_of(payload)
+    if header is None:
+        out.append(('evidence_header', gid))
+        return
+    if header['gate'] != gid or header['command'] != gate['command'] or header['exit_code'] != gate['exit_code']:
+        out.append(('evidence_mismatch', gid))
+
+
+def check_gates(manifest, root, out, requirements):
     gates = manifest['gates']
     if type(gates) is not list or not gates:
         out.append(('gates', 'gates must be a non-empty list'))
         return {}
     min_level = level_of(manifest['required_min_level'])
     levels = {}
+    seen = set()
     for gate in gates:
         if type(gate) is not dict or set(gate) != GATE_FIELDS:
             out.append(('gate_schema', 'gate field set mismatch'))
@@ -72,39 +131,18 @@ def check_gates(manifest, root, out):
             out.append(('gate_exit', gid))
         if type(gate['command']) is not str or not gate['command'].strip():
             out.append(('gate_command', gid))
-        raw = gate['raw_log']
-        if type(raw) is not str or not raw or '\\' in raw or ':' in raw:
-            out.append(('gate_raw_path', gid))
-            continue
-        target = root / raw
-        try:
-            resolved = target.resolve(strict=False)
-        except OSError:
-            out.append(('gate_raw_path', gid))
-            continue
-        if not resolved.is_relative_to(root.resolve()):
-            out.append(('gate_raw_path', gid))
-            continue
-        lowered = raw.lower()
-        if any(word in lowered for word in DENY):
-            out.append(('gate_readonly_status', gid))
-            continue
-        if target.is_symlink() or not resolved.is_file():
-            out.append(('gate_raw_missing', gid))
-            continue
-        stored = gate['raw_log_sha256']
-        if type(stored) is not str or HEX64.match(stored) is None or stream_sha(resolved) != stored:
-            out.append(('gate_raw_sha', gid))
-    required = manifest['required_gate_ids']
+        check_evidence(gate, manifest, root, out, seen)
+    required = requirements.get('required_gate_ids')
     if type(required) is not list or not required or not all(type(x) is str and x for x in required):
-        out.append(('gate_required_schema', 'required_gate_ids must be non-empty strings'))
+        out.append(('requirements_error', 'required_gate_ids must be non-empty strings'))
     else:
-        if len(set(required)) != len(required):
-            out.append(('gate_required_schema', 'duplicate required gate ids'))
         for gid in sorted(set(required) - set(levels)):
             out.append(('gate_missing', gid))
         for gid in sorted(set(levels) - set(required)):
             out.append(('gate_extra', gid))
+    required_level = requirements.get('min_level')
+    if required_level is not None and required_level != manifest['required_min_level']:
+        out.append(('requirements_mismatch', 'min_level'))
     return levels
 
 
@@ -114,7 +152,6 @@ def check_claims(manifest, out, levels):
         out.append(('claims', 'claims must be non-empty'))
         return
     min_level = level_of(manifest['required_min_level'])
-    scope = manifest['scope']
     seen = set()
     for claim in claims:
         if type(claim) is not dict or set(claim) != CLAIM_FIELDS:
@@ -127,6 +164,15 @@ def check_claims(manifest, out, levels):
         if cid in seen:
             out.append(('claim_duplicate', cid))
         seen.add(cid)
+        statement = claim['statement']
+        if type(statement) is not str or not statement.strip():
+            out.append(('claim_statement', cid))
+        else:
+            lowered = statement.lower()
+            for word in PRODUCTION_WORDS:
+                if word in lowered:
+                    out.append(('claim_production_wording', cid))
+                    break
         lvl = level_of(claim['level'])
         if lvl is None:
             out.append(('claim_level', cid))
@@ -135,7 +181,7 @@ def check_claims(manifest, out, levels):
             out.append(('claim_level_too_low', cid))
         if claim['scope'] not in SCOPES:
             out.append(('claim_scope', cid))
-        if claim['scope'] == 'production' and scope == 'isolated':
+        if claim['scope'] == 'production' and manifest['scope'] != 'production':
             out.append(('claim_scope_escalation', cid))
         ids = claim['gate_ids']
         if type(ids) is not list or not ids:
@@ -146,13 +192,6 @@ def check_claims(manifest, out, levels):
                     out.append(('claim_unknown_gate', cid + ':' + str(gid)))
                 elif levels[gid] < lvl:
                     out.append(('claim_level_exceeds_gate', cid + ':' + str(gid)))
-        if scope == 'isolated':
-            text = claim['statement'] if type(claim['statement']) is str else ''
-            lowered = text.lower()
-            for word in PRODUCTION_WORDS:
-                if word in lowered:
-                    out.append(('claim_production_wording', cid))
-                    break
 
 
 def check_review(manifest, out):
@@ -178,32 +217,52 @@ def check_review(manifest, out):
         out.append(('review_window', 'window_start must precede window_end'))
 
 
-def check_production(manifest, out):
+def read_json(path):
+    return json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=no_duplicates)
+
+
+def check_production(manifest, root, out):
     if manifest['scope'] != 'production':
         return
     evidence = manifest.get('production_evidence')
     if type(evidence) is not dict or set(evidence) != PRODUCTION_FIELDS:
         out.append(('production_unbound', 'production scope requires production_evidence'))
         return
-    acceptance = evidence['acceptance_status_sha256']
-    release = evidence['release_gate_sha256']
-    if type(acceptance) is not str or HEX64.match(acceptance) is None or type(release) is not str or HEX64.match(release) is None:
-        out.append(('production_unbound', 'production evidence digests invalid'))
-    if evidence['release_gate_state'] != 'PASS':
+    for key_path, key_sha in (('acceptance_status_path', 'acceptance_status_sha256'), ('release_gate_path', 'release_gate_sha256')):
+        raw = evidence[key_path]
+        if type(raw) is not str or not raw or raw.startswith('/') or '..' in pathlib.PurePosixPath(raw).parts:
+            out.append(('production_unbound', key_path))
+            return
+        path = root / raw
+        if not path.is_file():
+            out.append(('production_unbound', 'missing ' + raw))
+            return
+        if hashlib.sha256(path.read_bytes()).hexdigest() != evidence[key_sha]:
+            out.append(('production_unbound', 'digest mismatch ' + raw))
+            return
+    try:
+        gate_state = read_json(root / evidence['release_gate_path'])
+        acceptance = read_json(root / evidence['acceptance_status_path'])
+    except (OSError, ValueError) as error:
+        out.append(('production_unbound', 'unreadable evidence: ' + str(error)))
+        return
+    if type(gate_state) is not dict or gate_state.get('production', {}).get('state') != 'PASS':
         out.append(('production_unbound', 'release gate is not PASS'))
+    if type(acceptance) is not dict or acceptance.get('production') != 'PASS':
+        out.append(('production_unbound', 'acceptance status is not PASS'))
 
 
-def validate(manifest, root):
+def validate(manifest, root, requirements):
     if type(manifest) is not dict:
         return [('schema', 'manifest must be an object')]
-    expected = BASE_FIELDS | ({'production_evidence'} if 'production_evidence' in manifest else set())
+    expected = FIELDS | ({'production_evidence'} if 'production_evidence' in manifest else set())
     if set(manifest) != expected:
         return [('schema', 'field set mismatch ' + repr(sorted(set(manifest) ^ expected)))]
     out = []
     body = {key: value for key, value in manifest.items() if key != 'manifest_sha256'}
     if type(manifest['manifest_sha256']) is not str or digest(body) != manifest['manifest_sha256']:
         out.append(('manifest_digest', 'manifest digest mismatch'))
-    if manifest['schema'] != 'stage-manifest/2':
+    if manifest['schema'] != 'stage-manifest/3':
         out.append(('schema_version', repr(manifest['schema'])))
     if type(manifest['stage_id']) is not str or not manifest['stage_id'].strip():
         out.append(('stage_id', 'missing stage id'))
@@ -217,10 +276,14 @@ def validate(manifest, root):
         out.append(('scope', repr(manifest['scope'])))
     if level_of(manifest['required_min_level']) is None:
         out.append(('required_min_level', repr(manifest['required_min_level'])))
-    levels = check_gates(manifest, root, out)
+    if git(root, 'cat-file', '-e', manifest['candidate_sha'] + '^{commit}').returncode != 0:
+        out.append(('git_candidate_missing', manifest['candidate_sha']))
+    elif git(root, 'merge-base', '--is-ancestor', manifest['base_sha'], manifest['candidate_sha']).returncode != 0:
+        out.append(('git_base_not_ancestor', manifest['base_sha']))
+    levels = check_gates(manifest, root, out, requirements)
     check_claims(manifest, out, levels)
     check_review(manifest, out)
-    check_production(manifest, out)
+    check_production(manifest, root, out)
     not_claimed = manifest['not_claimed']
     if type(not_claimed) is not list or not all(type(x) is str and x for x in not_claimed):
         out.append(('not_claimed_schema', 'not_claimed must be a list of strings'))
@@ -237,82 +300,26 @@ def build_manifest(body):
     return manifest
 
 
-def no_duplicates(pairs):
-    seen = {}
-    for key, value in pairs:
-        if key in seen:
-            raise ValueError('duplicate key: ' + str(key))
-        seen[key] = value
-    return seen
-
-
-
-
-def git_check(manifest, root, out):
-    def git(argv):
-        return subprocess.run(['git', *argv], cwd=root, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=False)
-    candidate = manifest['candidate_sha']
-    base = manifest['base_sha']
-    if git(['cat-file', '-e', candidate + '^{commit}']).returncode != 0:
-        out.append(('git_candidate_missing', candidate))
-        return
-    if git(['merge-base', '--is-ancestor', base, candidate]).returncode != 0:
-        out.append(('git_base_not_ancestor', base))
-    for gate in manifest['gates']:
-        if type(gate) is not dict:
-            continue
-        raw = gate.get('raw_log')
-        if type(raw) is not str or not raw:
-            continue
-        committed = git(['rev-parse', candidate + ':' + raw])
-        working = git(['hash-object', raw])
-        committed_id = committed.stdout.strip() if committed.returncode == 0 else ''
-        working_id = working.stdout.strip() if working.returncode == 0 else ''
-        if not committed_id or not working_id or committed_id != working_id:
-            out.append(('gate_raw_untracked', str(gate.get('id'))))
-
-
-def requirements_check(manifest, path, out):
-    try:
-        data = json.loads(pathlib.Path(path).read_text(encoding='utf-8'))
-    except (OSError, ValueError) as error:
-        out.append(('requirements_error', str(error)))
-        return
-    if type(data) is not list or not all(type(x) is str and x for x in data):
-        out.append(('requirements_error', 'expected list of gate ids'))
-        return
-    declared = manifest['required_gate_ids'] if type(manifest['required_gate_ids']) is list else []
-    for gid in sorted(set(data) - set(declared)):
-        out.append(('gate_missing', gid))
-    for gid in sorted(set(declared) - set(data)):
-        out.append(('gate_extra', gid))
-
-
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest', required=True)
-    parser.add_argument('--root', default=None)
-    parser.add_argument('--requirements', default=None)
-    parser.add_argument('--git', action='store_true')
     args = parser.parse_args(argv)
     path = pathlib.Path(args.manifest)
-    root = pathlib.Path(args.root) if args.root else path.parent
+    root = path.parent
     try:
-        text = path.read_text(encoding='utf-8')
-        manifest = json.loads(text, object_pairs_hook=no_duplicates)
-        if path.resolve().is_relative_to(root.resolve()) is False:
-            raise ValueError('manifest outside root')
-        failures = validate(manifest, root)
-        if args.requirements:
-            requirements_check(manifest, args.requirements, failures)
-        if args.git:
-            git_check(manifest, root, failures)
+        manifest = read_json(path)
+        requirements = read_json(root / 'requirements.json')
     except (OSError, ValueError) as error:
         print('FAIL validator_error:', error)
         return 2
+    if type(requirements) is not dict:
+        print('FAIL requirements_error: requirements.json must be an object')
+        return 2
+    failures = validate(manifest, root, requirements)
     for code, detail in failures:
         print('FAIL', code + ':', detail)
     print('STAGE MANIFEST:', 'PASS' if not failures else 'FAIL')
+    print('CHECKS RUN: schema,digest,commits,gates,evidence,requirements,claims,review,production,not_claimed')
     return 0 if not failures else 1
 
 

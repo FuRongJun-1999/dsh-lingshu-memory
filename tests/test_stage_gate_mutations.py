@@ -1,9 +1,9 @@
-"""Mutation killers for the stage manifest gate (schema v2)."""
+"""Mutation killers for the stage manifest gate (schema v3)."""
 import hashlib
 import importlib.util
 import json
-import subprocess
 import pathlib
+import subprocess
 import tempfile
 import unittest
 
@@ -12,103 +12,107 @@ GATE = pathlib.Path(__file__).resolve().parents[1] / 'scripts/stage_gate.py'
 MUTANTS = [
     ('skip_status', "if gate['status'] != 'PASS':", 'if False:'),
     ('skip_exit', "if type(gate['exit_code']) is not int or gate['exit_code'] != 0:", 'if False:'),
-    ('skip_raw_present', 'if target.is_symlink() or not resolved.is_file():', 'if False:'),
-    ('skip_raw_sha', 'or stream_sha(resolved) != stored:', 'or False:'),
+    ('skip_blob_sha', "if type(stored) is not str or HEX64.match(stored) is None or hashlib.sha256(payload).hexdigest() != stored:", 'if False:'),
+    ('skip_header', 'if header is None:', 'if False:'),
+    ('skip_header_match', "if header['gate'] != gid or header['command'] != gate['command'] or header['exit_code'] != gate['exit_code']:", 'if False:'),
+    ('skip_evidence_prefix', "if not raw.startswith(EVIDENCE_PREFIX) or raw.endswith('.json') or raw.startswith(FORBIDDEN_PREFIX):", 'if False:'),
+    ('skip_reuse', 'if raw in seen:', 'if False:'),
+    ('skip_gate_missing', 'for gid in sorted(set(required) - set(levels)):', 'for gid in []:'),
     ('skip_digest', "if type(manifest['manifest_sha256']) is not str or digest(body) != manifest['manifest_sha256']:", 'if False:'),
     ('skip_self_signed', 'elif implementer == verifier:', 'elif False:'),
-    ('skip_scope_escalation', "if claim['scope'] == 'production' and scope == 'isolated':", 'if False:'),
     ('skip_wording', 'if word in lowered:', 'if False:'),
-    ('skip_gate_missing', 'for gid in sorted(set(required) - set(levels)):', 'for gid in []:'),
-    ('skip_production_binding', "if evidence['release_gate_state'] != 'PASS':", 'if False:'),
-    ('skip_git_ancestor', "if git(['merge-base', '--is-ancestor', base, candidate]).returncode != 0:", 'if False:'),
-    ('skip_requirements', 'for gid in sorted(set(data) - set(declared)):', 'for gid in []:'),
-    ('skip_blob_match', 'if not committed_id or not working_id or committed_id != working_id:', 'if False:'),
+    ('skip_production_files', "if hashlib.sha256(path.read_bytes()).hexdigest() != evidence[key_sha]:", 'if False:'),
 ]
 
 KINDS = {
-    'skip_status': 'status',
-    'skip_exit': 'exit',
-    'skip_raw_present': 'missing',
-    'skip_raw_sha': 'tamper',
-    'skip_digest': 'digest',
-    'skip_self_signed': 'self',
-    'skip_scope_escalation': 'scope',
-    'skip_wording': 'wording',
-    'skip_gate_missing': 'required',
-    'skip_production_binding': 'production',
-    'skip_git_ancestor': 'ancestor',
-    'skip_requirements': 'requirements',
-    'skip_blob_match': 'blob',
+    'skip_status': 'status', 'skip_exit': 'exit', 'skip_blob_sha': 'blob', 'skip_header': 'header',
+    'skip_header_match': 'header', 'skip_evidence_prefix': 'prefix', 'skip_reuse': 'reuse',
+    'skip_gate_missing': 'required', 'skip_digest': 'digest', 'skip_self_signed': 'self',
+    'skip_wording': 'wording', 'skip_production_files': 'production',
 }
 
 EXPECTED = {
-    'skip_status': 'gate_not_run',
-    'skip_exit': 'gate_exit',
-    'skip_raw_present': 'gate_raw_missing',
-    'skip_raw_sha': 'gate_raw_sha',
-    'skip_digest': 'manifest_digest',
-    'skip_self_signed': 'review_self_signed',
-    'skip_scope_escalation': 'claim_scope_escalation',
-    'skip_wording': 'claim_production_wording',
-    'skip_gate_missing': 'gate_missing',
-    'skip_production_binding': 'production_unbound',
-    'skip_git_ancestor': 'git_base_not_ancestor',
-    'skip_requirements': 'gate_missing',
-    'skip_blob_match': 'gate_raw_untracked',
+    'skip_status': 'gate_not_run', 'skip_exit': 'gate_exit', 'skip_blob_sha': 'gate_raw_sha',
+    'skip_header': 'evidence_header', 'skip_header_match': 'evidence_mismatch',
+    'skip_evidence_prefix': 'gate_raw_path', 'skip_reuse': 'gate_raw_reused',
+    'skip_gate_missing': 'gate_missing', 'skip_digest': 'manifest_digest',
+    'skip_self_signed': 'review_self_signed', 'skip_wording': 'claim_production_wording',
+    'skip_production_files': 'production_unbound',
 }
 
 
-def apply(kind, module, root):
-    log = root / 'logs/spec.txt'
-    log.parent.mkdir(parents=True, exist_ok=True)
-    log.write_text('ok' + chr(10), encoding='utf-8')
-    body = {
-        'schema': 'stage-manifest/2',
-        'stage_id': 'stage-0.1',
-        'candidate_sha': 'a' * 40,
-        'base_sha': 'b' * 40,
+def git(root, *args):
+    return subprocess.run(['git', *args], cwd=root, capture_output=True, text=True, encoding='utf-8', errors='replace')
+
+
+def build(root, module, kind):
+    root.mkdir(parents=True, exist_ok=True)
+    git(root, 'init', '-q')
+    ev = root / 'evidence/spec.log'
+    ev.parent.mkdir(parents=True, exist_ok=True)
+    header = {'gate': 'spec', 'command': 'cmd', 'exit_code': 0}
+    if kind == 'header':
+        header = {'gate': 'spec', 'command': 'cmd'}
+    if kind == 'header_match':
+        header = {'gate': 'other', 'command': 'cmd', 'exit_code': 0}
+    with ev.open('w', encoding='utf-8', newline='') as handle:
+        handle.write(json.dumps(header, sort_keys=True) + chr(10) + 'body' + chr(10))
+    (root / 'notes.txt').write_text('n1' + chr(10), encoding='utf-8')
+    git(root, 'add', '-A')
+    subprocess.run(['git', '-c', 'user.email=t@e', '-c', 'user.name=t', 'commit', '-q', '-m', 'one'], cwd=root, capture_output=True)
+    base = git(root, 'rev-parse', 'HEAD').stdout.strip()
+    (root / 'notes.txt').write_text('n2' + chr(10), encoding='utf-8')
+    git(root, 'add', '-A')
+    subprocess.run(['git', '-c', 'user.email=t@e', '-c', 'user.name=t', 'commit', '-q', '-m', 'two'], cwd=root, capture_output=True)
+    candidate = git(root, 'rev-parse', 'HEAD').stdout.strip()
+    payload = {
+        'schema': 'stage-manifest/3',
+        'stage_id': 'stage-x',
+        'candidate_sha': candidate,
+        'base_sha': base,
         'scope': 'isolated',
         'required_min_level': 'I2',
-        'required_gate_ids': ['spec'],
-        'gates': [{'id': 'spec', 'command': 'python scripts/check_all.py', 'exit_code': 0,
-                   'raw_log': 'logs/spec.txt',
-                   'raw_log_sha256': hashlib.sha256(log.read_bytes()).hexdigest(),
+        'gates': [{'id': 'spec', 'command': 'cmd', 'exit_code': 0, 'raw_log': 'evidence/spec.log',
+                   'raw_log_sha256': hashlib.sha256(ev.read_bytes()).hexdigest(),
                    'independence': 'I2', 'status': 'PASS'}],
-        'claims': [{'id': 'spec-tools', 'statement': 'specification tools pass', 'level': 'I2',
-                    'scope': 'isolated', 'gate_ids': ['spec']}],
+        'claims': [{'id': 'c', 'statement': 'tools pass', 'level': 'I2', 'scope': 'isolated', 'gate_ids': ['spec']}],
         'not_claimed': ['production', 'm6-migration'],
-        'reviewed_by': {'implementer_id': 'impl', 'reviewer_id': 'ver', 'role': 'independent-verifier',
+        'reviewed_by': {'implementer_id': 'i', 'reviewer_id': 'v', 'role': 'independent-verifier',
                         'independent': True, 'session': 's', 'window_start': '2026-01-01T00:00:00Z',
                         'window_end': '2026-01-01T01:00:00Z'},
     }
     if kind == 'status':
-        body['gates'][0]['status'] = 'NOT_RUN'
+        payload['gates'][0]['status'] = 'NOT_RUN'
     elif kind == 'exit':
-        body['gates'][0]['exit_code'] = 3
-    elif kind == 'missing':
-        log.unlink()
-    elif kind == 'tamper':
-        log.write_text('tampered' + chr(10), encoding='utf-8')
-    elif kind == 'digest':
-        body['required_min_level'] = 'I0'
-    elif kind == 'self':
-        body['reviewed_by']['reviewer_id'] = 'impl'
-    elif kind == 'scope':
-        body['claims'][0]['scope'] = 'production'
-    elif kind == 'wording':
-        body['claims'][0]['statement'] = 'production ready'
+        payload['gates'][0]['exit_code'] = 2
+    elif kind == 'blob':
+        ev.write_text('tampered' + chr(10), encoding='utf-8')
+    elif kind == 'prefix':
+        payload['gates'][0]['raw_log'] = 'notes.txt'
+    elif kind == 'reuse':
+        payload['gates'].append(dict(payload['gates'][0], id='spec2'))
     elif kind == 'required':
-        body['required_gate_ids'] = ['spec', 'absent']
-    elif kind == 'production':
-        body['scope'] = 'production'
-        body['production_evidence'] = {'acceptance_status_sha256': 'c' * 64,
-                                       'release_gate_state': 'BLOCK',
-                                       'release_gate_sha256': 'd' * 64}
-    elif kind in ('ancestor', 'requirements', 'blob'):
         pass
-    else:
-        raise AssertionError('unknown kind')
-    return module.build_manifest(body)
+    elif kind == 'digest':
+        payload['required_min_level'] = 'I1'
+    elif kind == 'self':
+        payload['reviewed_by']['reviewer_id'] = 'i'
+    elif kind == 'wording':
+        payload['claims'][0]['statement'] = 'production ready'
+    elif kind == 'production':
+        payload['scope'] = 'production'
+        gate_file = root / 'gate.json'
+        acc_file = root / 'acc.json'
+        with gate_file.open('w', encoding='utf-8', newline='') as handle:
+            handle.write(json.dumps({'production': {'state': 'PASS'}}))
+        with acc_file.open('w', encoding='utf-8', newline='') as handle:
+            handle.write(json.dumps({'production': 'PASS'}))
+        payload['production_evidence'] = {'acceptance_status_path': 'acc.json',
+                                          'acceptance_status_sha256': 'c' * 64,
+                                          'release_gate_path': 'gate.json',
+                                          'release_gate_sha256': 'd' * 64}
+    built = {k: v for k, v in payload.items() if k != 'manifest_sha256'}
+    return module.build_manifest(built)
 
 
 class StageGateMutationTests(unittest.TestCase):
@@ -125,29 +129,14 @@ class StageGateMutationTests(unittest.TestCase):
                     spec = importlib.util.spec_from_file_location('_gate_mut', mutant)
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)
-                    manifest = apply(KINDS[name], module, work)
-                    out = []
+                    kind = KINDS[name]
+                    repo_dir = work / 'repo'
+                    manifest = build(repo_dir, module, kind)
+                    requirements = {'required_gate_ids': ['spec'] if kind != 'required' else ['spec', 'absent']}
                     try:
-                        if KINDS[name] in ('ancestor', 'blob'):
-                            subprocess.run(['git', 'init', '-q'], cwd=work, capture_output=True)
-                            subprocess.run(['git', '-c', 'user.email=t@e', '-c', 'user.name=t', 'add', '-A'], cwd=work, capture_output=True)
-                            subprocess.run(['git', '-c', 'user.email=t@e', '-c', 'user.name=t', 'commit', '-q', '-m', 'x'], cwd=work, capture_output=True)
-                            manifest['base_sha'] = 'a' * 40
-                            manifest['candidate_sha'] = 'b' * 40
-                            if KINDS[name] == 'blob':
-                                head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=work, capture_output=True, text=True, encoding='utf-8').stdout.strip()
-                                manifest['candidate_sha'] = head
-                                (work / 'logs/spec.txt').write_text('drift' + chr(10), encoding='utf-8')
-                            module.git_check(manifest, work, out)
-                        elif KINDS[name] == 'requirements':
-                            registry = work / 'requirements.json'
-                            registry.write_text(json.dumps(['spec', 'absent']), encoding='utf-8')
-                            module.requirements_check(manifest, registry, out)
-                        else:
-                            out = module.validate(manifest, work)
+                        reported = [c for c, _d in module.validate(manifest, repo_dir, requirements)]
                     except Exception as error:
-                        out = [('exception:' + type(error).__name__, '')]
-                    reported = [c for c, _d in out]
+                        reported = ['exception:' + type(error).__name__]
                     self.assertNotIn(EXPECTED[name], reported, 'mutant survived: ' + name)
 
 
