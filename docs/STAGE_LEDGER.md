@@ -6,7 +6,7 @@
 ## 台账规则
 
 1. 每行必须给出 40 位提交 id、测试总项数、以及 `independence` 上限。
-2. `independence` 只能是 `I0`–`I4` 之一；**I0/I1 行不得出现 production/power 通过类结论**。
+2. `independence` 只能是 `I0`–`I4` 之一；**I0/I1/I2 行不得出现 production/power 放行、`M6` 迁移判定或 release gate 变更类结论**——这类结论要求 `I3` 及以上（见 `docs/EXTERNAL_ANCHORS.md`），且提级须先补设施、再改 `MAX_GRADE`（当前 `I1`）。
 3. 行一旦写入不得修改（只可追加）；需要更正时追加新行并注明 `supersedes`。
 4. `gates` 列只能是 `NOT_RUN`（生产运行时门禁）或 `BLOCK`（发布门禁），本仓库当前两者都是这两值。
 5. 行必须按提交祖先序排列（后一行的提交须包含前一行的提交），以此检出历史改写与插队。
@@ -35,6 +35,7 @@
 | stage-0.1-v17 | 2c69ff0a7d3cc6324111ef05ba979a4c67f72752 | 333 | I1 | NOT_RUN/BLOCK | 组件级复核修复：真负例、fail-closed、复核台账 |
 | stage-0.1-v18 | 9d7933b8fe8265dbcca431ff80d77639876d65a1 | 336 | I1 | NOT_RUN/BLOCK | 同形字折叠与行为级接线断言 |
 | stage-0.1-v19 | e5cbe8ee2cca634c665a0f4cb3127fb0309a4319 | 338 | I1 | NOT_RUN/BLOCK | 复核签名与证明的域分离 |
+| stage-0.1-v20 | a250e1ef7e6d6a443da84cedfedd83fd967a1699 | 341 | I1 | NOT_RUN/BLOCK | 阶段冻结说明与三节机检 |
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
 
