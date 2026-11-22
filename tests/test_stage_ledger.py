@@ -86,6 +86,34 @@ class LedgerBranchTests(unittest.TestCase):
             rows[7] = row('stage-0.1-v7', '{:040x}'.format(8), tests=107, note=note)
             self.assertIn('overclaim:stage-0.1-v7', check(document(*rows)), note)
 
+    def test_missing_anchor_doc_is_flagged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / 'docs').mkdir()
+            (root / 'scripts').mkdir()
+            (root / 'scripts' / 'check_all.py').write_text('ledger_check.py' + chr(10), encoding='utf-8')
+            text = full_document()
+            problems = load().check_text(text, root, exists=lambda c: True,
+                                          ancestor=lambda a, b: True, head=HEAD,
+                                          artifact=lambda c: True, lag=lambda c: 0)
+            self.assertIn('missing_anchor_doc', problems)
+
+    def test_anchor_doc_sections_are_required(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / 'docs').mkdir()
+            (root / 'scripts').mkdir()
+            (root / 'scripts' / 'check_all.py').write_text('ledger_check.py' + chr(10), encoding='utf-8')
+            (root / 'docs' / 'EXTERNAL_ANCHORS.md').write_text('# 外部锚' + chr(10) + '## I2' + chr(10), encoding='utf-8')
+            problems = load().check_text(full_document(), root, exists=lambda c: True,
+                                          ancestor=lambda a, b: True, head=HEAD,
+                                          artifact=lambda c: True, lag=lambda c: 0)
+            self.assertIn('anchor_section_missing:I3', problems)
+            self.assertIn('anchor_missing_forbidden', problems)
+
+    def test_real_anchor_doc_passes(self):
+        module = load()
+        self.assertEqual(module.check_text(module.LEDGER.read_text(encoding='utf-8'), module.ROOT), [])
     def test_stale_ledger_is_flagged(self):
         codes = check(full_document(), lag=99)
         self.assertTrue(any(code.startswith('ledger_stale') for code in codes), codes)

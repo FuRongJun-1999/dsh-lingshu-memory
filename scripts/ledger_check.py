@@ -163,6 +163,18 @@ def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None,
     chain_text = chain.read_text(encoding='utf-8') if chain.is_file() else ''
     if 'ledger_check.py' not in chain_text:
         problems.append('ledger_not_wired')
+    anchors = root / 'docs' / 'EXTERNAL_ANCHORS.md'
+    if not anchors.is_file():
+        problems.append('missing_anchor_doc')
+    else:
+        anchor_text = anchors.read_text(encoding='utf-8')
+        for grade in ('## I2', '## I3', '## I4'):
+            if grade not in anchor_text:
+                problems.append('anchor_section_missing:' + grade.strip('# '))
+        if '不允许' not in anchor_text:
+            problems.append('anchor_missing_forbidden')
+        if '当前状态' not in anchor_text:
+            problems.append('anchor_missing_status')
     problems.extend(scan_docs(root))
     return problems
 
