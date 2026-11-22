@@ -6,6 +6,7 @@ import hashlib
 import json
 import pathlib
 import re
+import subprocess
 
 LEVELS = {'I0': 0, 'I1': 1, 'I2': 2, 'I3': 3, 'I4': 4}
 SCOPES = ('isolated', 'production')
@@ -245,10 +246,54 @@ def no_duplicates(pairs):
     return seen
 
 
+
+
+def git_check(manifest, root, out):
+    def git(argv):
+        return subprocess.run(['git', *argv], cwd=root, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=False)
+    candidate = manifest['candidate_sha']
+    base = manifest['base_sha']
+    if git(['cat-file', '-e', candidate + '^{commit}']).returncode != 0:
+        out.append(('git_candidate_missing', candidate))
+        return
+    if git(['merge-base', '--is-ancestor', base, candidate]).returncode != 0:
+        out.append(('git_base_not_ancestor', base))
+    for gate in manifest['gates']:
+        if type(gate) is not dict:
+            continue
+        raw = gate.get('raw_log')
+        if type(raw) is not str or not raw:
+            continue
+        committed = git(['rev-parse', candidate + ':' + raw])
+        working = git(['hash-object', raw])
+        committed_id = committed.stdout.strip() if committed.returncode == 0 else ''
+        working_id = working.stdout.strip() if working.returncode == 0 else ''
+        if not committed_id or not working_id or committed_id != working_id:
+            out.append(('gate_raw_untracked', str(gate.get('id'))))
+
+
+def requirements_check(manifest, path, out):
+    try:
+        data = json.loads(pathlib.Path(path).read_text(encoding='utf-8'))
+    except (OSError, ValueError) as error:
+        out.append(('requirements_error', str(error)))
+        return
+    if type(data) is not list or not all(type(x) is str and x for x in data):
+        out.append(('requirements_error', 'expected list of gate ids'))
+        return
+    declared = manifest['required_gate_ids'] if type(manifest['required_gate_ids']) is list else []
+    for gid in sorted(set(data) - set(declared)):
+        out.append(('gate_missing', gid))
+    for gid in sorted(set(declared) - set(data)):
+        out.append(('gate_extra', gid))
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest', required=True)
     parser.add_argument('--root', default=None)
+    parser.add_argument('--requirements', default=None)
+    parser.add_argument('--git', action='store_true')
     args = parser.parse_args(argv)
     path = pathlib.Path(args.manifest)
     root = pathlib.Path(args.root) if args.root else path.parent
@@ -258,6 +303,10 @@ def main(argv=None):
         if path.resolve().is_relative_to(root.resolve()) is False:
             raise ValueError('manifest outside root')
         failures = validate(manifest, root)
+        if args.requirements:
+            requirements_check(manifest, args.requirements, failures)
+        if args.git:
+            git_check(manifest, root, failures)
     except (OSError, ValueError) as error:
         print('FAIL validator_error:', error)
         return 2

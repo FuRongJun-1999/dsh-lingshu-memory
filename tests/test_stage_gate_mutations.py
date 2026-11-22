@@ -1,6 +1,8 @@
 """Mutation killers for the stage manifest gate (schema v2)."""
 import hashlib
 import importlib.util
+import json
+import subprocess
 import pathlib
 import tempfile
 import unittest
@@ -18,6 +20,9 @@ MUTANTS = [
     ('skip_wording', 'if word in lowered:', 'if False:'),
     ('skip_gate_missing', 'for gid in sorted(set(required) - set(levels)):', 'for gid in []:'),
     ('skip_production_binding', "if evidence['release_gate_state'] != 'PASS':", 'if False:'),
+    ('skip_git_ancestor', "if git(['merge-base', '--is-ancestor', base, candidate]).returncode != 0:", 'if False:'),
+    ('skip_requirements', 'for gid in sorted(set(data) - set(declared)):', 'for gid in []:'),
+    ('skip_blob_match', 'if not committed_id or not working_id or committed_id != working_id:', 'if False:'),
 ]
 
 KINDS = {
@@ -31,6 +36,9 @@ KINDS = {
     'skip_wording': 'wording',
     'skip_gate_missing': 'required',
     'skip_production_binding': 'production',
+    'skip_git_ancestor': 'ancestor',
+    'skip_requirements': 'requirements',
+    'skip_blob_match': 'blob',
 }
 
 EXPECTED = {
@@ -44,6 +52,9 @@ EXPECTED = {
     'skip_wording': 'claim_production_wording',
     'skip_gate_missing': 'gate_missing',
     'skip_production_binding': 'production_unbound',
+    'skip_git_ancestor': 'git_base_not_ancestor',
+    'skip_requirements': 'gate_missing',
+    'skip_blob_match': 'gate_raw_untracked',
 }
 
 
@@ -93,6 +104,8 @@ def apply(kind, module, root):
         body['production_evidence'] = {'acceptance_status_sha256': 'c' * 64,
                                        'release_gate_state': 'BLOCK',
                                        'release_gate_sha256': 'd' * 64}
+    elif kind in ('ancestor', 'requirements', 'blob'):
+        pass
     else:
         raise AssertionError('unknown kind')
     return module.build_manifest(body)
@@ -113,10 +126,28 @@ class StageGateMutationTests(unittest.TestCase):
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)
                     manifest = apply(KINDS[name], module, work)
+                    out = []
                     try:
-                        reported = [c for c, _d in module.validate(manifest, work)]
+                        if KINDS[name] in ('ancestor', 'blob'):
+                            subprocess.run(['git', 'init', '-q'], cwd=work, capture_output=True)
+                            subprocess.run(['git', '-c', 'user.email=t@e', '-c', 'user.name=t', 'add', '-A'], cwd=work, capture_output=True)
+                            subprocess.run(['git', '-c', 'user.email=t@e', '-c', 'user.name=t', 'commit', '-q', '-m', 'x'], cwd=work, capture_output=True)
+                            manifest['base_sha'] = 'a' * 40
+                            manifest['candidate_sha'] = 'b' * 40
+                            if KINDS[name] == 'blob':
+                                head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=work, capture_output=True, text=True, encoding='utf-8').stdout.strip()
+                                manifest['candidate_sha'] = head
+                                (work / 'logs/spec.txt').write_text('drift' + chr(10), encoding='utf-8')
+                            module.git_check(manifest, work, out)
+                        elif KINDS[name] == 'requirements':
+                            registry = work / 'requirements.json'
+                            registry.write_text(json.dumps(['spec', 'absent']), encoding='utf-8')
+                            module.requirements_check(manifest, registry, out)
+                        else:
+                            out = module.validate(manifest, work)
                     except Exception as error:
-                        reported = ['exception:' + type(error).__name__]
+                        out = [('exception:' + type(error).__name__, '')]
+                    reported = [c for c, _d in out]
                     self.assertNotIn(EXPECTED[name], reported, 'mutant survived: ' + name)
 
 

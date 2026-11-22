@@ -218,5 +218,100 @@ class StageGateV2Tests(unittest.TestCase):
             self.assertIn('gate_not_run', bad.stdout)
 
 
+
+
+def git(root, *args):
+    return subprocess.run(['git', *args], cwd=root, capture_output=True, text=True, encoding='utf-8', errors='replace')
+
+
+def commit(root, message):
+    result = subprocess.run(['git', '-c', 'user.email=t@example.invalid', '-c', 'user.name=t',
+                             'commit', '-q', '-m', message], cwd=root, capture_output=True, text=True, encoding='utf-8')
+    if result.returncode != 0:
+        raise AssertionError(result.stdout + result.stderr)
+
+
+def init_repo(root):
+    git(root, 'init', '-q')
+    notes = root / 'notes.txt'
+    notes.write_text('n1' + chr(10), encoding='utf-8')
+    git(root, 'add', '-A')
+    commit(root, 'one')
+    base = git(root, 'rev-parse', 'HEAD').stdout.strip()
+    notes.write_text('n2' + chr(10), encoding='utf-8')
+    git(root, 'add', '-A')
+    commit(root, 'two')
+    candidate = git(root, 'rev-parse', 'HEAD').stdout.strip()
+    return base, candidate
+
+
+class StageGateGitAnchorTests(unittest.TestCase):
+    def test_tracked_evidence_at_candidate_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest = make(root)
+            base, candidate = init_repo(root)
+            manifest['base_sha'] = base
+            manifest['candidate_sha'] = candidate
+            out = []
+            gate_mod.git_check(manifest, root, out)
+            self.assertEqual(out, [])
+
+    def test_mutated_evidence_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest = make(root)
+            base, candidate = init_repo(root)
+            extra = root / 'logs/spec.txt'
+            extra.write_text('three' + chr(10), encoding='utf-8')
+            manifest['base_sha'] = base
+            manifest['candidate_sha'] = candidate
+            out = []
+            gate_mod.git_check(manifest, root, out)
+            self.assertIn('gate_raw_untracked', [code for code, _d in out])
+
+    def test_missing_candidate_commit_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest = make(root)
+            base, _candidate = init_repo(root)
+            manifest['base_sha'] = base
+            manifest['candidate_sha'] = 'f' * 40
+            out = []
+            gate_mod.git_check(manifest, root, out)
+            self.assertIn('git_candidate_missing', [code for code, _d in out])
+
+    def test_non_ancestor_base_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            base, candidate = init_repo(root)
+            manifest = make(root)
+            manifest['base_sha'] = candidate
+            manifest['candidate_sha'] = base
+            out = []
+            gate_mod.git_check(manifest, root, out)
+            self.assertIn('git_base_not_ancestor', [code for code, _d in out])
+
+    def test_external_requirements_registry_is_authoritative(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            manifest = make(root)
+            registry = root / 'requirements.json'
+            registry.write_text(json.dumps(['spec', 'shadow']), encoding='utf-8')
+            out = []
+            gate_mod.requirements_check(manifest, registry, out)
+            codes_out = [code for code, _d in out]
+            self.assertIn('gate_missing', codes_out)
+            registry.write_text(json.dumps(['spec']), encoding='utf-8')
+            out = []
+            gate_mod.requirements_check(manifest, registry, out)
+            self.assertEqual(out, [])
+            registry.write_text(json.dumps(['spec', 'other']), encoding='utf-8')
+            out = []
+            gate_mod.requirements_check(manifest, registry, out)
+            codes_out = [code for code, _d in out]
+            self.assertIn('gate_missing', codes_out)
+
+
 if __name__ == '__main__':
     unittest.main()
