@@ -3,6 +3,7 @@
 Read-only. Evidence is anchored to committed bytes; the validator never writes
 acceptance status, release gates or production records."""
 import argparse
+import datetime
 import hashlib
 import json
 import pathlib
@@ -23,6 +24,7 @@ GATE_FIELDS = {'id', 'command', 'exit_code', 'raw_log', 'raw_log_sha256', 'indep
 CLAIM_FIELDS = {'id', 'statement', 'level', 'scope', 'gate_ids'}
 REVIEW_FIELDS = {'implementer_id', 'reviewer_id', 'role', 'independent', 'session', 'window_start', 'window_end'}
 HEADER_FIELDS = {'gate', 'command', 'exit_code'}
+FAILURE_MARKERS = ('FAILED', 'ERROR:', 'FAIL:')
 PRODUCTION_FIELDS = {'acceptance_status_path', 'acceptance_status_sha256', 'release_gate_path', 'release_gate_sha256'}
 
 
@@ -98,6 +100,12 @@ def check_evidence(gate, manifest, root, out, seen):
         return
     if header['gate'] != gid or header['command'] != gate['command'] or header['exit_code'] != gate['exit_code']:
         out.append(('evidence_mismatch', gid))
+        return
+    body = payload.split(b'\n', 1)[1].decode('utf-8', 'replace') if b'\n' in payload else ''
+    for marker in FAILURE_MARKERS:
+        if marker in body:
+            out.append(('evidence_failure_text', gid))
+            break
 
 
 def check_gates(manifest, root, out, requirements):
@@ -252,7 +260,65 @@ def check_production(manifest, root, out):
         out.append(('production_unbound', 'acceptance status is not PASS'))
 
 
-def validate(manifest, root, requirements):
+def committed_json(root, rev, path):
+    payload = committed_bytes(root, rev, path)
+    if payload is None:
+        return None, None
+    try:
+        parsed = json.loads(payload.decode('utf-8'), object_pairs_hook=no_duplicates)
+    except (UnicodeDecodeError, ValueError):
+        return None, payload
+    return parsed, payload
+
+
+def check_pins(manifest, root, pins, out):
+    requirements, payload = committed_json(root, manifest['base_sha'], 'requirements.json')
+    if payload is None:
+        out.append(('requirements_uncommitted', 'base:requirements.json'))
+        return None
+    pinned = pins.get('requirements_sha256')
+    if type(pinned) is not str or hashlib.sha256(payload).hexdigest() != pinned:
+        out.append(('requirements_unpinned', 'digest does not match external pin'))
+    if type(requirements) is not dict:
+        out.append(('requirements_error', 'committed requirements must be an object'))
+        return None
+    manifest_pin = pins.get('manifest_sha256')
+    if type(manifest_pin) is not str or type(manifest['manifest_sha256']) is not str or manifest_pin != manifest['manifest_sha256']:
+        out.append(('manifest_unpinned', 'manifest digest must be pinned externally'))
+    ref = pins.get('require_ref')
+    if ref:
+        if git(root, 'rev-parse', '--verify', ref).returncode != 0:
+            out.append(('anchor_ref_missing', ref))
+        elif git(root, 'merge-base', '--is-ancestor', manifest['candidate_sha'], ref).returncode != 0:
+            out.append(('anchor_not_contained', ref))
+    else:
+        out.append(('anchor_ref_missing', 'no external ref pinned'))
+    return requirements
+
+
+def check_window(manifest, root, out):
+    reviewer = manifest['reviewed_by']
+    if type(reviewer) is not dict:
+        return
+    start = reviewer.get('window_start')
+    end = reviewer.get('window_end')
+    try:
+        start_at = datetime.datetime.fromisoformat(str(start).replace('Z', '+00:00'))
+        end_at = datetime.datetime.fromisoformat(str(end).replace('Z', '+00:00'))
+    except ValueError:
+        out.append(('review_window_format', 'ISO-8601 required'))
+        return
+    commit_time = git(root, 'show', '-s', '--format=%cI', manifest['candidate_sha']).stdout.strip()
+    try:
+        committed_at = datetime.datetime.fromisoformat(commit_time)
+    except ValueError:
+        return
+    if start_at < committed_at:
+        out.append(('review_window_early', 'window starts before candidate commit'))
+    if end_at.tzinfo is not None and end_at > datetime.datetime.now(datetime.timezone.utc):
+        out.append(('review_window_future', 'window ends after validation time'))
+
+def validate(manifest, root, pins):
     if type(manifest) is not dict:
         return [('schema', 'manifest must be an object')]
     expected = FIELDS | ({'production_evidence'} if 'production_evidence' in manifest else set())
@@ -280,9 +346,11 @@ def validate(manifest, root, requirements):
         out.append(('git_candidate_missing', manifest['candidate_sha']))
     elif git(root, 'merge-base', '--is-ancestor', manifest['base_sha'], manifest['candidate_sha']).returncode != 0:
         out.append(('git_base_not_ancestor', manifest['base_sha']))
-    levels = check_gates(manifest, root, out, requirements)
+    requirements = check_pins(manifest, root, pins, out)
+    levels = check_gates(manifest, root, out, requirements or {})
     check_claims(manifest, out, levels)
     check_review(manifest, out)
+    check_window(manifest, root, out)
     check_production(manifest, root, out)
     not_claimed = manifest['not_claimed']
     if type(not_claimed) is not list or not all(type(x) is str and x for x in not_claimed):
@@ -303,23 +371,25 @@ def build_manifest(body):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest', required=True)
+    parser.add_argument('--pin-manifest-sha256', default='')
+    parser.add_argument('--pin-requirements-sha256', default='')
+    parser.add_argument('--require-ref', default='')
     args = parser.parse_args(argv)
     path = pathlib.Path(args.manifest)
     root = path.parent
     try:
         manifest = read_json(path)
-        requirements = read_json(root / 'requirements.json')
     except (OSError, ValueError) as error:
         print('FAIL validator_error:', error)
         return 2
-    if type(requirements) is not dict:
-        print('FAIL requirements_error: requirements.json must be an object')
-        return 2
-    failures = validate(manifest, root, requirements)
+    pins = {'manifest_sha256': args.pin_manifest_sha256,
+            'requirements_sha256': args.pin_requirements_sha256,
+            'require_ref': args.require_ref}
+    failures = validate(manifest, root, pins)
     for code, detail in failures:
         print('FAIL', code + ':', detail)
     print('STAGE MANIFEST:', 'PASS' if not failures else 'FAIL')
-    print('CHECKS RUN: schema,digest,commits,gates,evidence,requirements,claims,review,production,not_claimed')
+    print('CHECKS RUN: schema,digest,commits,pins,anchor,gates,evidence,requirements,claims,review,window,production,not_claimed')
     return 0 if not failures else 1
 
 
