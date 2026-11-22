@@ -9,7 +9,8 @@ from shadow_runtime.durability import append_line_durable
 from shadow_runtime.writer_status import _name
 
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
-_EXPECTED_KEYS = {"writer_id", "seq", "ts", "tenant", "principal", "op", "node_id", "revision", "payload_sha", "prev_sha", "entry_sha"}
+_LEGACY_EXPECTED_KEYS = {"writer_id", "seq", "ts", "tenant", "principal", "op", "node_id", "revision", "payload_sha", "prev_sha", "entry_sha"}
+_EXPECTED_KEYS = _LEGACY_EXPECTED_KEYS | {"transaction_id"}
 
 
 def _entry_sha(entry_without_sha: dict) -> str:
@@ -33,6 +34,8 @@ def _valid_audit_types(obj: dict) -> bool:
     for k in ("payload_sha", "prev_sha", "entry_sha"):
         if type(obj[k]) is not str or _HEX64.fullmatch(obj[k]) is None:
             return False
+    if "transaction_id" in obj and (type(obj["transaction_id"]) is not str or _HEX64.fullmatch(obj["transaction_id"]) is None):
+        return False
     return True
 
 
@@ -81,7 +84,7 @@ def inspect_audit(audit_path: pathlib.Path, *, expected_tenant: str | None = Non
         # Check payload leakage BEFORE strict key-set rejection so leak is classified explicitly!
         if "body" in obj or "content" in obj:
             return {"state": "integrity_failure", "reason": "payload_leak_in_audit", "count": idx - 1, "last_seq": seq, "last_sha": prev_sha, "foreign_rows": foreign_rows}
-        if set(obj) != _EXPECTED_KEYS or not _valid_audit_types(obj):
+        if set(obj) not in (_LEGACY_EXPECTED_KEYS, _EXPECTED_KEYS) or not _valid_audit_types(obj):
             return {"state": "integrity_failure", "reason": "invalid_audit_schema", "count": idx - 1, "last_seq": seq, "last_sha": prev_sha, "foreign_rows": foreign_rows}
         if obj["seq"] != seq + 1 or obj["prev_sha"] != prev_sha:
             return {"state": "integrity_failure", "reason": "hash_chain_break", "count": idx - 1, "last_seq": seq, "last_sha": prev_sha, "foreign_rows": foreign_rows}
@@ -104,10 +107,19 @@ class PayloadFreeAuditLog:
         self.path = pathlib.Path(audit_path)
 
     def append(self, *, writer_id: str, ts: int, tenant: str, principal: str, op: str, node_id: str,
-               revision: int, payload_sha: str, durable: bool, fault_hook=None) -> dict:
+               revision: int, payload_sha: str, transaction_id: str, durable: bool, fault_hook=None) -> dict:
         info = inspect_audit(self.path)
         if info["state"] not in ("ok", "missing"):
             raise ValueError("AUDIT_CORRUPTED:" + info["state"])
+        if info["state"] == "ok":
+            expected = (transaction_id, writer_id, ts, tenant, principal, op, node_id, revision, payload_sha)
+            for line in self.path.read_text(encoding="utf-8").splitlines():
+                existing = parse(line)
+                if "transaction_id" not in existing:
+                    continue
+                actual = tuple(existing[k] for k in ("transaction_id", "writer_id", "ts", "tenant", "principal", "op", "node_id", "revision", "payload_sha"))
+                if actual == expected:
+                    return existing
         seq = info["last_seq"] + 1
         prev_sha = info["last_sha"]
         entry = {
@@ -120,9 +132,12 @@ class PayloadFreeAuditLog:
             "node_id": node_id,
             "revision": revision,
             "payload_sha": payload_sha,
+            "transaction_id": transaction_id,
             "prev_sha": prev_sha,
         }
         entry["entry_sha"] = _entry_sha(entry)
         line = json.dumps(entry, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
         append_line_durable(self.path, line, durable=durable, fault_hook=fault_hook)
+        if fault_hook is not None:
+            fault_hook("audit:after_append", self.path)
         return entry

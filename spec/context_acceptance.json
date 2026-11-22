@@ -1,7 +1,237 @@
 {
-  "verdict": "ISOLATED_ACCEPTED",
-  "scope": "isolated_synthetic",
+  "checks": {
+    "bounded_refetch_alert": {
+      "assertions": 12,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_actual_refetch_after_irrelevant_initial_query",
+      "tests": 1
+    },
+    "budget_exhausted": {
+      "assertions": 5,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_replay.ReplayTests.test_budget_carries_across_assemble_compact_resume",
+      "tests": 1
+    },
+    "conditions_and_version": {
+      "assertions": 16,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_wrong_version_conditions_architecture_or_unauthorized",
+      "tests": 1
+    },
+    "exact_locator_readback": {
+      "assertions": 5,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_store.SyntheticStoreTests.test_locator_mismatch_and_unauthorized_uniform_none",
+      "tests": 1
+    },
+    "filter_before_limit": {
+      "assertions": 6,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_store.SyntheticStoreTests.test_filter_before_limit_no_ids_or_counts_for_hidden",
+      "tests": 1
+    },
+    "independent_effect_probe": {
+      "assertions": 4,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_wrong_request_digest_does_not_count_as_action_evidence",
+      "tests": 1
+    },
+    "irrelevant_dummy_search": {
+      "assertions": 2,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_benchmark.BenchmarkTests.test_dummy_search_and_missing_final_read_do_not_pass",
+      "tests": 1
+    },
+    "large_irrelevant_corpus": {
+      "assertions": 7,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_store.SyntheticStoreTests.test_exact_key_locates_under_noise",
+      "tests": 1
+    },
+    "missing_logs_unknown": {
+      "assertions": 7,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_missing_store_log_is_unknown_not_accepted",
+      "tests": 1
+    },
+    "no_default_production": {
+      "assertions": 16,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_context_cli.ContextCliTests.test_no_implicit_mode_duplicate_keys_paths_or_oversize",
+      "tests": 1
+    },
+    "no_facts_in_degraded_output": {
+      "assertions": 5,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_second_requirement_failure_discards_all_partial_facts",
+      "tests": 1
+    },
+    "production_fallback": {
+      "assertions": 11,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_store.SyntheticStoreTests.test_explicit_isolation_and_closed_input",
+      "tests": 1
+    },
+    "query_result_claim_binding": {
+      "assertions": 8,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_mutating_task_or_rows_after_prepare_is_rejected",
+      "tests": 1
+    },
+    "report_without_effect": {
+      "assertions": 7,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_reported_alert_without_actual_sink_effect_is_unknown",
+      "tests": 1
+    },
+    "restart_or_compaction": {
+      "assertions": 5,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_replay.ReplayTests.test_fresh_stream_bootstrap_retrieves_not_serialized_ticket",
+      "tests": 1
+    },
+    "resume_rebind": {
+      "assertions": 20,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_replay.ReplayTests.test_compact_discards_ticket_and_resume_retrieves",
+      "tests": 1
+    },
+    "same_name_wrong_task": {
+      "assertions": 6,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_replay.ReplayTests.test_delayed_old_task_decision_never_consumes_new_task_ticket",
+      "tests": 1
+    },
+    "side_effect_without_log": {
+      "assertions": 8,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_lost_prior_probe_or_untracked_side_effect_blocks",
+      "tests": 1
+    },
+    "skip_retrieval": {
+      "assertions": 16,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_ticket_single_use_wrong_task_and_prepare_invalidation",
+      "tests": 1
+    },
+    "stale_revision": {
+      "assertions": 4,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_independent_review_equal_body_digest_wrong_revision",
+      "tests": 1
+    },
+    "task_bound_retrieval": {
+      "assertions": 15,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_run_performs_search_read_key_confirmation_and_recheck",
+      "tests": 1
+    },
+    "unauthorized_record": {
+      "assertions": 32,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "skips": 0,
+      "test": "test_sandbox_controller.ControllerTests.test_output_reauthorizes_all_context_fields_and_expiry",
+      "tests": 1
+    }
+  },
   "contract_sha": "90feb453f0d9a0d04f93ca5927c427faa4d76ac59e40292655064ecdc32346c6",
+  "demos": {
+    "benchmark_sha": "f37bee445bbc887ddbba61f506989ca8f5d7a471f14b631a39f3182b9769ddf3",
+    "context_sha": "ae79891fc45c933c049b49554b5b13c1d4082eb0d0ad281731abbf9567add0d5",
+    "replay_sha": "4910e54cefdebad06ebd87af7b300bf46669fb6922dd6ce66d553756ce166ed9"
+  },
+  "gui_integration": "NOT_RUN",
+  "llm_evaluation": "NOT_RUN",
+  "open_semantic_retrieval": "NOT_EVALUATED",
+  "production": "NOT_RUN",
+  "scope": "isolated_synthetic",
   "sources": {
     "framework/__init__.py": "75240ef09df0426410194b0a60fe0e6143d27ee1cc6e0c576409d341dc955c65",
     "framework/api.py": "c75bc2fcc25ed34f2ec107c96c2b4e49c841063f99d6e78a6fc6ab72f802b1d4",
@@ -63,243 +293,13 @@
     "tests/test_sandbox_store_mutations.py": "1cee042fc33f4e507d4dc647daa2f9422c2cb5cd44adcf785ea67e0a63eb4887",
     "tests/test_security.py": "59c6a6fa86c137261db2571184c79c812f827419b59dd02d3c8b78e21d25a1ab",
     "tests/test_security_mutations.py": "8548c637dce9356de1a212759b617a2993ccddd7f5d43d16aca5cb537e95e0cf",
-    "tests/test_shadow_runtime.py": "f17decaafe03f32e2fe4ed66d98b14696540d69d78f8ac6f4cde30ad67ed945f",
-    "tests/test_shadow_runtime_mutations.py": "5ecce7643bb64a9e2a87bcc374b0976dbaadb5e2e92f6463a1aefe1b7169bca6",
+    "tests/test_shadow_runtime.py": "cf3b592782045b2ccc6414ea2f257aef79c9f702eef04c09fcb7e4e7b0dffb1f",
+    "tests/test_shadow_runtime_mutations.py": "f1e348b32461eaa38eb21395cce8267de4f84d1b8a14ba60a64d898093e713d1",
     "tests/test_source_boundary.py": "bbba9557378adacf1ed6cff9a56c1735d2713634766357d4babdd62491d6581f",
     "tests/test_source_boundary_mutations.py": "20f6b24da7d0bced4d072c4a3827eb2c252dfc318ee644a7befbc86085e866a1",
     "tests/test_spec_tree.py": "96eb81c4c7c519afbbd162663fd4ec5b8acf4ce98c99c2fafd69d32f9f7081c6",
     "tests/test_writer_receipt.py": "24cff9f460f7a4d4b70995517f155257f4fe3d3f0131e667214c3a4218751cc6",
     "tests/test_writer_status.py": "f9062a9a9d2d7009816ed6bdcb0d98d1838531a5281638168abbdadb1d9da553"
   },
-  "checks": {
-    "task_bound_retrieval": {
-      "test": "test_sandbox_controller.ControllerTests.test_run_performs_search_read_key_confirmation_and_recheck",
-      "assertions": 15,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "filter_before_limit": {
-      "test": "test_sandbox_store.SyntheticStoreTests.test_filter_before_limit_no_ids_or_counts_for_hidden",
-      "assertions": 6,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "exact_locator_readback": {
-      "test": "test_sandbox_store.SyntheticStoreTests.test_locator_mismatch_and_unauthorized_uniform_none",
-      "assertions": 5,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "query_result_claim_binding": {
-      "test": "test_sandbox_controller.ControllerTests.test_mutating_task_or_rows_after_prepare_is_rejected",
-      "assertions": 8,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "conditions_and_version": {
-      "test": "test_sandbox_controller.ControllerTests.test_wrong_version_conditions_architecture_or_unauthorized",
-      "assertions": 16,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "no_facts_in_degraded_output": {
-      "test": "test_sandbox_controller.ControllerTests.test_second_requirement_failure_discards_all_partial_facts",
-      "assertions": 5,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "bounded_refetch_alert": {
-      "test": "test_sandbox_controller.ControllerTests.test_actual_refetch_after_irrelevant_initial_query",
-      "assertions": 12,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "independent_effect_probe": {
-      "test": "test_sandbox_controller.ControllerTests.test_wrong_request_digest_does_not_count_as_action_evidence",
-      "assertions": 4,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "missing_logs_unknown": {
-      "test": "test_sandbox_controller.ControllerTests.test_missing_store_log_is_unknown_not_accepted",
-      "assertions": 7,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "no_default_production": {
-      "test": "test_context_cli.ContextCliTests.test_no_implicit_mode_duplicate_keys_paths_or_oversize",
-      "assertions": 16,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "resume_rebind": {
-      "test": "test_replay.ReplayTests.test_compact_discards_ticket_and_resume_retrieves",
-      "assertions": 20,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "skip_retrieval": {
-      "test": "test_sandbox_controller.ControllerTests.test_ticket_single_use_wrong_task_and_prepare_invalidation",
-      "assertions": 16,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "irrelevant_dummy_search": {
-      "test": "test_benchmark.BenchmarkTests.test_dummy_search_and_missing_final_read_do_not_pass",
-      "assertions": 2,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "report_without_effect": {
-      "test": "test_sandbox_controller.ControllerTests.test_reported_alert_without_actual_sink_effect_is_unknown",
-      "assertions": 7,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "large_irrelevant_corpus": {
-      "test": "test_sandbox_store.SyntheticStoreTests.test_exact_key_locates_under_noise",
-      "assertions": 7,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "stale_revision": {
-      "test": "test_sandbox_controller.ControllerTests.test_independent_review_equal_body_digest_wrong_revision",
-      "assertions": 4,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "same_name_wrong_task": {
-      "test": "test_replay.ReplayTests.test_delayed_old_task_decision_never_consumes_new_task_ticket",
-      "assertions": 6,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "unauthorized_record": {
-      "test": "test_sandbox_controller.ControllerTests.test_output_reauthorizes_all_context_fields_and_expiry",
-      "assertions": 32,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "side_effect_without_log": {
-      "test": "test_sandbox_controller.ControllerTests.test_lost_prior_probe_or_untracked_side_effect_blocks",
-      "assertions": 8,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "budget_exhausted": {
-      "test": "test_replay.ReplayTests.test_budget_carries_across_assemble_compact_resume",
-      "assertions": 5,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "production_fallback": {
-      "test": "test_sandbox_store.SyntheticStoreTests.test_explicit_isolation_and_closed_input",
-      "assertions": 11,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    },
-    "restart_or_compaction": {
-      "test": "test_replay.ReplayTests.test_fresh_stream_bootstrap_retrieves_not_serialized_ticket",
-      "assertions": 5,
-      "errors": 0,
-      "expected_failures": 0,
-      "failures": 0,
-      "passed": true,
-      "skips": 0,
-      "tests": 1
-    }
-  },
-  "demos": {
-    "context_sha": "ae79891fc45c933c049b49554b5b13c1d4082eb0d0ad281731abbf9567add0d5",
-    "replay_sha": "4910e54cefdebad06ebd87af7b300bf46669fb6922dd6ce66d553756ce166ed9",
-    "benchmark_sha": "f37bee445bbc887ddbba61f506989ca8f5d7a471f14b631a39f3182b9769ddf3"
-  },
-  "gui_integration": "NOT_RUN",
-  "production": "NOT_RUN",
-  "llm_evaluation": "NOT_RUN",
-  "open_semantic_retrieval": "NOT_EVALUATED"
+  "verdict": "ISOLATED_ACCEPTED"
 }

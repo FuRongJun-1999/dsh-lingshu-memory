@@ -19,6 +19,7 @@
 - [工作区索引](<WORKSPACE_INDEX.md>)、[贡献约定](<CONTRIBUTING.md>)
 - [响应与取消](<docs/RESPONSES.md>)、[事务协议提案](<docs/TRANSACTIONS.md>)
 - [四应用字段草案](<docs/API_DRAFT.md>)、[输入schema提案](<spec/api.schema.json>)、[开发运维](<docs/OPERATIONS.md>)
+- [双仓功能地图](<docs/FUNCTION_MAP.md>)、[接口参考](<docs/INTERFACE_REFERENCE.md>)、[多智能体派发实测](<docs/MULTIAGENT_DISPATCH_TRIAL.md>)
 
 ## 定位
 

@@ -7,7 +7,7 @@
 | M2独立复核 | 安全/恢复/测试复核，高风险修正或阻断 | complete（非形式证明） |
 | M3公开验证 | 跨平台CI、文档/索引/隐私检查，证据绑定commit | complete（首批84c1b75四矩阵通过） |
 | M4运行时设计 | 事务、认证、日志、并发、平台协议 | complete（统一api_v2/response_full契约、core 0.2.0、MD+JSON原子协议与平台持久化探针已落地；真实认证尚未接入） |
-| M5影子实现 | 合成隔离库，运行时FAIL/PASS证据 | complete（shadow_runtime 纯文本MD真源+JSON索引/WAL/Fencing实现及隔离R01–R09故障注入与变异测试已实测PASS；生产接入与真实认证仍pending） |
+| M5影子实现 | 合成隔离库，运行时FAIL/PASS证据 | complete（shadow_runtime 纯文本MD真源+JSON索引；token-scoped intent以manifest为process-crash提交判定，前滚/回滚覆盖Write与Govern；隔离故障/变异测试通过。非多文件原子、非掉电或生产WAL；生产接入与真实认证仍pending） |
 | M6迁移试点 | 授权备份、回滚与真实验收，不自动执行 | pending |
 
 后续队列：完整records输出与错误码；旧action/参数逐项映射（顶层39+5候选已列）；条件语言与旧时间精度显式转换（保真载体已建）；策略索引快照原子性（输出绑定纯谓词已建）；token唯一性；审计与删除保留期（资格矩阵已建，物理清理未实现）；MCP/DSH兼容清单；VM故障设施。

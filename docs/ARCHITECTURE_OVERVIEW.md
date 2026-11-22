@@ -2,7 +2,7 @@
 
 > **权威与范围声明**：本文是 [dsh-lingshu-memory](<../README.md>) 的**人类可读导读，不新增规范**。
 > 可执行核心规则唯一权威为 [core.json](<../spec/core.json>)（当前 `0.2.0`，受 [contract.lock.json](<../spec/contract.lock.json>) 冻结保护；统一条件空间与双时间轴已按 [ADR-0005](<adr/0005-unified-conditions-bitemporal.md>) 纳入真源）。
-> 截至当前阶段，`runtime_released: false`：本仓包含**规范真源、参考模型与隔离合成验证闭环（C0–C5）**，**不是**可投入生产的 1.0 运行时；隔离影子运行时 [shadow_runtime](<../shadow_runtime/store.py>)（纯文本 Markdown 真源 + JSON 索引/WAL/Fencing）已落地并通过 `R01–R09` 隔离故障注入；生产环境真实接入与认证仍未发布（生产门禁 `NOT_RUN`）。
+> 截至当前阶段，`runtime_released: false`：本仓包含**规范真源、参考模型与隔离合成验证闭环（C0–C5）**，**不是**可投入生产的 1.0 运行时；隔离影子运行时 [shadow_runtime](<../shadow_runtime/store.py>)（纯文本 Markdown 真源 + JSON 索引 + schema-v2 token-scoped intent；manifest匹配作为process-crash恢复判据）已通过 `R01–R09` 隔离故障注入；这不是生产WAL/CAS/fencing，也未验证真实SIGKILL、VM强停或掉电；生产环境真实接入与认证仍未发布（生产门禁 NOT_RUN）。
 
 ---
 
@@ -132,12 +132,14 @@
 ## 7. 诚实边界、已知差距与后续路线
 
 1. **现状边界（重要）**：
-   - `C0–C5` 的通过仅代表**隔离纯内存合成闭环**逻辑成立，**不代表生产可用、不代表 LLM 效果已评测、也不代表已接入现用宿主插件**。
-   - 多文件原子事务、跨进程锁、真实身份认证、条件语言求值、双时间轴整合、完整 `records` 返回体 schema、以及物理删除合规流程均尚未完成。
-   - [验收矩阵](<ACCEPTANCE.md>) 中的运行时门禁 `R01–R09` 全部为 `NOT_RUN`。
-2. **路线图与存储底座方向（待建设）**：
-   - 依据 [长期路线](<ROADMAP.md>)，`M0–M3` 已完成，当前处于 `M4` 设计推进期，`M5`（影子运行时）与 `M6`（授权试点）尚未开始。
-   - 后续 M4/M5 存储底座规划坚持**纯文本可读路径**：以 **Markdown 文档作为不可变原文真源 + JSON 作为结构化索引/Intent/审计账本**，不引入 SQLite 等封闭二进制格式；任何平台持久化声称均须通过独立故障注入实证。
+   - C0–C5 只代表上下文主动取用的隔离合成闭环，不代表生产可用、真实 LLM 效果或宿主插件集成。
+   - 另有 [M5 shadow_runtime](<../shadow_runtime/store.py>) 文件型合成运行时，使用 Markdown + JSON、写锁、intent/回执/审计与恢复逻辑；它是隔离实验，不是生产服务。当前 meta sidecar 有无密钥摘要与 manifest 当前态核对，边界见 [安全模型](<SECURITY_MODEL.md>)。
+   - [framework](<../framework/contracts.py>) 已有 v2 请求与完整响应 schema/验证器；这不等于生产 records 查询/写入 API 已上线。真实认证、网络 MCP/HTTP 适配器、插件连接、授权迁移试点和物理删除仍未完成。
+   - [验收矩阵](<ACCEPTANCE.md>) 中 R01–R09 仍为 NOT_RUN；影子回归测试不得代替该登记。
+2. **里程碑状态**：
+   - [ROADMAP](<ROADMAP.md>) 的 M4（运行时契约/设计）与 M5（合成 shadow）为 complete；此处 complete 仅限各自退出条件，不代表生产发布。
+   - M6（真实数据迁移试点）仍 pending，要求授权备份、回滚和独立真实验收。
+   - 原文不可变和 shadow meta/status 的具体原子性、灾难恢复、并发/功率损失边界仍按对应事务与恢复文档声明，不从本轮单元测试外推。
 
 ---
 

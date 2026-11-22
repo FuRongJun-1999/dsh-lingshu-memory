@@ -1,6 +1,6 @@
 # 原子提交与取消协议提案
 
-状态proposal；没有实际WAL、锁、CAS或平台I/O实现。纯模型不证明真实并发。
+状态proposal；没有生产WAL、认证协调域、跨进程CAS或平台I/O实现。纯模型不证明真实并发。隔离 shadow_runtime 另有process-crash intent恢复，范围/提交判定见[恢复说明](<RECOVERY.md#shadow-process-crash-transaction-journal>)；它不实现本提案的生产线性化或fencing保证。
 
 ## 提交域与线性化点
 
