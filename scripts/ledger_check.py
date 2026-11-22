@@ -12,7 +12,7 @@ LEDGER = ROOT / 'docs' / 'STAGE_LEDGER.md'
 ROW = re.compile(r'^\|\s*(stage-[0-9.]+-v\d+)\s*\|\s*([0-9a-f]{40})\s*\|\s*(\d+)\s*\|\s*(I[0-4])\s*\|\s*([A-Z_]+/[A-Z_]+)\s*\|\s*(.+?)\s*\|$')
 GRADES = ('I0', 'I1', 'I2', 'I3', 'I4')
 MAX_GRADE = 'I1'
-MIN_ROWS = 8
+MIN_ROWS = 10
 GATES = ('NOT_RUN/BLOCK',)
 FORBIDDEN = ('production pass', 'production approved', 'production-approved', 'production ready',
              'production-ready', 'ga-ready', 'general availability', 'prod-ready', 'release-ready',
@@ -51,16 +51,23 @@ def is_ancestor(root, older, newer):
     return result.returncode == 0
 
 
+def artifact_present(root, commit, path):
+    result = subprocess.run(['git', 'cat-file', '-e', commit + ':' + path], cwd=root,
+                            capture_output=True, text=True, encoding='utf-8', errors='replace')
+    return result.returncode == 0
+
+
 def head_commit(root):
     result = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=root,
                             capture_output=True, text=True, encoding='utf-8', errors='replace')
     return result.stdout.strip() if result.returncode == 0 else ''
 
 
-def check_text(text, root, exists=None, ancestor=None, head=None):
+def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None):
     exists = exists or (lambda commit: commit_exists(root, commit))
     ancestor = ancestor or (lambda older, newer: is_ancestor(root, older, newer))
     head = head if head is not None else head_commit(root)
+    artifact = artifact or (lambda commit: artifact_present(root, commit, 'scripts/stage_gate.py'))
     problems = []
     entries = rows(text)
     if not entries:
@@ -88,9 +95,15 @@ def check_text(text, root, exists=None, ancestor=None, head=None):
                 break
         if not exists(entry['commit']):
             problems.append('unknown_commit:' + entry['stage'])
+        elif not artifact(entry['commit']):
+            problems.append('missing_artifact:' + entry['stage'])
+        if entry['tests'] <= 0:
+            problems.append('tests_not_positive:' + entry['stage'])
     for previous, current in zip(entries, entries[1:]):
         if ancestor(previous['commit'], current['commit']) is False:
             problems.append('row_order:' + current['stage'])
+        if current['tests'] < previous['tests']:
+            problems.append('tests_not_monotonic:' + current['stage'])
     if entries and head and ancestor(entries[-1]['commit'], head) is False:
         problems.append('row_not_in_history:' + entries[-1]['stage'])
     for required in ('## 当前边界声明', '## 已知共因风险'):

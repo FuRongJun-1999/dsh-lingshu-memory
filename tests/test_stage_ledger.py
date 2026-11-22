@@ -28,7 +28,7 @@ def document(*lines, boundary=None, risks='共因风险说明'):
     return chr(10).join(parts)
 
 
-def check(text, exists=True, ancestor=True, head=HEAD, wired=True):
+def check(text, exists=True, ancestor=True, head=HEAD, wired=True, artifact=True):
     module = load()
     root = module.ROOT
     chain = module.ROOT / 'scripts' / 'check_all.py'
@@ -39,13 +39,14 @@ def check(text, exists=True, ancestor=True, head=HEAD, wired=True):
         return module.check_text(text, root,
                                 exists=lambda commit: exists,
                                 ancestor=lambda older, newer: ancestor,
-                                head=head)
+                                head=head,
+                                artifact=lambda commit: artifact)
     finally:
         module.Path.read_text = real_read
 
 
 def full_document(**overrides):
-    rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1)) for index in range(8)]
+    rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1), tests=100 + index) for index in range(10)]
     return document(*rows, **overrides)
 
 
@@ -57,32 +58,44 @@ class LedgerBranchTests(unittest.TestCase):
         self.assertIn('ledger_empty', check(document()))
 
     def test_too_few_rows_is_flagged(self):
-        self.assertIn('too_few_rows', check(document(row())))
+        self.assertIn('too_few_rows', check(document(row(tests=1))))
 
     def test_duplicate_commit_is_flagged(self):
-        rows = [row('stage-0.1-v%d' % index, HEAD) for index in range(8)]
+        rows = [row('stage-0.1-v%d' % index, HEAD, tests=100 + index) for index in range(10)]
         self.assertIn('duplicate_commit:stage-0.1-v1', check(document(*rows)))
 
     def test_duplicate_stage_is_flagged(self):
-        rows = [row('stage-0.1-v1', '{:040x}'.format(index + 1)) for index in range(8)]
+        rows = [row('stage-0.1-v1', '{:040x}'.format(index + 1), tests=100 + index) for index in range(10)]
         self.assertIn('duplicate_stage:stage-0.1-v1', check(document(*rows)))
 
     def test_bad_gates_value_is_flagged(self):
-        rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1)) for index in range(8)]
-        rows[0] = row('stage-0.1-v0', '{:040x}'.format(1), gates='PASS/BLOCK')
+        rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1), tests=100 + index) for index in range(10)]
+        rows[0] = row('stage-0.1-v0', '{:040x}'.format(1), tests=100, gates='PASS/BLOCK')
         self.assertIn('bad_gates:stage-0.1-v0', check(document(*rows)))
 
     def test_grade_above_ceiling_is_flagged(self):
         rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1)) for index in range(8)]
-        rows[3] = row('stage-0.1-v3', '{:040x}'.format(4), grade='I2')
+        rows[3] = row('stage-0.1-v3', '{:040x}'.format(4), tests=103, grade='I2')
         self.assertIn('grade_ceiling:stage-0.1-v3', check(document(*rows)))
 
     def test_overclaim_is_flagged_for_fullwidth_and_zero_width(self):
         for note in ('生产　通过', '生产\u200b通过', 'PRODUCTION　PASS', '可 上 线'):
             rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1)) for index in range(8)]
-            rows[7] = row('stage-0.1-v7', '{:040x}'.format(8), note=note)
+            rows[7] = row('stage-0.1-v7', '{:040x}'.format(8), tests=107, note=note)
             self.assertIn('overclaim:stage-0.1-v7', check(document(*rows)), note)
 
+    def test_missing_artifact_is_flagged(self):
+        self.assertIn('missing_artifact:stage-0.1-v0', check(full_document(), artifact=False))
+
+    def test_non_positive_tests_is_flagged(self):
+        rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1), tests=100 + index) for index in range(10)]
+        rows[0] = row('stage-0.1-v0', '{:040x}'.format(1), tests=0)
+        self.assertIn('tests_not_positive:stage-0.1-v0', check(document(*rows)))
+
+    def test_tests_must_not_decrease(self):
+        rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1), tests=100 + index) for index in range(10)]
+        rows[5] = row('stage-0.1-v5', '{:040x}'.format(6), tests=1)
+        self.assertIn('tests_not_monotonic:stage-0.1-v5', check(document(*rows)))
     def test_unknown_commit_is_flagged(self):
         self.assertIn('unknown_commit:stage-0.1-v0', check(full_document(), exists=False))
 
@@ -90,15 +103,15 @@ class LedgerBranchTests(unittest.TestCase):
         self.assertIn('row_order:stage-0.1-v1', check(full_document(), ancestor=False))
 
     def test_row_outside_head_history_is_flagged(self):
-        rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1)) for index in range(8)]
+        rows = [row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1), tests=100 + index) for index in range(10)]
         module = load()
         problems = module.check_text(document(*rows), module.ROOT,
                                      exists=lambda commit: True, ancestor=lambda older, newer: newer != HEAD,
-                                     head=HEAD)
-        self.assertIn('row_not_in_history:stage-0.1-v7', problems)
+                                     head=HEAD, artifact=lambda commit: True)
+        self.assertIn('row_not_in_history:stage-0.1-v9', problems)
 
     def test_missing_section_is_flagged(self):
-        text = chr(10).join([row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1)) for index in range(8)])
+        text = chr(10).join([row('stage-0.1-v%d' % index, '{:040x}'.format(index + 1), tests=100 + index) for index in range(10)])
         problems = check(text)
         self.assertIn('missing_section:## 当前边界声明', problems)
 
