@@ -34,6 +34,15 @@ def canonical(body):
     return json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode('utf-8')
 
 
+
+
+SIGNING_DOMAIN = b'dsh-lingshu-memory/stage-gate/v1\x00'
+
+
+def signed(body):
+    return SIGNING_DOMAIN + canonical(body)
+
+
 def digest(body):
     return hashlib.sha256(canonical(body)).hexdigest()
 
@@ -220,7 +229,7 @@ def review_payload(manifest):
     body = {key: value for key, value in manifest.items() if key != 'manifest_sha256'}
     reviewed = {key: value for key, value in body['reviewed_by'].items() if key != 'signature'}
     body['reviewed_by'] = reviewed
-    return canonical(body)
+    return signed(body)
 
 def check_review(manifest, pins, out, performed):
     reviewer = manifest['reviewed_by']
@@ -366,7 +375,7 @@ def check_attestation(manifest, pins, out):
     body = {name: data[name] for name in ATTESTATION_FIELDS - {'signature'}}
     try:
         verifier = ed25519_module()
-        attestation_valid = verifier.verify(bytes.fromhex(key), canonical(body), bytes.fromhex(signature))
+        attestation_valid = verifier.verify(bytes.fromhex(key), signed(body), bytes.fromhex(signature))
     except Exception as error:
         out.append(('attestation_schema', 'verification failed: ' + str(error)))
         return

@@ -52,7 +52,7 @@ def sign_review(body):
     reviewed['reviewer_keyid'] = signer.public_key(REVIEW_SEED).hex()
     projection['reviewed_by'] = reviewed
     body['reviewed_by']['reviewer_keyid'] = reviewed['reviewer_keyid']
-    body['reviewed_by']['signature'] = signer.sign(REVIEW_SEED, gate_mod.canonical(projection)).hex()
+    body['reviewed_by']['signature'] = signer.sign(REVIEW_SEED, gate_mod.signed(projection)).hex()
 
 
 def payload(root, base, candidate, requirements_sha, mutate=None):
@@ -116,16 +116,16 @@ def attestation(manifest, pins, *, key=SEED, tamper=None, trusted=True):
             'issuer': 'stage-reviewer',
             'issued_at': '2026-01-01T00:30:00Z',
             'public_key': public.hex()}
-    signature = signer.sign(key, gate_mod.canonical(body))
+    signature = signer.sign(key, gate_mod.signed(body))
     record = dict(body, signature=signature.hex())
     if tamper == 'manifest':
         body['manifest_sha256'] = 'e' * 64
-        record = dict(body, signature=signer.sign(key, gate_mod.canonical(body)).hex())
+        record = dict(body, signature=signer.sign(key, gate_mod.signed(body)).hex())
     elif tamper == 'signature':
         record['signature'] = ('00' * 64)
     elif tamper == 'time':
         body['issued_at'] = '2099-01-01T00:00:00Z'
-        record = dict(body, signature=signer.sign(key, gate_mod.canonical(body)).hex())
+        record = dict(body, signature=signer.sign(key, gate_mod.signed(body)).hex())
     root = pins.pop('_root')
     path = root / 'attestation.json'
     write_lf(path, json.dumps(record, sort_keys=True))
@@ -318,6 +318,15 @@ class StageGateHardeningTests(unittest.TestCase):
 
 
 class StageGateAttestationTests(unittest.TestCase):
+    def test_domain_separation_prefixes_the_signed_bytes(self):
+        body = {'a': 1}
+        self.assertNotEqual(gate_mod.signed(body), gate_mod.canonical(body))
+        self.assertTrue(gate_mod.signed(body).startswith(gate_mod.SIGNING_DOMAIN))
+
+    def test_undomained_signature_does_not_verify_against_gate_payload(self):
+        body = {'a': 1}
+        signature = signer.sign(SEED, gate_mod.canonical(body))
+        self.assertFalse(signer.verify(signer.public_key(SEED), gate_mod.signed(body), signature))
     def test_signed_attestation_enables_pass(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)

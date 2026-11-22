@@ -299,7 +299,7 @@
     "tests/test_source_boundary.py": "bbba9557378adacf1ed6cff9a56c1735d2713634766357d4babdd62491d6581f",
     "tests/test_source_boundary_mutations.py": "20f6b24da7d0bced4d072c4a3827eb2c252dfc318ee644a7befbc86085e866a1",
     "tests/test_spec_tree.py": "96eb81c4c7c519afbbd162663fd4ec5b8acf4ce98c99c2fafd69d32f9f7081c6",
-    "tests/test_stage_gate.py": "5d3a1c5995e042a9efcc0520bd9e6a43621bc1623436cacad63f0f15fe03b660",
+    "tests/test_stage_gate.py": "e3452cd7e6aa6ed5234c726397fd76acb91f9f334c6e6c68b77146d980cb9cda",
     "tests/test_stage_gate_mutations.py": "aceabdfc5dcdc03207d09fe7f39674f25358fea075a12b5232a12bb3bdfb35e4",
     "tests/test_stage_ledger.py": "425dbea4b191dc271a8a3c0e97a936bcd7b49984c8a1de433e695be06ee59842",
     "tests/test_writer_receipt.py": "24cff9f460f7a4d4b70995517f155257f4fe3d3f0131e667214c3a4218751cc6",
