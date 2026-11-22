@@ -9,6 +9,7 @@ ENV = dict(os.environ, PYTHONUTF8="1", PYTHONDONTWRITEBYTECODE="1")
 def main():
     commands = [[sys.executable, "-B", "scripts/spec_tools.py", "check"],
                 [sys.executable, "-B", "scripts/spec_tree.py"],
+                [sys.executable, "-B", "scripts/ledger_check.py"],
                 [sys.executable, "-B", "scripts/release_gate.py"],
                 [sys.executable, "-B", "scripts/migration_gate.py"],
                 [sys.executable, "-B", "scripts/workspace_index.py"],

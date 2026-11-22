@@ -1,7 +1,7 @@
 # 阶段台账（Stage Ledger）
 
 本文件是**可机检**的阶段冻结记录：每一行对应一次已提交的候选、其验证读数、以及**当时被明确排除在外的结论**。
-校验脚本：`scripts/ledger_check.py`（由 `scripts/check_all.py` 之外独立运行，CI 中由 `tests/test_stage_ledger.py` 调用）。
+校验脚本：`scripts/ledger_check.py`，已接入 `scripts/check_all.py`（CI 会跑），并由 `tests/test_stage_ledger.py` 覆盖。
 
 ## 台账规则
 
@@ -9,6 +9,7 @@
 2. `independence` 只能是 `I0`–`I4` 之一；**I0/I1 行不得出现 production/power 通过类结论**。
 3. 行一旦写入不得修改（只可追加）；需要更正时追加新行并注明 `supersedes`。
 4. `gates` 列只能是 `NOT_RUN`（生产运行时门禁）或 `BLOCK`（发布门禁），本仓库当前两者都是这两值。
+5. 行必须按提交祖先序排列（后一行的提交须包含前一行的提交），以此检出历史改写与插队。
 
 ## 冻结记录
 
@@ -21,6 +22,7 @@
 | stage-0.1-v7 | fac9cb4ab0833e6a0229a1b01352d8d174cbdf49 | 283 | I1 | NOT_RUN/BLOCK | 复核者签名、RFC 8032 向量回归 |
 | stage-0.1-v8 | 0252c17c99ed765f80ec336616b2d79af41c90cd | 290 | I1 | NOT_RUN/BLOCK | 小阶点/单位元伪造修复、动态 CHECKS RUN |
 | stage-0.1-v9 | 461d3795cb44a4686cb53f015fa2ddf318d53b37 | 294 | I1 | NOT_RUN/BLOCK | production 证据提交字节绑定与显式错误码 |
+| stage-0.1-v10 | 58d02a9af58dc3170c4c6f53b7d45ab1f5758aa2 | 300 | I1 | NOT_RUN/BLOCK | 可机检阶段台账与证据上限声明 |
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
 

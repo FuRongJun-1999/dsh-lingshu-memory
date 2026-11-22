@@ -44,6 +44,13 @@ class LedgerTests(unittest.TestCase):
         for entry in module.rows(text):
             self.assertTrue(module.commit_exists(module.ROOT, entry['commit']), entry['stage'])
 
+    def test_rows_are_listed_in_ancestry_order(self):
+        module = load()
+        text = (ROOT / 'docs' / 'STAGE_LEDGER.md').read_text(encoding='utf-8')
+        entries = module.rows(text)
+        for previous, current in zip(entries, entries[1:]):
+            self.assertTrue(module.is_ancestor(module.ROOT, previous['commit'], current['commit']),
+                            previous['stage'] + ' -> ' + current['stage'])
     def test_no_i1_row_claims_production_pass(self):
         module = load()
         text = (ROOT / 'docs' / 'STAGE_LEDGER.md').read_text(encoding='utf-8')

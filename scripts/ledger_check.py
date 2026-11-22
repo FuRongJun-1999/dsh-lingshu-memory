@@ -29,6 +29,12 @@ def commit_exists(root, commit):
     return result.returncode == 0
 
 
+def is_ancestor(root, older, newer):
+    result = subprocess.run(['git', 'merge-base', '--is-ancestor', older, newer], cwd=root,
+                            capture_output=True, text=True, encoding='utf-8', errors='replace')
+    return result.returncode == 0
+
+
 def main(argv=None):
     root = ROOT
     text = LEDGER.read_text(encoding='utf-8')
@@ -52,6 +58,10 @@ def main(argv=None):
                     problems.append('overclaim:' + entry['stage'])
         if not commit_exists(root, entry['commit']):
             problems.append('unknown_commit:' + entry['stage'])
+    for previous, current in zip(entries, entries[1:]):
+        if commit_exists(root, previous['commit']) and commit_exists(root, current['commit']):
+            if not is_ancestor(root, previous['commit'], current['commit']):
+                problems.append('row_order:' + current['stage'])
     for required in ('## 当前边界声明', '## 已知共因风险'):
         if required not in text:
             problems.append('missing_section:' + required)
