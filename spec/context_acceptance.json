@@ -301,7 +301,7 @@
     "tests/test_spec_tree.py": "96eb81c4c7c519afbbd162663fd4ec5b8acf4ce98c99c2fafd69d32f9f7081c6",
     "tests/test_stage_gate.py": "e3452cd7e6aa6ed5234c726397fd76acb91f9f334c6e6c68b77146d980cb9cda",
     "tests/test_stage_gate_mutations.py": "aceabdfc5dcdc03207d09fe7f39674f25358fea075a12b5232a12bb3bdfb35e4",
-    "tests/test_stage_ledger.py": "246551b5db49d6462c0291ee787a157dc992757d1c2c69b8603b6c44eac1c17a",
+    "tests/test_stage_ledger.py": "06327fe525a5d62d8fa46f4f996ff0251a5a4b25f789e1a575cf99c9ef9e7b0c",
     "tests/test_writer_receipt.py": "24cff9f460f7a4d4b70995517f155257f4fe3d3f0131e667214c3a4218751cc6",
     "tests/test_writer_status.py": "f9062a9a9d2d7009816ed6bdcb0d98d1838531a5281638168abbdadb1d9da553"
   },
