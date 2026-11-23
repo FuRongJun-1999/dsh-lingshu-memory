@@ -99,6 +99,10 @@ def head_commit(root):
 
 def scan_docs(root):
     problems = []
+    shallow = is_shallow(root) if shallow is None else shallow
+    if shallow:
+        problems.append('shallow_clone: ledger checks need full git history (set fetch-depth: 0)')
+        return problems
     files = sorted(list((root / 'docs').glob('*.md')) + list(root.glob('*.md')))
     for path in files:
         if path.name == 'STAGE_LEDGER.md':
@@ -127,7 +131,13 @@ def stage_number(stage):
     return int(match.group(1)) if match else 0
 
 
-def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None, lag=None, checker=None):
+def is_shallow(root):
+    result = subprocess.run(['git', 'rev-parse', '--is-shallow-repository'], cwd=root,
+                            capture_output=True, text=True, encoding='utf-8', errors='replace')
+    return result.returncode == 0 and result.stdout.strip() == 'true'
+
+
+def check_text(text, root, exists=None, ancestor=None, head=None, artifact=None, lag=None, checker=None, shallow=None):
     exists = exists or (lambda commit: commit_exists(root, commit))
     ancestor = ancestor or (lambda older, newer: is_ancestor(root, older, newer))
     head = head if head is not None else head_commit(root)

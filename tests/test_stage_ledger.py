@@ -95,6 +95,17 @@ class LedgerBranchTests(unittest.TestCase):
             rows[7] = row('stage-0.1-v7', '{:040x}'.format(8), tests=107, note=note)
             self.assertIn('overclaim:stage-0.1-v7', check(document(*rows)), note)
 
+    def test_shallow_clone_is_reported_explicitly(self):
+        module = load()
+        problems = module.check_text(full_document(), module.ROOT, shallow=True)
+        self.assertEqual(problems, ['shallow_clone: ledger checks need full git history (set fetch-depth: 0)'])
+
+    def test_full_clone_still_runs_the_checks(self):
+        module = load()
+        problems = module.check_text(full_document(), module.ROOT, shallow=False,
+                                      exists=lambda c: True, ancestor=lambda a, b: True, head=HEAD,
+                                      artifact=lambda c: True, lag=lambda c: 0, checker=lambda c: True)
+        self.assertEqual(problems, [])
     def test_missing_freeze_doc_is_flagged(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
