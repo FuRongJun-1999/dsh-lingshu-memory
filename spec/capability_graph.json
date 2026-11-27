@@ -1747,6 +1747,48 @@
       "dependencies": [
         "edges.visible"
       ]
+    },
+    {
+      "id": "review.records",
+      "name": "授权裁决记录元数据",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/review_records.py",
+        "symbol": "review_records"
+      },
+      "implementation": [
+        {
+          "path": "framework/review_records.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "提案显式且已授权；可信宿主独立锚定同快照摘要。"
+      ],
+      "subfunctions": [
+        "授权先行",
+        "核对完整投影摘要",
+        "倒序限额"
+      ],
+      "execution": "只输出裁决类型、序号与修订；摘要不符整次拒绝。",
+      "negative": [
+        "不接旧账本、裁决写入、正文、独立复核身份或签名。"
+      ],
+      "evidence": [
+        "tests/test_review_records.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3966,
+          3991
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

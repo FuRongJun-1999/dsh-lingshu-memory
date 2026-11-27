@@ -98,10 +98,15 @@
         119,
         151
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "review.records",
+          "condition": "单提案授权与完整裁决元数据摘要相符后按序投影。"
+        }
+      ],
+      "gap": "不迁旧账本、待审队列、检索、写裁决、旧摘要编码和签章。"
     },
     {
       "tool": "cg",
