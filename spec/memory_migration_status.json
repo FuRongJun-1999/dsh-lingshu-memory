@@ -454,10 +454,15 @@
         677,
         729
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "whitebox.readback_probe",
+          "condition": "现有合成事实在授权条件下可回读并命中独立固定的精确版本和摘要。"
+        }
+      ],
+      "gap": "不迁旧问答路由、模型调用、编码写入、探针落库或协议。"
     },
     {
       "tool": "cg",

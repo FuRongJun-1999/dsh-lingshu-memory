@@ -1,7 +1,7 @@
 # 固定上游记忆功能迁移对照（生成）
 
 范围：固定上游提交的 39 个 cg 和 5 个 stg 顶层操作。未运行旧仓，不覆盖 action、参数组合和历史别名。
-统计：39 项子集有隔离证据，5 项未迁移，旧接口可调用 0 项。
+统计：40 项子集有隔离证据，4 项未迁移，旧接口可调用 0 项。
 
 “子集有证据”只指新版中文功能图中的隔离能力；不表示旧协议兼容。既有 S3 映射保留原冻结基线。
 新版节点见[记忆能力图](<CAPABILITY_GRAPH.md>)；旧候选见[兼容候选](<COMPATIBILITY.md>)。
@@ -33,7 +33,7 @@
 | [cg.index_code](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L629-L647) | 子集隔离验证 | index.python_declarations：已授权且版本匹配的 Python 快照，静态生成顶层声明引用。 | 不迁旧目录扫描、多语言、嵌套声明、注释渲染、写入和增量水位。 |
 | [cg.index_doc](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L648-L657) | 子集隔离验证 | index.document_sections：已知授权源版本，围栏外按标题切分，生成可回读的引用。 | 不迁目录扫描、旧摘要与小节归并、写入、增量水位或旧协议。 |
 | [cg.ref](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L658-L676) | 子集隔离验证 | ref.source：按已登记源 ID 授权；整源与区间摘要均匹配才回读。 | 不接旧路径、索引水位、悬空清理、巡检或旧协议。 |
-| [cg.whitebox](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L677-L729) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
+| [cg.whitebox](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L677-L729) | 子集隔离验证 | whitebox.readback_probe：现有合成事实在授权条件下可回读并命中独立固定的精确版本和摘要。 | 不迁旧问答路由、模型调用、编码写入、探针落库或协议。 |
 | [cg.theory](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L730-L744) | 子集隔离验证 | theory.declaration_check：授权后对照独立摘要、策略和认可版本集合。 | 不迁旧默认放行、声明写入、启动许可、理论验真及旧协议。 |
 | [cg.link](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L745-L806) | 子集隔离验证 | link.lineage：授权同快照显式派生记录，只有当前子父定位符匹配才报告。 | 不迁旧握手、对端信任、证据交换、签名、原台账读写及重建。 |
 | [cg.session](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L807-L833) | 子集隔离验证 | session.resume：授权的单会话同代际快照，组合定位符与近期事件，整次受限。 | 不迁旧写要点、压缩、可见性切换、状态自动装配和令牌预算。 |

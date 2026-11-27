@@ -2249,6 +2249,48 @@
       "dependencies": [
         "edges.visible"
       ]
+    },
+    {
+      "id": "whitebox.readback_probe",
+      "name": "授权白箱回读核验",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/whitebox_probe.py",
+        "symbol": "verify_existing"
+      },
+      "implementation": [
+        {
+          "path": "framework/whitebox_probe.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信夹具提供明确当前预期修订和正文摘要；读口可复验授权。"
+      ],
+      "subfunctions": [
+        "真实授权回读",
+        "核对当前定位符及正文摘要",
+        "最小核验回执"
+      ],
+      "execution": "只验证一次固定事实的回读；不写、不输出正文。",
+      "negative": [
+        "不迁白箱问答、编码、模型路由、后台留痕或生产。"
+      ],
+      "evidence": [
+        "tests/test_whitebox_probe.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/whitebox.py",
+        "lines": [
+          374,
+          405
+        ]
+      },
+      "dependencies": [
+        "read.get"
+      ]
     }
   ]
 }
