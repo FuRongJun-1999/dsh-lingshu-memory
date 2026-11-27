@@ -18,7 +18,7 @@ from framework.responses import absence_basis, cancellation
 from framework.read_get import ReadSnapshot, read_get
 from framework.security import binding_shape, context_shape, emit_allowed
 from framework.spec import canonical, parse
-from sandbox_runtime.retrieval import bm25_rank_visible
+from framework.read_search import read_search
 from sandbox_runtime.store import wordset
 from shadow_runtime.audit import PayloadFreeAuditLog, inspect_audit
 from shadow_runtime.durability import ExclusiveFileLock, atomic_write_text, ensure_dir_durable, probe_platform_durability
@@ -1229,6 +1229,20 @@ class ShadowMarkdownStore:
                             current_context=current_context if current_context is not None else lambda: context,
                             current_now=current_now if current_now is not None else lambda: now)
 
+    def _search_candidates(self, req, ctx, now, manifest, nodes, metas, offset):
+        idx = self._load_valid_index(manifest)
+        bodies = {}
+
+        def ranking_body(key, revision):
+            text = self._md_path(key, revision).read_bytes().decode("utf-8")
+            bodies[key] = text
+            return text
+
+        view = ReadSnapshot(manifest["content_generation"], manifest["policy_generation"], nodes, metas)
+        page = read_search(req, context=ctx, now=now, view=view, postings=None if idx is None else idx["inverted"],
+                           body=ranking_body, model=self.model, offset=offset)
+        return page, bodies
+
     def _read_locked(self, req: dict, ctx: dict, now: int, rid: str, *,
                      current_context_provider=None, current_now_provider=None) -> dict:
         manifest_body = self._load_manifest_or_init()
@@ -1275,21 +1289,14 @@ class ShadowMarkdownStore:
             )
 
         if kind == "Read.search":
-            idx = self._load_valid_index(manifest_body)
-            if idx is None and manifest_body["nodes"]:
-                return validate_full_response({
-                    "version": "0.2-full", "request_id": rid, "scope": "read", "outcome": "error",
-                    "error_code": "INTEGRITY_FAILURE", "next_action": "refresh_snapshot",
-                    "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                    "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
-                })
-            q_tokens = wordset(req["query"])
-            cand_ids = set()
-            if idx is not None:
-                for tok in q_tokens:
-                    cand_ids.update(idx["inverted"].get(tok, ()))
-            authorized_ids = [nid for nid in sorted(cand_ids) if nid in metas and _can_read(nid, ctx)]
-            limit = req["limit"]
+            page, bodies = self._search_candidates(req, ctx, now, manifest_body, nodes, metas, offset)
+            if page.error is not None:
+                action = "fix_input" if page.error == "CONDITION_DEFERRED" else "refresh_snapshot"
+                return validate_full_response(dict(version="0.2-full", request_id=rid, scope="read", outcome="error",
+                    error_code=page.error, next_action=action, snapshot_ref=None, policy_generation=None, records=None,
+                    next_cursor=None, target=None, historical_receipt=None, selfcheck_aggregate=None))
+            page_ids = [locator["id"] for locator in page.locators]
+            has_more, limit = page.has_more, req["limit"]
         else:
             root_id = req["node_id"]
             if not _can_read(root_id, ctx):
@@ -1312,35 +1319,29 @@ class ShadowMarkdownStore:
             authorized_ids = collected
             limit = req["limit"]
 
-        matched_ids = []
-        saw_defer = False
-        bodies: dict[str, str] = {}
-        for nid in authorized_ids:
-            meta = metas[nid]
-            cv = condition_match(meta["condition_space"], cond_q)
-            tv = bitemporal_match(meta["bitemporal"], time_q)
-            if cv == "NO_MATCH" or tv == "NO_MATCH":
-                continue
-            if cv == "DEFER" or tv == "DEFER":
-                saw_defer = True
-                continue
-            matched_ids.append(nid)
-            bodies[nid] = self._md_path(nid, meta["revision"]).read_text(encoding="utf-8")
+            matched_ids = []
+            saw_defer = False
+            bodies: dict[str, str] = {}
+            for nid in authorized_ids:
+                meta = metas[nid]
+                cv = condition_match(meta["condition_space"], cond_q)
+                tv = bitemporal_match(meta["bitemporal"], time_q)
+                if cv == "NO_MATCH" or tv == "NO_MATCH":
+                    continue
+                if cv == "DEFER" or tv == "DEFER":
+                    saw_defer = True
+                    continue
+                matched_ids.append(nid)
+                bodies[nid] = self._md_path(nid, meta["revision"]).read_text(encoding="utf-8")
 
-        if saw_defer:
-            return validate_full_response({
-                "version": "0.2-full", "request_id": rid, "scope": "read", "outcome": "error",
-                "error_code": "CONDITION_DEFERRED", "next_action": "fix_input",
-                "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
-            })
+            if saw_defer:
+                return validate_full_response({
+                    "version": "0.2-full", "request_id": rid, "scope": "read", "outcome": "error",
+                    "error_code": "CONDITION_DEFERRED", "next_action": "fix_input",
+                    "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
+                    "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
+                })
 
-        if kind == "Read.search":
-            pool_records = {nid: {"body": bodies[nid], "key": nid} for nid in matched_ids}
-            ranked_ids = bm25_rank_visible(matched_ids, req["query"], pool_records, len(matched_ids))
-            page_ids = ranked_ids[offset:offset + limit]
-            has_more = offset + limit < len(ranked_ids)
-        else:
             page_ids = matched_ids[offset:offset + limit]
             has_more = offset + limit < len(matched_ids)
 

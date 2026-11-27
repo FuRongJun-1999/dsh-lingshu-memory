@@ -20,6 +20,9 @@ const request={kind:'Write.create',caller_token:'dsh-lab',content:'synthetic blu
   source_attribution:{source_kind:'document',source_id:'fixture'},durability_request:'process'};
 const get={kind:'Read.get',node_id:'node-1',include_provenance:false,condition_query:conditions,time_axis:'effective',time_point:'2024-01-05T00:00:00Z'};
 
+const search={kind:"Read.search", query:"blue", limit:1, include_provenance:false,
+  condition_query:conditions, time_axis:"effective", time_point:get.time_point};
+
 async function call(name, args) {
   const id = 'fixture-' + ++seq;
   const batch = await ctx.tools.execute({calls:[{type:'tool-call',id,name,arguments:JSON.stringify(args)}], signal:AbortSignal.timeout(10000)});
@@ -79,6 +82,9 @@ try {
   assert.deepEqual(after.records[0].locator,{id:receipt.node_id,revision:1,content_sha:receipt.content_sha});
   assert.equal((await invoke(owner,{...request,content:'changed fixture'})).error_code,'TOKEN_PAYLOAD_CONFLICT');
   await installed(attach('fixture_reader','bob',root+'/reader.pid'));
+  assert.deepEqual((await invoke(owner,search)).records,after.records);
+  assert.deepEqual((await invoke(owner,{...search,query:"absentphrase"})).records,[]);
+  assert.deepEqual((await invoke(reader,search)).records,[]);
   const denied=await invoke(reader,get);
   assert.equal(denied.error_code,'NOT_FOUND_OR_DENIED');
   assert.equal(denied.records,null);
@@ -90,7 +96,7 @@ try {
   assert.equal(rows[0].payload_sha,receipt.content_sha);
   console.log('LAB_RESULT '+JSON.stringify({owner_tool:owner,reader_tool:reader,client_pid:process.pid,first_server_pid:firstPid,
     reconnected_server_pid:secondPid,transitions,receipt_replay:'PASS',authorized_read:'PASS',foreign_read:'DENIED',
-    audit_rows:rows.length,dsh_tool_pipeline:'PASS',dsh_model_loop:'NOT_RUN',production:'NOT_RUN'}));
+    audit_rows:rows.length,search_contrast:'PASS',dsh_tool_pipeline:'PASS',dsh_model_loop:'NOT_RUN',production:'NOT_RUN'}));
 } finally {
   for(const fiber of fibers.reverse()) await fiber.dispose();
   await rm(root,{recursive:true,force:true});

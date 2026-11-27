@@ -77,9 +77,72 @@
     },
     {
       "id": "read.search",
-      "name": "候选检索",
-      "state": "planned",
-      "dependencies": []
+      "name": "可授权候选检索",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/read_search.py",
+        "symbol": "read_search"
+      },
+      "implementation": [
+        {
+          "path": "framework/read_search.py",
+          "symbol": null
+        },
+        {
+          "path": "framework/ranking.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore.execute"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._search_candidates"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._read_locked"
+        },
+        {
+          "path": "shadow_runtime/mcp_lab.py",
+          "symbol": "Session.dispatch"
+        }
+      ],
+      "conditions": [
+        "显式 Read.search、可信主体和时点；受信的一致快照以及绑定其代际的倒排索引",
+        "只有已授权且条件、指定时间轴匹配的记录进入评分；提供经过适配器验证的分页位移",
+        "候选不授权正文；任何对外交付仍由适配器复核当前主体和快照"
+      ],
+      "subfunctions": [
+        "索引候选去重",
+        "授权及条件时间过滤",
+        "按修订与摘要读排名材料",
+        "可见池 BM25 排序与页切片"
+      ],
+      "execution": "独立入口只返回定位符、下一页提示或错误；不返回正文、分数、被拒记录或其统计。条件未知则不排名。现有文件接口保留受控正文交付与分页。",
+      "negative": [
+        "不复刻旧版融合排序、语义词扩展、budget_tokens召回及标签过滤",
+        "不通过该接口发现库、认证、发行游标或判定证据充分性；不保证运行时间侧信道或开放语义检索"
+      ],
+      "evidence": [
+        "tests/test_read_search.py",
+        "scripts/linux_mcp_wire_lab.py",
+        "scripts/linux_dsh_mcp_lab.mjs"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3542,
+          3668
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "condition.time",
+        "snapshot.body"
+      ]
     },
     {
       "id": "write.token",

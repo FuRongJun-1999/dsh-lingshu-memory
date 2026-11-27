@@ -36,7 +36,9 @@
 | stage-0.1-v18 | 9d7933b8fe8265dbcca431ff80d77639876d65a1 | 336 | I1 | NOT_RUN/BLOCK | 同形字折叠与行为级接线断言 |
 | stage-0.1-v19 | e5cbe8ee2cca634c665a0f4cb3127fb0309a4319 | 338 | I1 | NOT_RUN/BLOCK | 复核签名与证明的域分离 |
 | stage-0.1-v20 | a250e1ef7e6d6a443da84cedfedd83fd967a1699 | 341 | I1 | NOT_RUN/BLOCK | 阶段冻结说明与三节机检 |
-| docker-lab-baseline | 2bfd549bb3abb77a3e46f03135dd1fd6942bb713 | 345 | I1 | NOT_RUN/BLOCK | 同一主体复验 Docker 三条隔离路径与完整门禁；不提升证据等级 |
+| stage-0.2-v1 | 2bfd549bb3abb77a3e46f03135dd1fd6942bb713 | 345 | I1 | NOT_RUN/BLOCK | 同一主体复验 Docker 三条隔离路径与完整门禁；不提升证据等级 |
+| stage-0.2-v2 | dce2ced23b34513cb3efdfb5d062dd6828e4630b | 350 | I1 | NOT_RUN/BLOCK | 按标识回读独立化；四矩阵及 Docker 两条接入路径 |
+
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
 

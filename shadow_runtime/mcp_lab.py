@@ -69,7 +69,7 @@ class Session:
             req = params["arguments"]["request"]
             # Deliberately expose only this experiment's operations and process durability.
             kind = req.get("kind")
-            if kind not in ("Read.get", "Read.receipt", "Write.create") or (
+            if kind not in ("Read.get", "Read.search", "Read.receipt", "Write.create") or (
                     kind == "Write.create" and (self.principal != "alice" or req.get("durability_request") != "process")):
                 result = dict(isError=True, content=[dict(type="text", text="operation not available in this lab")])
             else:

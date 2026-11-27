@@ -71,6 +71,8 @@ def call(send, req):
 
 def main():
     request, _, read = fixture()
+    search = {k:v for k,v in read.items() if k != "node_id"}
+    search.update(kind="Read.search",query="blue",limit=1)
     with tempfile.TemporaryDirectory(prefix="lingshu-mcp-", dir="/tmp") as tmp:
         with connect(tmp,"alice") as (a,send):
             created = call(send,request)
@@ -80,6 +82,7 @@ def main():
         with connect(tmp,"bob") as (b,send):
             denied=call(send,read)
             check(denied["error_code"]=="NOT_FOUND_OR_DENIED" and denied["records"] is None,"foreign read")
+            check(call(send,search)["records"]==[],"foreign search disclosed record")
             injected=send("tools/call",dict(name="shadow_request",arguments=dict(request=read,context=dict(principal="alice"))))
             check(injected["error"]["code"]==-32602,"request can override launch identity")
             blocked=send("tools/call",dict(name="shadow_request",arguments=dict(request=request)))
@@ -88,6 +91,8 @@ def main():
             restored=call(send,read)["records"]
             check(len(restored)==1 and restored[0]["body"]==request["content"] and restored[0]["locator"]==
                   dict(id=original["node_id"],revision=1,content_sha=hashlib.sha256(request["content"].encode()).hexdigest()), "read mismatch")
+            check(call(send,search)["records"]==restored,"authorized search differs from known read")
+            check(call(send,dict(search,query="absentphrase"))["records"]==[],"unmatched query returned records")
             check(call(send,request)["historical_receipt"]==original,"replay changed historical receipt")
             check(call(send,dict(request,content="changed fixture"))["error_code"]=="TOKEN_PAYLOAD_CONFLICT","token conflict accepted")
         rows=[json.loads(line) for line in (Path(tmp)/"audit/audit.jsonl").read_text(encoding="utf-8").splitlines()]
@@ -95,7 +100,7 @@ def main():
         check(len(rows)==1 and rows[0]["writer_id"]==original["writer_id"] and rows[0]["payload_sha"]==original["content_sha"],"audit disagreement")
         print(json.dumps(dict(schema=1,protocol="2024-11-05",server_pids=[a,b,c],audit_rows=len(rows),
                               receipt_replay="PASS",authorized_read="PASS",foreign_read="DENIED",identity_override="REJECTED",
-                              dsh_bridge="NOT_RUN",production="NOT_RUN"),sort_keys=True))
+                              search_contrast="PASS",dsh_bridge="NOT_RUN",production="NOT_RUN"),sort_keys=True))
 
 
 if __name__ == "__main__":

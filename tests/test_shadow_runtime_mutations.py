@@ -40,7 +40,7 @@ class ShadowRuntimeMutationTests(unittest.TestCase):
             ("empty_disk_absent", 'if tok_rec is None:\n            return {"commit_status": "unknown", "audit_state": audit_state, "integrity_failure": audit_info["state"] in ("degraded", "integrity_failure")}', 'if tok_rec is None:\n            return {"commit_status": "absent", "audit_state": audit_state, "integrity_failure": False}'),
             ("allow_overwrite_revision_md", "if md_target.exists() or meta_target.exists():", "if False:"),
             ("allow_overwrite_correct_revision_md", 'if self._md_path(node_id, new_rev).exists() or self._meta_path(node_id, new_rev).exists():', "if False:"),
-            ("ignore_corrupt_index", 'if idx is None and manifest_body["nodes"]:', "if False:"),
+            ("ignore_corrupt_index", 'postings=None if idx is None else idx["inverted"]', 'postings={} if idx is None else idx["inverted"]'),
             ("skip_cancel_fence_on_write", 'if action == "return_original_cancel":', "if False:"),
             ("skip_proof_sha_check", 'if _sha_obj(body) != proof["proof_sha"]:', "if False:"),
             ("skip_meta_sha_check", 'if type(meta["meta_sha"]) is not str or _sha_obj(body) != meta["meta_sha"]:', "if False:"),

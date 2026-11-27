@@ -31,7 +31,7 @@ class McpBoundaryTests(unittest.TestCase):
         store,rpc=self.session('bob')
         self.ready(rpc)
         self.assertEqual(rpc('tools/call',dict(name=TOOL,arguments={'request':{'kind':'Read.get'},'principal':'alice'}))['error']['code'],-32602)
-        for request in ({'kind':'Write.create','durability_request':'process'},{'kind':'Govern.restore'},{'kind':'Read.search'}):
+        for request in ({'kind':'Write.create','durability_request':'process'},{'kind':'Govern.restore'},{'kind':'Read.expand'}):
             self.assertTrue(rpc('tools/call',dict(name=TOOL,arguments={'request':request}))['result']['isError'])
         store.execute.assert_not_called()
         rpc('tools/call',dict(name=TOOL,arguments={'request':{'kind':'Read.get'}}))
