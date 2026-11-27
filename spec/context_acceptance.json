@@ -317,7 +317,7 @@
     "tests/test_benchmark.py": "f13df455ddac5f92ac271a9d45985ab68b183967707323336d29d71a8fc8ac31",
     "tests/test_benchmark_mutations.py": "c6ce2c772e6ea78482eaeaa2e72bc5d37ef3fd10df8d60bfbbaec62dc9386d41",
     "tests/test_calibration_report.py": "59913e90295209fa4ce6a658268db7df06199ce95623653cd3f41057e0d622e8",
-    "tests/test_capability_budget.py": "f8bb8d098c5ec571db2463fffd1f920de6c7d94fc0195619b221647ec09ae7bc",
+    "tests/test_capability_budget.py": "193ad165f8b6b3b11601b56a7c84a8b4c09d8a793a9531bdd9297260d4242843",
     "tests/test_capability_help.py": "4545c45aff9b871309f271433333f19b96aeef23e6364dd512bc1b93f6c7c1bb",
     "tests/test_causal_path.py": "89a2dcf9cb6c4464ada31bf9a828b16b02fa59fc8ef8a210150f2d1f18e89a50",
     "tests/test_ccg_review_preview.py": "4b3e70ce87cf4848803ddbc53b78b0921e38aeee06428cc52331f773c06fc1a9",
