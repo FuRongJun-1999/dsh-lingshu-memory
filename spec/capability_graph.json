@@ -1535,6 +1535,49 @@
       "dependencies": [
         "recent.window"
       ]
+    },
+    {
+      "id": "causal.path",
+      "name": "授权显式条件依赖路径",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/causal_path.py",
+        "symbol": "conditional_path"
+      },
+      "implementation": [
+        {
+          "path": "framework/causal_path.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信宿主提供同一快照的显式依赖三元组及已认证上下文。",
+        "每跳当前修订、权限、时间与条件均匹配，深度至多8。"
+      ],
+      "subfunctions": [
+        "复用当前节点可见投影",
+        "按层遍历显式条件依赖",
+        "过预算拒绝而非报告无路径"
+      ],
+      "execution": "只返回可见路径定位符；不回读正文，不输出被拒绝端点。",
+      "negative": [
+        "不从来源边或相似度推断，不支持旧权重、gate、解释或生产接口。"
+      ],
+      "evidence": [
+        "tests/test_causal_path.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          1924,
+          1940
+        ]
+      },
+      "dependencies": [
+        "edges.visible"
+      ]
     }
   ]
 }

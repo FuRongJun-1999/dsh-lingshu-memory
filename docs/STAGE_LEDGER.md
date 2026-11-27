@@ -63,6 +63,7 @@
 | stage-0.2-v25 | 27dc7c2ff6cf3e2cdbec4c1fcf38d1dfa37d71e8 | 425 | I1 | NOT_RUN/BLOCK | 静态 Python 引用闭环与公开四矩阵 |
 | stage-0.2-v26 | 201d3fa428124370211981e332ed1856419c3ed5 | 425 | I1 | NOT_RUN/BLOCK | 共享源版本闸门、四路 Docker 与交接 |
 | stage-0.2-v27 | 99aae6afe772b85ba7b4d8ef34c39cf8d1a45228 | 428 | I1 | NOT_RUN/BLOCK | 授权近期窗口与公开四矩阵 |
+| stage-0.2-v28 | 5f41556293819790a867c9553c07b336fdd6471f | 431 | I1 | NOT_RUN/BLOCK | 授权会话续接及公开四矩阵 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

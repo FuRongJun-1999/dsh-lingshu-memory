@@ -218,10 +218,15 @@
         431,
         454
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "causal.path",
+          "condition": "显式条件依赖绑定，逐跳授权与当前修订匹配，有限深度路径。"
+        }
+      ],
+      "gap": "不迁旧 gate、推断、解释、权重、反向链或协议。"
     },
     {
       "tool": "cg",

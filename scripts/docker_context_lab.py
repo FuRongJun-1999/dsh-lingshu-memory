@@ -121,7 +121,11 @@ def observe():
                             cwd=ROOT,shell=False,capture_output=True,text=True,encoding='utf-8',errors='strict',timeout=40)
     if resume.returncode or 'Ran 3 tests' not in resume.stderr or not resume.stderr.rstrip().endswith('OK'):
         raise RuntimeError('session resume tests failed: '+resume.stderr)
-    return dict(cases=cases, file_tests=4, verification_tests=3, status_tests=3, edge_tests=3, relation_tests=3, timeline_tests=3, anchor_tests=3, time_check_tests=3, state_chain_tests=4, state_event_tests=4, state_lease_tests=3, evidence_audit_tests=3, route_tests=3, help_tests=3, task_progress_tests=3, source_ref_tests=3, document_section_tests=3, python_declaration_tests=3, recent_window_tests=3, session_resume_tests=3,
+    causal = subprocess.run([sys.executable,'-X','utf8','-B','-m','unittest','discover','-s','tests','-p','test_causal_path.py','-v'],
+                            cwd=ROOT,shell=False,capture_output=True,text=True,encoding='utf-8',errors='strict',timeout=40)
+    if causal.returncode or 'Ran 3 tests' not in causal.stderr or not causal.stderr.rstrip().endswith('OK'):
+        raise RuntimeError('causal path tests failed: '+causal.stderr)
+    return dict(cases=cases, file_tests=4, verification_tests=3, status_tests=3, edge_tests=3, relation_tests=3, timeline_tests=3, anchor_tests=3, time_check_tests=3, state_chain_tests=4, state_event_tests=4, state_lease_tests=3, evidence_audit_tests=3, route_tests=3, help_tests=3, task_progress_tests=3, source_ref_tests=3, document_section_tests=3, python_declaration_tests=3, recent_window_tests=3, session_resume_tests=3, causal_path_tests=3,
                 dsh_model_loop='NOT_RUN', production='NOT_RUN')
 
 
@@ -136,7 +140,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='lingshu-recall-code-') as tmp:
         root = Path(tmp)
         sources = collect(root)
-        fixtures = ('test_session_resume.py','test_recent_window.py','test_python_declarations.py','test_document_sections.py','test_source_ref.py','test_task_progress.py','test_capability_help.py','test_route_candidates.py','test_evidence_audit.py','test_state_lease.py','test_state_event_port.py','test_state_chain.py','test_time_consistency.py','test_time_anchors.py','test_read_timeline.py','test_time_relation.py','test_read_edges.py','test_read_status.py','test_verification_capability.py','test_file_recall.py','test_shadow_runtime.py','test_sandbox_controller.py','test_sandbox_store.py')
+        fixtures = ('test_causal_path.py','test_session_resume.py','test_recent_window.py','test_python_declarations.py','test_document_sections.py','test_source_ref.py','test_task_progress.py','test_capability_help.py','test_route_candidates.py','test_evidence_audit.py','test_state_lease.py','test_state_event_port.py','test_state_chain.py','test_time_consistency.py','test_time_anchors.py','test_read_timeline.py','test_time_relation.py','test_read_edges.py','test_read_status.py','test_verification_capability.py','test_file_recall.py','test_shadow_runtime.py','test_sandbox_controller.py','test_sandbox_store.py')
         for rel in ('scripts/docker_process_lab.py', 'scripts/docker_context_lab.py', *(f'tests/{n}' for n in fixtures)):
             dest = root/rel
             dest.parent.mkdir(parents=True,exist_ok=True)
