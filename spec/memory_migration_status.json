@@ -175,10 +175,15 @@
         266,
         298
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "evolution.condition_history",
+          "condition": "同快照授权历史绑定当前节点定位符，按修订倒序。"
+        }
+      ],
+      "gap": "不读旧账本，不迁写入、回滚、模式聚合或旧协议。"
     },
     {
       "tool": "cg",

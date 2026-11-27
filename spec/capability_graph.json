@@ -1705,6 +1705,48 @@
       "dependencies": [
         "edges.visible"
       ]
+    },
+    {
+      "id": "evolution.condition_history",
+      "name": "授权条件补充历史",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/condition_history.py",
+        "symbol": "condition_history"
+      },
+      "implementation": [
+        {
+          "path": "framework/condition_history.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "受信宿主在同一锁内提供单独授权的历史投影，绑定当前定位符。"
+      ],
+      "subfunctions": [
+        "授权先于读取",
+        "核对当前修订和记录顺序",
+        "从新到旧限额"
+      ],
+      "execution": "不把缺失或旧版证据解释为空历史；返回的不可信文字不作指令。",
+      "negative": [
+        "不写台账、不回滚、不证明历史完整或记录签名。"
+      ],
+      "evidence": [
+        "tests/test_condition_history.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          1963,
+          1992
+        ]
+      },
+      "dependencies": [
+        "edges.visible"
+      ]
     }
   ]
 }
