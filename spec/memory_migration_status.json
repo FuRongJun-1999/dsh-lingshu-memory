@@ -549,10 +549,15 @@
         4976,
         4982
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未迁移观察轴时间线及会话过滤。"
+      "evidence": [
+        {
+          "capability": "stg.timeline",
+          "condition": "显式轴和时点；只排序已授权且适用的当前修订。"
+        }
+      ],
+      "gap": "未迁旧会话归一、整库时间线、原区间视图、层级与正文预览。"
     },
     {
       "tool": "stg",

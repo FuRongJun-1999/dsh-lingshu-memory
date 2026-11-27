@@ -833,6 +833,56 @@
         "snapshot.body",
         "recovery.plan"
       ]
+    },
+    {
+      "id": "stg.timeline",
+      "name": "授权当前修订时间线",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/read_timeline.py",
+        "symbol": "read_timeline"
+      },
+      "implementation": [
+        {
+          "path": "framework/read_timeline.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/timeline_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信主体、同锁已校验快照、显式轴与查询时点。",
+        "可见、条件适用、指定区间包含时点且起点有限，才进入排序；数量限1至100。"
+      ],
+      "subfunctions": [
+        "授权先于读取元数据",
+        "条件及半开观察区间过滤",
+        "按起点倒序与标识稳定打破并列"
+      ],
+      "execution": "返回当前候选定位符与时间轴，不返回正文、原区间或总计。未知或无有限起点不进入排序。",
+      "negative": [
+        "不迁旧会话归一、层/会话整库统计、跨时点扫描、热层与预览；不是旧工具协议。"
+      ],
+      "evidence": [
+        "tests/test_read_timeline.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4976,
+          4982
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "condition.time",
+        "snapshot.body",
+        "recovery.plan"
+      ]
     }
   ]
 }

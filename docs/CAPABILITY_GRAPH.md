@@ -21,6 +21,8 @@ graph LR
   E --> T
   Z[授权双节点时间关系] --> T
   Z --> A
+  L[授权当前修订时间线] --> T
+  L --> A
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -90,3 +92,9 @@ graph LR
 [独立时间判据](<../framework/time_relation.py>)对两个当前修订先做权限和条件判定，再比较指定的观察轴或效力轴；[文件端口](<../shadow_runtime/relation_port.py>)在原库锁内恢复并固定两端快照。不可见和不存在都返回同一错误，不标出是哪一端；结果仅含定位符、轴和关系，不交付正文或原段值。未知端点返回 unknown，允许明确的开放边界；零长度返回 empty，相邻端点按左闭右开不重叠。[反例](<../tests/test_time_relation.py>)覆盖端点变异、双轴分歧、目标换版与拒读。
 
 对应[冻结旧入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4953-L4975)与[旧计算](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/stg.py#L493-L506)的时间关系子集。旧版默认观察轴，旧实现相邻区间不判 before/after；新版强制选择轴并有意采用半开语义。空间关系、热层预览、旧协议与生产用户身份均不纳入本批。
+
+## 授权当前修订时间线
+
+[时间线独立接口](<../framework/read_timeline.py>)在显式轴和查询时点筛选已授权、条件适用且可判定的当前修订；[文件适配](<../shadow_runtime/timeline_port.py>)沿用恢复与锁。区间左闭右开；未知端点或无有限起点不进入排序。先过滤，再以起点递减、同起点按标识递增排序并截断。输出只有轴及当前定位符，不返回正文、原区间或计数。[实测](<../tests/test_read_timeline.py>)对比隐藏样例、端点、双轴和修订变化；移除权限判据时反例会变红。
+
+对照[固定旧入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4976-L4982)及[旧时间线](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/stg.py#L602-L660)（源码 SHA256 42ad24f6cbd95244be7406a45c6500e06e44983d89012d7a03a9e55d45c275b9）。本批只做一个查询时点，不复制会话归一、历史路径、跨会话统计、预览、旧协议和生产认证。

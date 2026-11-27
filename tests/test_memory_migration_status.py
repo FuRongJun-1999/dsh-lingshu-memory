@@ -15,7 +15,7 @@ class MigrationStatusTests(unittest.TestCase):
 
     def test_44_operations_and_boundaries(self):
         stats=verify(self.doc,self.inventory,self.graph)
-        self.assertEqual(stats,{'partial':7,'not_migrated':37})
+        self.assertEqual(stats,{'partial':8,'not_migrated':36})
         self.assertEqual(render(self.doc,stats),(ROOT/'docs/MEMORY_MIGRATION_STATUS.md').read_text(encoding='utf-8'))
 
     def test_dropped_operations_and_promoted_legacy_calls_are_rejected(self):
