@@ -55,6 +55,7 @@
 | stage-0.2-v17 | d6d5af66fadefd6f307cdbb9555f7feed77b8e37 | 401 | I1 | NOT_RUN/BLOCK | 授权单槽状态事件追加与跨进程验收 |
 | stage-0.2-v18 | 61125c806d971bb0fe49666112b230b64ff22669 | 404 | I1 | NOT_RUN/BLOCK | 单槽租约、到期边界及容器/四矩阵 |
 | stage-0.2-v19 | b2bae6bd470b3fd13f43464656a4992b7404c6e8 | 407 | I1 | NOT_RUN/BLOCK | 授权节点证据审计与公开四矩阵 |
+| stage-0.2-v20 | e5f886ff05f6fe5391e019189b3c6a580eef238f | 410 | I1 | NOT_RUN/BLOCK | 隔离授权路由建议与公开四矩阵 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

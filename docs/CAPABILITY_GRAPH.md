@@ -34,6 +34,7 @@ graph LR
   EA[授权节点证据审计] --> K
   EA --> E
   RH[授权只读能力建议] --> Q
+  HH[按需查询公开能力条件]
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -151,3 +152,9 @@ graph LR
 [独立建议接口](<../framework/route_candidates.py>)只消费无游标的显式检索。候选先经过主体、条件与时间校验，再排序，仅用当前返回页的显式 route.capability 条件属性与宿主白名单求交。结果只有定位符和建议名；不来自正文，不暴露不可见或页外名称，未确认不返回部分建议。建议不是执行许可。[文件适配](<../shadow_runtime/route_port.py>)沿用合成库锁和事务恢复。
 
 对照[固定旧路由](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L3380-L3423)的只读知识定位与能力建议，不复刻热层及全文预览、旧来源标签或全库回退。[定向反例](<../tests/test_route_candidates.py>)覆盖越权、未登记建议、换版和条件未决。不接旧协议、现用 GUI、工具执行或生产数据。
+
+## 按需查询公开能力条件
+
+[独立目录接口](<../framework/capability_help.py>)消费机检后的公开图和可信发布摘要。只在摘要一致时，按能力 ID 精确查找或按 ID 稳定列出至多 64 张隔离卡，输出职责、生效条件、执行边界和依赖名，不出源码入口或底层配置。列表不枚举共享节点，已知共享 ID 和未知 ID 返回相同错误。返回的目录不授予工具权限或生产资格，摘要不是签名。
+
+对照[固定旧披露入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L2511-L2520)，只迁按需披露子集，不复制旧版自然语言参数说明及工具表。[定向反例](<../tests/test_capability_help.py>)对比未登记 ID、返回名单限制与摘要漂移变异。

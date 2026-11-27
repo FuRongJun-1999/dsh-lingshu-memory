@@ -1217,6 +1217,46 @@
         "snapshot.body",
         "recovery.plan"
       ]
+    },
+    {
+      "id": "help.conditions",
+      "name": "按需查询公开能力条件",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/capability_help.py",
+        "symbol": "capability_help"
+      },
+      "implementation": [
+        {
+          "path": "framework/capability_help.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "宿主提供机检过的公开中文图与可信发布摘要，查询仅选择能力 ID 或受限列表。"
+      ],
+      "subfunctions": [
+        "图摘要绑定",
+        "精确定位隔离能力卡",
+        "最小条件列投影"
+      ],
+      "execution": "确定性返回职责与边界，目录状态不等于运行时可调用；不加载入口或连接运行库。",
+      "negative": [
+        "不迁旧参数检索、签名推导、宿主工具枚举或执行；摘要不是签名。"
+      ],
+      "evidence": [
+        "tests/test_capability_help.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          2511,
+          2520
+        ]
+      },
+      "dependencies": []
     }
   ]
 }

@@ -1,7 +1,7 @@
 # 固定上游记忆功能迁移对照（生成）
 
 范围：固定上游提交的 39 个 cg 和 5 个 stg 顶层操作。未运行旧仓，不覆盖 action、参数组合和历史别名。
-统计：15 项子集有隔离证据，29 项未迁移，旧接口可调用 0 项。
+统计：16 项子集有隔离证据，28 项未迁移，旧接口可调用 0 项。
 
 “子集有证据”只指新版中文功能图中的隔离能力；不表示旧协议兼容。既有 S3 映射保留原冻结基线。
 新版节点见[记忆能力图](<CAPABILITY_GRAPH.md>)；旧候选见[兼容候选](<COMPATIBILITY.md>)。
@@ -46,7 +46,7 @@
 | [cg.status](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1003-L1015) | 子集隔离验证 | status.current：已授权且条件、时间适用的当前修订；只检查 full 证明。 | 未迁移旧巡查、验证态台账、履历、冷队列或旧状态字段。 |
 | [cg.edges](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1016-L1031) | 子集隔离验证 | edges.visible：按单节点查看已授权且适用的当前来源出边。 | 未迁移旧反查、入边、时间窗、批次、分页与聚合；不返回隐边计数。 |
 | [cg.audit](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1032-L1041) | 子集隔离验证 | audit.evidence：另授审计权限，授权只读快照中组合当前核验态与可见来源。 | 不迁旧五面全部字段、备择、反向出处、盲区和退役史，不替代事务日志。 |
-| [cg.help](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1042-L1051) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
+| [cg.help](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1042-L1051) | 子集隔离验证 | help.conditions：显式图摘要与受信公开图一致，按能力 ID 查条件。 | 不迁旧参数语义搜索、工具面枚举和别名；目录非执行许可。 |
 | [stg.relation](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4953-L4975) | 子集隔离验证 | stg.time_relation：双端当前修订均可见且条件适用；显式单时间轴，不返回空间。 | 不迁旧空间、热层预览、缺省观察轴或原区间输出；相邻端点语义按新版左闭右开。 |
 | [stg.timeline](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4976-L4982) | 子集隔离验证 | stg.timeline：显式轴和时点；只排序已授权且适用的当前修订。 | 未迁旧会话归一、整库时间线、原区间视图、层级与正文预览。 |
 | [stg.anchors](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4983-L4986) | 子集隔离验证 | stg.anchors：显式轴与有限非空时间窗；只投影授权且适用的相交当前修订。 | 未迁旧坐标适配、空间范围、扫描统计或正文预览。 |
