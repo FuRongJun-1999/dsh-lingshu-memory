@@ -245,3 +245,9 @@ graph LR
 [独立对照接口](<../framework/condition_conflict.py>)仅对同一可信快照中可见、适用且当前修订匹配的目标比较显式正负条件。正对负或负对正出现同一标识时返回精确冲突。候选集合未知、超额或有效条目重复不报告一致；没有命中也不是全库一致。
 
 参照[冻结旧条件冲突入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L1760-L1785)及[跨侧比对口径](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/consistency.py#L1247-L1251)，不做文本推断、递归、飞轮或写库。[反例](<../tests/test_condition_conflict.py>)验证隐藏与旧版不参与，简单同侧匹配不报冲突。
+
+## 授权节点定位符导出清单
+
+[独立导出接口](<../framework/export_locators.py>)仅接受最多 64 个明确定位符，由可信宿主单独授予导出权限。核对同锁快照的内容与策略代际，再逐项匹配当前版本、授权和适用条件；任一不符整次拒绝，正常结果按 ID 排序。只在内存返回 ID、修订和摘要，不读正文、不写文件、不发送。
+
+参照[冻结旧导出入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4579-L4611)的独立管理授权及显式节点，未迁旧整库扫描、输出覆盖、备份或导入。[反例](<../tests/test_export_locators.py>)覆盖无导出许可、代际漂移和整批拒绝。

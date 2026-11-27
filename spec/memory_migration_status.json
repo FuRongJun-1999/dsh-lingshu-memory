@@ -494,10 +494,15 @@
         850,
         871
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "export.locator_manifest",
+          "condition": "独立导出授权和当前版本绑定的显式节点定位符清单。"
+        }
+      ],
+      "gap": "不迁旧全库、切片、正文、落盘、导入或签名。"
     },
     {
       "tool": "cg",

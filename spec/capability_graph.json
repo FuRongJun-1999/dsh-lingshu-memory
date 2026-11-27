@@ -1830,6 +1830,48 @@
       "dependencies": [
         "edges.visible"
       ]
+    },
+    {
+      "id": "export.locator_manifest",
+      "name": "授权节点定位符导出清单",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/export_locators.py",
+        "symbol": "export_locators"
+      },
+      "implementation": [
+        {
+          "path": "framework/export_locators.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信宿主提供独立导出授权、同锁快照与明确定位符。"
+      ],
+      "subfunctions": [
+        "先验导出授权和代际",
+        "逐项匹配可见当前修订",
+        "规范排序"
+      ],
+      "execution": "只返回内存定位符清单；任一候选不符则整次拒绝。",
+      "negative": [
+        "不读正文、不写文件、不联网、不接旧账或生产。"
+      ],
+      "evidence": [
+        "tests/test_export_locators.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4579,
+          4611
+        ]
+      },
+      "dependencies": [
+        "edges.visible"
+      ]
     }
   ]
 }
