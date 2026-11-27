@@ -215,3 +215,9 @@ graph LR
 [独立检查接口](<../framework/protection_check.py>)要求同锁授权快照和权威标记读口，仅报告当前修订的两个显式标记：不可遗忘与不可覆盖。两者不互推；缺标记证据或定位符不符返回未知，不解释成未保护。未授权不触读口。此结果不授予修改或遗忘权限。
 
 对照[冻结旧检查入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L1588-L1605)与[旧判据](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/protect.py#L248-L296)。只迁显式标记观察，不迁层级、评分与自我状态豁免、文件与索引对照、保护写入口或真实库。[反例](<../tests/test_protection_check.py>)核对授权顺序、两位独立和换版变异。
+
+## 授权当前目标候选列表
+
+[独立列表接口](<../framework/goal_list.py>)只消费受信同快照下最多 128 个显式候选及其标签。逐项核对权限、时间和适用条件，随后按当前节点 ID、修订与摘要取标签。按明确状态筛选，以整数优先级降序、ID 升序打破平局，再限制条数；只返回定位符、状态与优先级。隐项及旧版不占输出名额，不承诺计时侧信道隔离。
+
+对照[冻结旧列表分支](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L3879-L3885)。不做全库列表、旧活动榜、截止期推导、生成或推进状态，不连 Harness 的自动目标。[反例](<../tests/test_goal_list.py>)覆盖未授权不查标签、稳定限额、空集合仍核对策略和旧修订变异。

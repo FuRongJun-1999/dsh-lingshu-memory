@@ -65,6 +65,7 @@
 | stage-0.2-v27 | 99aae6afe772b85ba7b4d8ef34c39cf8d1a45228 | 428 | I1 | NOT_RUN/BLOCK | 授权近期窗口与公开四矩阵 |
 | stage-0.2-v28 | 5f41556293819790a867c9553c07b336fdd6471f | 431 | I1 | NOT_RUN/BLOCK | 授权会话续接及公开四矩阵 |
 | stage-0.2-v29 | 55d7406afd82fde21d3172a8a4c53a027ad92f22 | 434 | I1 | NOT_RUN/BLOCK | 显式条件依赖路径及公开四矩阵 |
+| stage-0.2-v30 | 1f8d6c0638b79dddf58ac2b6139ee4f15f78f5ac | 437 | I1 | NOT_RUN/BLOCK | 显式保护检查及公开四矩阵 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

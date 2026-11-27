@@ -261,10 +261,15 @@
         465,
         501
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "goal.visible_list",
+          "condition": "显式候选当前定位符绑定，授权与状态筛选后排序并截断。"
+        }
+      ],
+      "gap": "不迁旧新增、生成、修改状态、默认活动列表、截止期规则、台账或旧协议。"
     },
     {
       "tool": "cg",

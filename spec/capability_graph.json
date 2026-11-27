@@ -1620,6 +1620,49 @@
       "dependencies": [
         "edges.visible"
       ]
+    },
+    {
+      "id": "goal.visible_list",
+      "name": "授权当前目标候选列表",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/goal_list.py",
+        "symbol": "list_goals"
+      },
+      "implementation": [
+        {
+          "path": "framework/goal_list.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "受信同快照显式候选与标签，权限、时间和适用条件通过。",
+        "标签绑定 ID、修订和摘要；显式状态与条数。"
+      ],
+      "subfunctions": [
+        "授权后读取当前标签",
+        "优先级与稳定平局排序",
+        "筛选后截断"
+      ],
+      "execution": "只返回定位符、状态和整数优先级；隐藏和旧版不占名额。",
+      "negative": [
+        "不接目标生成、修改、活动台账、全库或旧协议。"
+      ],
+      "evidence": [
+        "tests/test_goal_list.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3879,
+          3885
+        ]
+      },
+      "dependencies": [
+        "edges.visible"
+      ]
     }
   ]
 }
