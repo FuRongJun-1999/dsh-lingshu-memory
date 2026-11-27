@@ -263,3 +263,9 @@ graph LR
 [独立画像接口](<../framework/identity_profile.py>)仅接受明确主体；宿主先授权访问主体，并在同一权限快照逐条授权锚点和特征引用。接口只返回至多 32 个定位符，不返回正文。重复引用、主体混入或摘要漂移整次拒绝。摘要锚点须独立可信；它不证明身份或授予权限。
 
 参照[冻结旧画像分支](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L1663-L1680)，不迁主体枚举、位置画像、观察写入、契约或生产身份。[反例](<../tests/test_identity_profile.py>)核对拒绝先于读取、主体、修订变化和重复引用。
+
+## 授权薄状态卡
+
+[独立状态卡](<../framework/self_state_card.py>)仅接受明确主体及预期代际；可信宿主逐条授权指针并提供同权限快照。任务、人物、会话、时间、信任五维只列精确定位符或已知空值，不返回详情。主体、代际、策略或形状异常整次拒绝。指针不是身份凭据或信任裁决。
+
+参照[冻结旧状态快照](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L1828-L1844)，不迁整卡历史、刷新、自举、关系修改、权限建立或维度反查。[反例](<../tests/test_self_state_card.py>)覆盖主体越权、策略漂移及版本变异。

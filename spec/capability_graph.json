@@ -1956,6 +1956,48 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "self_state.card",
+      "name": "授权薄状态卡",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/self_state_card.py",
+        "symbol": "read_self_card"
+      },
+      "implementation": [
+        {
+          "path": "framework/self_state_card.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "明确主体，受信宿主在同快照逐条授权指针。"
+      ],
+      "subfunctions": [
+        "主体授权",
+        "快照及策略版本核对",
+        "五维最小引用"
+      ],
+      "execution": "只读；版本或形状不符整次拒绝。",
+      "negative": [
+        "不刷新、生成身份、建立关系或读取引用正文。"
+      ],
+      "evidence": [
+        "tests/test_self_state_card.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          1828,
+          1844
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

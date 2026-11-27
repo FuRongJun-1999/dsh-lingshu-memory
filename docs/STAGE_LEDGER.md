@@ -73,6 +73,7 @@
 | stage-0.2-v35 | 09e5142286e33c93a7792a8b22f17d407bf272d7 | 452 | I1 | NOT_RUN/BLOCK | 精确条件对照与公开四矩阵 |
 | stage-0.2-v36 | c032efbe9b29ba16e49e539a0e9b3f5f80366f05 | 455 | I1 | NOT_RUN/BLOCK | 授权定位符清单与公开四矩阵 |
 | stage-0.2-v37 | 0b3f0d0de5dad7bb0252337ca7cabe0d162fbebe | 458 | I1 | NOT_RUN/BLOCK | 长期未验证诊断与公开四矩阵 |
+| stage-0.2-v38 | a79d16c33aa0a62154e751e3976fca589b563d95 | 461 | I1 | NOT_RUN/BLOCK | 主体画像与四路 Docker，本地验收；公开 CI 排队 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

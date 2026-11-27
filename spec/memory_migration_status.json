@@ -178,10 +178,15 @@
         242,
         265
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "self_state.card",
+          "condition": "同代际和策略下的授权单主体五维状态指针。"
+        }
+      ],
+      "gap": "不迁九项历史内容、刷新、自举、关系图、维度反查或生产。"
     },
     {
       "tool": "cg",
