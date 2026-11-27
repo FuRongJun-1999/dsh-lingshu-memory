@@ -461,10 +461,15 @@
         730,
         744
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "theory.declaration_check",
+          "condition": "授权后对照独立摘要、策略和认可版本集合。"
+        }
+      ],
+      "gap": "不迁旧默认放行、声明写入、启动许可、理论验真及旧协议。"
     },
     {
       "tool": "cg",

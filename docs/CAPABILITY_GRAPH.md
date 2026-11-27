@@ -281,3 +281,9 @@ graph LR
 [独立诊断接口](<../framework/index_info.py>)要求授权、预期内存代际以及可信宿主在同一临界区提供同口径的内存和落盘观测。区分代际不同、同代但摘要或计数不符、观测匹配与未知；观测匹配不等于全库一致。只返回状态和计数，不返回内部路径或索引摘要，也不启动维修。
 
 参照[冻结旧索引诊断](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L3261-L3308)。不扫描宿主、归因、报告真实健康或兼容旧工具。[反例](<../tests/test_index_info.py>)验证同数不同摘要、权限先于取证及未知与版本不符的区别。
+
+## 授权理论版本声明核对
+
+[独立核对接口](<../framework/theory_declaration.py>)从授权快照读取版本声明，与宿主独立提供的摘要和认可版本集合比对。声明缺失只报告未声明；策略、格式或摘要变动返回错误，已有但不认可的版本单独报告。匹配不证明理论正确、声明者身份或启动资格。
+
+参照[冻结旧理论检查](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/theory.py#L137-L176)。不迁旧默认放行、落盘声明、签章或真实宿主权限。[反例](<../tests/test_theory_declaration.py>)证明即使改后的版本也在认可集合，摘要仍须匹配。

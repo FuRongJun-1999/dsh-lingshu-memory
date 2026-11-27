@@ -2082,6 +2082,48 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "theory.declaration_check",
+      "name": "授权理论版本声明核对",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/theory_declaration.py",
+        "symbol": "check_declaration"
+      },
+      "implementation": [
+        {
+          "path": "framework/theory_declaration.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信宿主授权且独立提供预期摘要和认可版本集合。"
+      ],
+      "subfunctions": [
+        "授权先行",
+        "核对声明格式策略和摘要",
+        "区分缺失和版本不认可"
+      ],
+      "execution": "只读诊断，缺失不默认放行。",
+      "negative": [
+        "不验证理论、不签章、不写声明、启动或接生产。"
+      ],
+      "evidence": [
+        "tests/test_theory_declaration.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/theory.py",
+        "lines": [
+          137,
+          176
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }
