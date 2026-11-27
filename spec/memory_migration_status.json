@@ -350,10 +350,15 @@
         648,
         657
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "index.document_sections",
+          "condition": "已知授权源版本，围栏外按标题切分，生成可回读的引用。"
+        }
+      ],
+      "gap": "不迁目录扫描、旧摘要与小节归并、写入、增量水位或旧协议。"
     },
     {
       "tool": "cg",

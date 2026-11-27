@@ -1347,6 +1347,49 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "index.document_sections",
+      "name": "授权文档章节引用构造",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/document_sections.py",
+        "symbol": "index_document"
+      },
+      "implementation": [
+        {
+          "path": "framework/document_sections.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "显式已授权源 ID、可信当前不可变 UTF-8 快照、整源摘要。",
+        "只识别一级至三级 ATX 标题；前置元数据与围栏须闭合。"
+      ],
+      "subfunctions": [
+        "版本检查",
+        "围栏外标题分段",
+        "构造可独立回读的字节定位符"
+      ],
+      "execution": "最多64段，每段最多256行；不交付正文，格式不明或超限整次拒绝。",
+      "negative": [
+        "不扫描目录、不维护水位、不写入记忆；不支持旧分块合并、完整 Markdown 文法或旧协议。"
+      ],
+      "evidence": [
+        "tests/test_document_sections.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/docindex.py",
+        "lines": [
+          86,
+          115
+        ]
+      },
+      "dependencies": [
+        "ref.source"
+      ]
     }
   ]
 }
