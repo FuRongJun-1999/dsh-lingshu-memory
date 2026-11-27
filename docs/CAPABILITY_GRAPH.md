@@ -269,3 +269,9 @@ graph LR
 [独立状态卡](<../framework/self_state_card.py>)仅接受明确主体及预期代际；可信宿主逐条授权指针并提供同权限快照。任务、人物、会话、时间、信任五维只列精确定位符或已知空值，不返回详情。主体、代际、策略或形状异常整次拒绝。指针不是身份凭据或信任裁决。
 
 参照[冻结旧状态快照](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L1828-L1844)，不迁整卡历史、刷新、自举、关系修改、权限建立或维度反查。[反例](<../tests/test_self_state_card.py>)覆盖主体越权、策略漂移及版本变异。
+
+## 授权样本校准差
+
+[独立校准接口](<../framework/calibration_report.py>)先授权，再读至多 256 个已筛选样本，核对策略和由可信宿主独立提供的快照摘要。用精确分数报告各样本置信度的非加权均值、按证据计数汇总的成功率及其差值，每个分数以分子和分母表示。无正例时保留可计算读数但不判方向；空样本读数为空。样本不是全库或生产基准。
+
+参照[冻结旧校准判据](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/metacognition.py#L272-L292)，不迁分桶误差、旧取样、盲区信任或写回。[反例](<../tests/test_calibration_report.py>)覆盖无正例、授权先于读取、策略与摘要漂移。

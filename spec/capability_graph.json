@@ -1998,6 +1998,48 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "metacognition.calibration",
+      "name": "授权样本校准差",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/calibration_report.py",
+        "symbol": "calibration_report"
+      },
+      "implementation": [
+        {
+          "path": "framework/calibration_report.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信宿主提供已授权样本与独立摘要；当前策略匹配。"
+      ],
+      "subfunctions": [
+        "先授权再读样本",
+        "精确计算均值及实际成功率",
+        "无正例不判方向"
+      ],
+      "execution": "只输出聚合读数，不改变置信度。",
+      "negative": [
+        "不迁旧采样、ECE、盲区、写回或生产。"
+      ],
+      "evidence": [
+        "tests/test_calibration_report.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/metacognition.py",
+        "lines": [
+          272,
+          292
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }
