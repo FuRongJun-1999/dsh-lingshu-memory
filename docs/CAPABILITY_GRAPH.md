@@ -209,3 +209,9 @@ graph LR
 [独立路径接口](<../framework/causal_path.py>)只沿宿主在同一快照中登记的精确条件依赖定位符，逐跳核对权限、版本、时间及条件。按层找一条最短可见链，深度至多 8；超出遍历预算返回错误，不报告无路径。它只证明图内登记关系，不是现实因果推断。隐藏或过期节点不得进入路径；不承诺时间和预算侧信道隔离。
 
 参照[冻结旧路径动作](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L1924-L1940)。不把来源边当成因果边，不接旧权重、语义准入、解释或生产接口。[定向反例](<../tests/test_causal_path.py>)覆盖隐藏跳点、旧修订、环、深度与预算。
+
+## 授权当前显式保护标记检查
+
+[独立检查接口](<../framework/protection_check.py>)要求同锁授权快照和权威标记读口，仅报告当前修订的两个显式标记：不可遗忘与不可覆盖。两者不互推；缺标记证据或定位符不符返回未知，不解释成未保护。未授权不触读口。此结果不授予修改或遗忘权限。
+
+对照[冻结旧检查入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L1588-L1605)与[旧判据](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/protect.py#L248-L296)。只迁显式标记观察，不迁层级、评分与自我状态豁免、文件与索引对照、保护写入口或真实库。[反例](<../tests/test_protection_check.py>)核对授权顺序、两位独立和换版变异。

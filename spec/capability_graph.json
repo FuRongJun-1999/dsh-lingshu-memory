@@ -1578,6 +1578,48 @@
       "dependencies": [
         "edges.visible"
       ]
+    },
+    {
+      "id": "protect.current_flags",
+      "name": "授权当前显式保护标记检查",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/protection_check.py",
+        "symbol": "check_protection"
+      },
+      "implementation": [
+        {
+          "path": "framework/protection_check.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "受信宿主同一锁内提供当前节点快照和权威标记读口。",
+        "节点授权、时间和适用条件均通过，且完整定位符一致。"
+      ],
+      "subfunctions": [
+        "授权后才取标记",
+        "分别投影不可遗忘和不可覆盖"
+      ],
+      "execution": "缺证据或版本不符返回未知；只读，不授予写入许可。",
+      "negative": [
+        "不迁重要性推导、层级及豁免、设置标记或写入门禁。"
+      ],
+      "evidence": [
+        "tests/test_protection_check.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          1588,
+          1605
+        ]
+      },
+      "dependencies": [
+        "edges.visible"
+      ]
     }
   ]
 }

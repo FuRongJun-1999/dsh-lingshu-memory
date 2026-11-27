@@ -110,10 +110,15 @@
         152,
         170
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "protect.current_flags",
+          "condition": "按当前授权修订检查受信显式标记，分别报告两类。"
+        }
+      ],
+      "gap": "不迁旧层级、重要性、豁免、统计、设置标记、实际写门或协议。"
     },
     {
       "tool": "cg",
