@@ -30,6 +30,7 @@ graph LR
   SC[授权单槽状态事件投影] --> A
   SE[授权单槽事件追加] --> SC
   SE --> X
+  SL[授权单槽租约视图] --> SE
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -129,3 +130,9 @@ graph LR
 [独立写口及合成文件适配](<../shadow_runtime/state_event_port.py>)要求显式合成库、可信主体和时钟，并在访问盘面前检查单槽写权限。持共享槽锁复核事件链、先前链头与预期旧值；两进程持同链头竞争时只允许一个提交。事件与链头共用单文件原子替换，逻辑只追加；撤回为 null，不迁旧空白串判据。读回用[单槽投影](<../framework/state_chain.py>)。链头来自同一个可信合成存储，不能抗控制存储目录的进程重写，也不是外部链头注册或签名。[反例](<../tests/test_state_event_port.py>)覆盖两进程、过时链头、拒写不触盘、替换前失败和损坏输入。
 
 对照[固定旧入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L3929-L3947)和[旧追加](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/state_events.py#L114-L155)（SHA256 ab1211f1479e61498f982b100cc39fa088e851332c7cc69f7471e7ac073c202c）。本批不兼容旧记录、kind/evidence、真实主体令牌、多主机和掉电，不开启 MCP 写口或接现用库。
+
+## 授权单槽租约视图
+
+[独立租约判据](<../framework/state_lease.py>)消费已校验的单槽投影。由受信调用方明确提供正整数 TTL 秒，年龄达到 TTL 即标为 weak，不删除现值。缺失时间证据不伪造稳定；空槽、撤回、未知和损坏分别返回。[合成文件端口](<../shadow_runtime/state_view_port.py>)重用已授权的只读检查，不另存投影或改变台账。[定向反例](<../tests/test_state_lease.py>)覆盖端点、撤回、拒读不触盘和读取不改文件。
+
+此为[固定旧租约](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/state_view.py#L101-L124)子集（源码 SHA256 b444909414d7e8137a8bc6c32085126c88f9e0086a741b939d17f987de309dca）；不迁旧环境变量、槽名缺省、不可变声明、多槽联合或历史输出。时间为受信落账秒，不做真相、签名或生产身份保证；无旧接口接线。

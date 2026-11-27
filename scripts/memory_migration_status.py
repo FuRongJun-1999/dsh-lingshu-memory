@@ -11,6 +11,7 @@ from framework.spec import parse
 
 PIN = {"repo":"FuRongJun-1999/dsh-memory","commit":"71efd6785b373a99504b74c61b2c03136d7fd809","sources":{"cg":{"path":"md_cg/op_table.py","sha256":"47e161e68332fbbb99da501a35c4dfe04af0acf61c100c395e6c116ac82f34d7"},"stg":{"path":"md_cg/mcp_server.py","sha256":"fd367661c814c349ba9ce178a24b58e15981b80a9e858b6759569673edd9cc2e"}}}
 PARTIAL = {
+    ('cg', 'state_view'): {'state.lease'},
     ('cg', 'state_event'): {'state.event'},
     ('stg', 'state_chain'): {'stg.state_chain'},
     ('stg', 'consistency'): {'stg.time_check'},

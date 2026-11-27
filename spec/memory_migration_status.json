@@ -282,10 +282,15 @@
         591,
         604
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "state.lease",
+          "condition": "可信调用方按槽授权，显式 TTL 秒及同一时钟；到期保留值并标记需复核。"
+        }
+      ],
+      "gap": "不迁多槽组合、旧 TTL 优先级、不可变声明、替代历史或旧工具协议。"
     },
     {
       "tool": "cg",

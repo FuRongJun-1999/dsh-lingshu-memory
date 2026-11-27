@@ -1071,6 +1071,54 @@
         "stg.state_chain",
         "transaction.storage"
       ]
+    },
+    {
+      "id": "state.lease",
+      "name": "授权单槽租约视图",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/state_lease.py",
+        "symbol": "lease_view"
+      },
+      "implementation": [
+        {
+          "path": "framework/state_lease.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/state_view_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "先按槽授权并验证当前投影；受信调用方显式给出正整数 TTL 秒和同一时钟。",
+        "仅在同一次读取的投影里区分空槽、撤回、稳定、需复核和未知。"
+      ],
+      "subfunctions": [
+        "只读取得单槽当前投影",
+        "半开式租约比较",
+        "只返回对应状态及当前值"
+      ],
+      "execution": "age >= TTL 标记 weak 且保留值；撤回不报 weak，证据未知不报空，损坏不放行。",
+      "negative": [
+        "不复制旧环境缺省、槽名猜测、不可变声明或多槽组合；不提供旧协议、生产认证和后台自动清理。"
+      ],
+      "evidence": [
+        "tests/test_state_lease.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/state_view.py",
+        "lines": [
+          101,
+          124
+        ]
+      },
+      "dependencies": [
+        "state.event",
+        "stg.state_chain"
+      ]
     }
   ]
 }
