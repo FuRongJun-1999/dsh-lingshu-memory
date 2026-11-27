@@ -78,6 +78,7 @@
 | stage-0.2-v40 | 7bfc76814c4d60ea7a8fd4817cbda0ab9c7d8cf3 | 467 | I1 | NOT_RUN/BLOCK | 样本校准差与四路 Docker，本地验收 |
 | stage-0.2-v41 | 2b876b310dde0abfcc139c36ebb70d0a5e219e45 | 470 | I1 | NOT_RUN/BLOCK | 索引快照对照与四路 Docker，本地验收 |
 | stage-0.2-v42 | a318bd89b753414d2ec6b6aa19ec5b38cf39453f | 473 | I1 | NOT_RUN/BLOCK | 理论声明核对与四路 Docker，本地验收 |
+| stage-0.2-v43 | d6565a75a36559a5209bd35094917024f74cf369 | 476 | I1 | NOT_RUN/BLOCK | 心跳状态诊断与四路 Docker，本地验收 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

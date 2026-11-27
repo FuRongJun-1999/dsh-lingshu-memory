@@ -293,3 +293,9 @@ graph LR
 [独立诊断接口](<../framework/heartbeat_status.py>)只检查明确服务、实例代际和当前策略下的授权观测。可信时钟下观测年龄在半开区间内才报告新鲜：恰好到期已过时，未来时间为错误，缺失为未知。只在新鲜时返回忙闲自报；这不是存活或任务健康保证。未授权不触读口。
 
 参照[冻结旧维生状态入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L2094-L2113)，不迁心跳写入、后台循环、会话水位、对端或自愈。[反例](<../tests/test_heartbeat_status.py>)覆盖时效边界、代际与权限。
+
+## 授权事件摄取预演
+
+[独立预演接口](<../framework/ingest_preview.py>)依赖已授权、摘要固定的同一来源快照。仅接源 ID、序号与文本三字段的合成 JSONL；先检查完整窗口和递增序号，再按受信水位统计待摄取数。超额或坏记录整次拒绝，即使错误在水位以前；不回显正文、不推进水位、不产生写入许可。
+
+参照[冻结旧摄取预演](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4544-L4575)。不迁旧数据格式、目录扫描、日志发现、真实事件写入或自动挖掘。[反例](<../tests/test_ingest_preview.py>)检查授权先行、来源混入、旧水位前坏记录及预算。

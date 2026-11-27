@@ -517,10 +517,15 @@
         834,
         849
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "ingest.event_preview",
+          "condition": "已授权固定来源的合成事件快照，按可信水位预演。"
+        }
+      ],
+      "gap": "不迁旧会话格式、自动发现、真实写入、水位落盘、错误对挖掘及旧协议。"
     },
     {
       "tool": "cg",

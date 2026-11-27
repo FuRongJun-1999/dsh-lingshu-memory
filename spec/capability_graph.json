@@ -2166,6 +2166,47 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "ingest.event_preview",
+      "name": "授权事件摄取预演",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/ingest_preview.py",
+        "symbol": "preview_ingest"
+      },
+      "implementation": [
+        {
+          "path": "framework/ingest_preview.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "显式受信源 ID、字节摘要和该源水位；权限由宿主提供。"
+      ],
+      "subfunctions": [
+        "校验整个事件窗口",
+        "按水位统计待摄取条目"
+      ],
+      "execution": "仅输出聚合和原水位，超额或坏记录整次拒绝。",
+      "negative": [
+        "不迁旧文件格式、发现目录、正文写入、水位推进或生产。"
+      ],
+      "evidence": [
+        "tests/test_ingest_preview.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4544,
+          4575
+        ]
+      },
+      "dependencies": [
+        "source.snapshot"
+      ]
     }
   ]
 }
