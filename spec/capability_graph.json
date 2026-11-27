@@ -983,6 +983,50 @@
         "snapshot.body",
         "recovery.plan"
       ]
+    },
+    {
+      "id": "stg.state_chain",
+      "name": "授权单槽状态事件投影",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/state_chain.py",
+        "symbol": "project_state_chain"
+      },
+      "implementation": [
+        {
+          "path": "framework/state_chain.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信入口提供主体及针对单槽的授权函数。",
+        "独立于事件输入的受信链头、按落账序提供完整同槽事件。"
+      ],
+      "subfunctions": [
+        "读前授权与上限检查",
+        "序号、前指纹和当前值一致性",
+        "最近值和撤回投影"
+      ],
+      "execution": "完整且匹配链头才输出当前值或撤回态；失败不输出部分历史。缺链头为未知，空链须有显式零链头。",
+      "negative": [
+        "不接旧台账、MCP 开关、多槽枚举、备选值或历史。",
+        "未提供真实台账、签名或可信链头分发；只用落账时间，不造第二轴。"
+      ],
+      "evidence": [
+        "tests/test_state_chain.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/stg.py",
+        "lines": [
+          790,
+          822
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

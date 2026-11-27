@@ -600,10 +600,15 @@
         4990,
         4999
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未迁移受开关保护的状态投影；不伪造效力轴。"
+      "evidence": [
+        {
+          "capability": "stg.state_chain",
+          "condition": "单槽有可信授权及独立链头；完整事件流本地投影现值或撤回态。"
+        }
+      ],
+      "gap": "不接旧台账与开关，不迁多槽分页、历史/备选、事件追加或生产链头分发。"
     }
   ]
 }
