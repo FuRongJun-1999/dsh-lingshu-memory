@@ -430,10 +430,15 @@
         807,
         833
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "session.resume",
+          "condition": "授权的单会话同代际快照，组合定位符与近期事件，整次受限。"
+        }
+      ],
+      "gap": "不迁旧写要点、压缩、可见性切换、状态自动装配和令牌预算。"
     },
     {
       "tool": "cg",

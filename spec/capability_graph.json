@@ -1492,6 +1492,49 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "session.resume",
+      "name": "授权会话续接投影",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/session_resume.py",
+        "symbol": "resume_session"
+      },
+      "implementation": [
+        {
+          "path": "framework/session_resume.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信宿主提供已经逐条授权的单会话同代际快照。",
+        "显式角色、近期条数、预期代际及载荷字节预算。"
+      ],
+      "subfunctions": [
+        "同快照绑定",
+        "近期窗口与要点定位符组合",
+        "全量校验及共同预算"
+      ],
+      "execution": "零预算不读；任一部分越界或超额不返回另一部分。",
+      "negative": [
+        "不生成或写入要点，不执行摘要、自动续接、真实鉴权或旧协议。"
+      ],
+      "evidence": [
+        "tests/test_session_resume.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4393,
+          4443
+        ]
+      },
+      "dependencies": [
+        "recent.window"
+      ]
     }
   ]
 }
