@@ -1257,6 +1257,53 @@
         ]
       },
       "dependencies": []
+    },
+    {
+      "id": "task.progress",
+      "name": "显式任务状态迁移",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/task_progress.py",
+        "symbol": "decide_task_progress"
+      },
+      "implementation": [
+        {
+          "path": "framework/task_progress.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/task_progress_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信调用方已授明确任务 ID 的读写权限，提供同一时钟及先前链头。",
+        "只有已证实空槽可登记，完成须给结果；终态不可重开。"
+      ],
+      "subfunctions": [
+        "单任务状态迁移判据",
+        "预期链头比较",
+        "在同一合成存储内持锁原子追加"
+      ],
+      "execution": "仅在实际提交成功后交付新状态。阻塞任务可恢复或放弃；拒绝未知、旧头和终态重开。",
+      "negative": [
+        "不复制旧同名合并、多任务列表、计划、会话装配、归档或生产写入。"
+      ],
+      "evidence": [
+        "tests/test_task_progress.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          2525,
+          2578
+        ]
+      },
+      "dependencies": [
+        "state.event"
+      ]
     }
   ]
 }

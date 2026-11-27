@@ -263,10 +263,15 @@
         502,
         559
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "取用消费显式任务；未迁移旧任务状态和归档。"
+      "evidence": [
+        {
+          "capability": "task.progress",
+          "condition": "显式任务 ID、可信读写授权及匹配链头；终态不可重开，完成需结果。"
+        }
+      ],
+      "gap": "不迁旧同名归并、列表、计划、会话装配、记忆归档或旧工具协议。"
     },
     {
       "tool": "cg",

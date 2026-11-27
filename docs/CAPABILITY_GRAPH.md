@@ -35,6 +35,7 @@ graph LR
   EA --> E
   RH[授权只读能力建议] --> Q
   HH[按需查询公开能力条件]
+  TP[显式任务状态迁移] --> SE
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -158,3 +159,9 @@ graph LR
 [独立目录接口](<../framework/capability_help.py>)消费机检后的公开图和可信发布摘要。只在摘要一致时，按能力 ID 精确查找或按 ID 稳定列出至多 64 张隔离卡，输出职责、生效条件、执行边界和依赖名，不出源码入口或底层配置。列表不枚举共享节点，已知共享 ID 和未知 ID 返回相同错误。返回的目录不授予工具权限或生产资格，摘要不是签名。
 
 对照[固定旧披露入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L2511-L2520)，只迁按需披露子集，不复制旧版自然语言参数说明及工具表。[定向反例](<../tests/test_capability_help.py>)对比未登记 ID、返回名单限制与摘要漂移变异。
+
+## 显式任务状态迁移
+
+[独立判据](<../framework/task_progress.py>)按已确定的当前状态裁定迁移：空槽只可登记 active，active 可阻塞、完成或放弃，blocked 只可恢复或放弃，done 与 dropped 不重开。完成必须附结果；未知状态不作空槽。[合成端口](<../shadow_runtime/task_progress_port.py>)要求可信调用方授予任务槽的读写权限，核对先前链头；读取至写入之间有并发时，由单槽原子写入口再次对照且失败不返回候选结果。仅合成状态目录，不借任务号读其他槽。
+
+参照[固定旧任务入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L2525-L2578)的登记、进度和完成判据；不迁同名合并、跨任务查询、计划、会话装配和经验/记忆归档，不开放旧协议。[定向测试](<../tests/test_task_progress.py>)检查终态变异、未授权、重开合成库和读写间旧头竞争。
