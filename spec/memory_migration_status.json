@@ -22,10 +22,15 @@
         33,
         46
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "无旧路由与路由副作用的迁移验收；不能用候选搜索替代。"
+      "evidence": [
+        {
+          "capability": "route.candidates",
+          "condition": "当前页授权候选的显式能力声明与宿主白名单交集，只建议不执行。"
+        }
+      ],
+      "gap": "不迁旧热层、正文预览、能力标签推断、自然语言与旧工具协议。"
     },
     {
       "tool": "cg",

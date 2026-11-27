@@ -1168,6 +1168,55 @@
         "status.current",
         "recovery.plan"
       ]
+    },
+    {
+      "id": "route.candidates",
+      "name": "授权只读能力建议",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/route_candidates.py",
+        "symbol": "suggest_route"
+      },
+      "implementation": [
+        {
+          "path": "framework/route_candidates.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/route_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信调用方提供当前已校验快照、认证上下文和能力白名单。",
+        "只接受无游标且不取出处正文的显式候选查询。"
+      ],
+      "subfunctions": [
+        "授权与适用性过滤后排序",
+        "当前候选显式声明与白名单求交",
+        "只输出定位符及建议名"
+      ],
+      "execution": "候选未确认时传播失败，不回退到全库或其他上下文，绝不执行建议。",
+      "negative": [
+        "不复现旧热层与全库切换、自然语言路由、正文预览、旧协议或工具授权。"
+      ],
+      "evidence": [
+        "tests/test_route_candidates.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3380,
+          3423
+        ]
+      },
+      "dependencies": [
+        "read.search",
+        "snapshot.body",
+        "recovery.plan"
+      ]
     }
   ]
 }

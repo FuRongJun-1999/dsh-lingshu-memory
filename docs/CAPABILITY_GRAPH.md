@@ -33,6 +33,7 @@ graph LR
   SL[授权单槽租约视图] --> SE
   EA[授权节点证据审计] --> K
   EA --> E
+  RH[授权只读能力建议] --> Q
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -144,3 +145,9 @@ graph LR
 [独立证据接口](<../framework/evidence_audit.py>)额外要求节点审计许可，然后复用可见来源和核验态判据。两个投影必须绑定同一个当前定位符；冲突拒绝，不能交付半份。只返回当前定位符、核验态和至多 64 个可见来源；不返回正文、证明原件或隐边计数。[合成文件适配](<../shadow_runtime/evidence_audit_port.py>)复用库锁及既有事务恢复；查询不改证明或追加审计，先前未完成事务仍按原规则恢复。
 
 对照[冻结五面组装器](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/auditview.py#L136-L248)（SHA256 0fac5a19403229095dba7307bf4f6aaaae9c0792a3401496d03ca88a3b0210b3）；仅迁移当前核验与可见来源子集，不迁旧备择、反向出处、盲区和退役史，也不改事务日志或开放旧 RPC。[定向测试](<../tests/test_evidence_audit.py>)核对审计授权变异、同修订拒绝及重开换版。
+
+## 授权只读能力建议
+
+[独立建议接口](<../framework/route_candidates.py>)只消费无游标的显式检索。候选先经过主体、条件与时间校验，再排序，仅用当前返回页的显式 route.capability 条件属性与宿主白名单求交。结果只有定位符和建议名；不来自正文，不暴露不可见或页外名称，未确认不返回部分建议。建议不是执行许可。[文件适配](<../shadow_runtime/route_port.py>)沿用合成库锁和事务恢复。
+
+对照[固定旧路由](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L3380-L3423)的只读知识定位与能力建议，不复刻热层及全文预览、旧来源标签或全库回退。[定向反例](<../tests/test_route_candidates.py>)覆盖越权、未登记建议、换版和条件未决。不接旧协议、现用 GUI、工具执行或生产数据。
