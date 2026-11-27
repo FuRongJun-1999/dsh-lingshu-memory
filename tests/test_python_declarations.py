@@ -1,9 +1,9 @@
 import hashlib
 import inspect
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
-from framework import python_declarations
+from framework import python_declarations, source_snapshot
 from framework.source_ref import read_source_ref
 from test_shadow_runtime import ctx
 
@@ -38,7 +38,8 @@ class PythonDeclarationsTests(unittest.TestCase):
     def test_mutation_exposes_candidate_from_changed_version(self):
         raw=b'def fn(): pass\n'; kw=args(raw,expected_sha='1'*64)
         self.assertEqual(python_declarations.index_python(**kw),{'error':'SOURCE_CHANGED'})
-        src=inspect.getsource(python_declarations); guard='if hashlib.sha256(raw).hexdigest() != expected_sha:'
+        src=inspect.getsource(source_snapshot); guard='if hashlib.sha256(raw).hexdigest() != expected_sha:'
         self.assertEqual(src.count(guard),1)
         changed={};exec(compile(src.replace(guard,'if False:',1),'<python-source-version-mutant>','exec'),changed)
-        self.assertEqual(changed['index_python'](**kw)['declarations'][0]['name'],'fn')
+        with patch.object(python_declarations,'authorized_source',changed['authorized_source']):
+            self.assertEqual(python_declarations.index_python(**kw)['declarations'][0]['name'],'fn')

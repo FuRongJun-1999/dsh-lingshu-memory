@@ -36,7 +36,8 @@ graph LR
   RH[授权只读能力建议] --> Q
   HH[按需查询公开能力条件]
   TP[显式任务状态迁移] --> SE
-  RF[授权源区间精确回读] --> A
+  RF[授权源区间精确回读] --> SR[共享源授权与版本闸门]
+  SR --> A
   DS[授权文档章节引用] --> RF
   CD[授权 Python 顶层声明引用] --> RF
   P[独立恢复方向] --> S
@@ -186,3 +187,7 @@ graph LR
 [独立构造器](<../framework/python_declarations.py>)仅接受已授权、版本一致的 UTF-8 快照。按 Python 3.11 语法口径静态分析，只索引顶层函数、异步函数和类，从 def/class 行开始，不包括前置装饰器。返回名称、类型和原字节定位符，不复制正文，不导入或执行源码；只支持 LF/CRLF，语法错误或超限整次拒绝。
 
 对照[固定旧 Python 抽取器](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/codeindex.py#L140-L180)（SHA256 aad69786d2107b8a852fa4520306862e9945b519f52c5dfb0f4225f8681d2f41）。不迁旧目录扫描、所有语言、嵌套展开、注释渲染、写库或增量水位。[定向测试](<../tests/test_python_declarations.py>)用独立源区间读口核对 CRLF 和末行字节，并验证未授权、语法错误和换版拒绝。
+
+### 三个源接口共享同一闸门
+
+[共享源闸门](<../framework/source_snapshot.py>)统一源授权、整源摘要、字节上限与 UTF-8 检查，回读和两个索引构造器沿用各自区间语义。共享实现单独计量，不以它扩大旧协议覆盖。原授权、版本及区间变异继续运行；[交接说明](<MIGRATION_HANDOFF.md>)列出主线范围及后续复验入口。

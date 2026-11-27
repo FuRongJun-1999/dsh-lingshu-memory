@@ -27,6 +27,8 @@
 
 - [固定上游迁移进度对照](<docs/MEMORY_MIGRATION_STATUS.md>)：区分新版隔离子集与未迁移旧操作。
 
+- [隔离记忆迁移交接](<docs/MIGRATION_HANDOFF.md>)：已验证主线、复验入口和未完成边界。
+
 ## 定位
 
 承接 [dsh-memory](https://github.com/FuRongJun-1999/dsh-memory) 的设计与实践，不是它的原地升级或生产替代。

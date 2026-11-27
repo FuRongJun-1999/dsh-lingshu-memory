@@ -1345,7 +1345,7 @@
         ]
       },
       "dependencies": [
-        "policy.read"
+        "source.snapshot"
       ]
     },
     {
@@ -1388,7 +1388,8 @@
         ]
       },
       "dependencies": [
-        "ref.source"
+        "ref.source",
+        "source.snapshot"
       ]
     },
     {
@@ -1431,7 +1432,22 @@
         ]
       },
       "dependencies": [
-        "ref.source"
+        "ref.source",
+        "source.snapshot"
+      ]
+    },
+    {
+      "id": "source.snapshot",
+      "name": "共享源授权与版本闸门",
+      "state": "dependency",
+      "implementation": [
+        {
+          "path": "framework/source_snapshot.py",
+          "symbol": null
+        }
+      ],
+      "dependencies": [
+        "policy.read"
       ]
     }
   ]

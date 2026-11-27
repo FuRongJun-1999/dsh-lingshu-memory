@@ -1,11 +1,7 @@
 """按受信源 ID 回读 UTF-8 区间；没有宿主路径接口。"""
 import hashlib
-import re
-from framework.security import context_shape, integer
-
-MAX_BYTES = 1048576
-IDENT = re.compile(r'[a-z][a-z0-9_.-]{0,127}')
-HEX = re.compile(r'[0-9a-f]{64}')
+from framework.security import integer
+from framework.source_snapshot import HEX, IDENT, authorized_source
 
 
 def read_source_ref(ref, *, context, now, authorize, snapshot):
@@ -19,25 +15,10 @@ def read_source_ref(ref, *, context, now, authorize, snapshot):
         raise ValueError('INVALID_LINE_RANGE')
     if any(type(ref[k]) is not str or HEX.fullmatch(ref[k]) is None for k in ('source_sha','region_sha')):
         raise ValueError('INVALID_REFERENCE_DIGEST')
-    try:
-        actor = context_shape(context)
-    except (ValueError, TypeError, RecursionError):
-        return {'error':'AUTH_REQUIRED'}
-    if not integer(now) or now >= actor['expires_at']:
-        return {'error':'AUTH_REQUIRED'}
-    if authorize(actor,key) is not True:
-        return {'error':'NOT_FOUND_OR_DENIED'}
-    raw = snapshot(actor,key)
-    if raw is None:
-        return {'error':'NOT_FOUND_OR_DENIED'}
-    if type(raw) is not bytes or len(raw)>MAX_BYTES:
-        return {'error':'UNSUPPORTED_SOURCE'}
-    if hashlib.sha256(raw).hexdigest() != ref['source_sha']:
-        return {'error':'SOURCE_CHANGED'}
-    try:
-        raw.decode('utf-8')
-    except UnicodeDecodeError:
-        return {'error':'UNSUPPORTED_SOURCE'}
+    error, raw = authorized_source(source_id=key,expected_sha=ref['source_sha'],context=context,
+                                   now=now,authorize=authorize,snapshot=snapshot)
+    if error is not None:
+        return {'error':error}
     # 只按 LF 分行，保留选中行原始的 LF/CRLF 和末行字节。
     parts = raw.split(b'\n',end)
     line_count = len(parts) - (parts[-1] == b'')

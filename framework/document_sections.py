@@ -1,8 +1,7 @@
 """已授权 Markdown 快照到精确章节引用；不触盘或写入索引。"""
 import hashlib
 import re
-from framework.security import context_shape, integer
-from framework.source_ref import HEX, IDENT, MAX_BYTES
+from framework.source_snapshot import authorized_source
 
 FENCE = re.compile(rb' {0,3}(\x60{3,}|~{3,})([^\r\n]*)')
 HEADING = re.compile(rb' {0,3}(#{1,6})(?:[ \t]+[^\r\n]*)?')
@@ -11,29 +10,10 @@ MAX_SECTIONS = 64
 
 def index_document(*, source_id, expected_sha, context, now, authorize, snapshot):
     """仅接受登记源和固定版本；超限或格式不明不返回部分引用。"""
-    if type(source_id) is not str or IDENT.fullmatch(source_id) is None:
-        raise ValueError('INVALID_SOURCE_ID')
-    if type(expected_sha) is not str or HEX.fullmatch(expected_sha) is None:
-        raise ValueError('INVALID_REFERENCE_DIGEST')
-    try:
-        actor = context_shape(context)
-    except (TypeError, ValueError, RecursionError):
-        return {'error':'AUTH_REQUIRED'}
-    if not integer(now) or now >= actor['expires_at']:
-        return {'error':'AUTH_REQUIRED'}
-    if authorize(actor,source_id) is not True:
-        return {'error':'NOT_FOUND_OR_DENIED'}
-    raw = snapshot(actor,source_id)
-    if raw is None:
-        return {'error':'NOT_FOUND_OR_DENIED'}
-    if type(raw) is not bytes or len(raw)>MAX_BYTES:
-        return {'error':'UNSUPPORTED_SOURCE'}
-    if hashlib.sha256(raw).hexdigest() != expected_sha:
-        return {'error':'SOURCE_CHANGED'}
-    try:
-        raw.decode('utf-8')
-    except UnicodeDecodeError:
-        return {'error':'UNSUPPORTED_SOURCE'}
+    error, raw = authorized_source(source_id=source_id,expected_sha=expected_sha,context=context,
+                                   now=now,authorize=authorize,snapshot=snapshot)
+    if error is not None:
+        return {'error':error}
     pieces=raw.split(b'\n')
     lines=[p+b'\n' for p in pieces[:-1]]+([pieces[-1]] if pieces[-1] else [])
     first=0

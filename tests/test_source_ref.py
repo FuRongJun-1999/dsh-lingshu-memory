@@ -1,8 +1,8 @@
 import hashlib
 import inspect
 import unittest
-from unittest.mock import Mock
-from framework import source_ref as module
+from unittest.mock import Mock, patch
+from framework import source_ref as module, source_snapshot
 from test_shadow_runtime import ctx
 
 
@@ -36,9 +36,10 @@ class SourceRefTests(unittest.TestCase):
         ref=dict(source_id='fixture.doc',source_sha=sha(original),start=1,end=1,region_sha=sha(b'fixture\n'))
         kw=dict(context=ctx(),now=10,authorize=lambda *_:True,snapshot=lambda *_:updated)
         self.assertEqual(module.read_source_ref(ref,**kw),{'error':'SOURCE_CHANGED'})
-        text=inspect.getsource(module);guard="if hashlib.sha256(raw).hexdigest() != ref['source_sha']:"
+        text=inspect.getsource(source_snapshot);guard="if hashlib.sha256(raw).hexdigest() != expected_sha:"
         self.assertEqual(text.count(guard),1)
         mutant={};exec(compile(text.replace(guard,'if False:',1),'<ref-version-mutant>','exec'),mutant)
-        self.assertEqual(mutant['read_source_ref'](ref,**kw)['text'],'fixture\n')
+        with patch.object(module,'authorized_source',mutant['authorized_source']):
+            self.assertEqual(module.read_source_ref(ref,**kw)['text'],'fixture\n')
         wrong=dict(ref,source_sha=sha(updated),region_sha='0'*64)
         self.assertEqual(module.read_source_ref(wrong,**kw),{'error':'REGION_CHANGED'})
