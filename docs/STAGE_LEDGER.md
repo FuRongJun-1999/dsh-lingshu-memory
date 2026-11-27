@@ -57,6 +57,7 @@
 | stage-0.2-v19 | b2bae6bd470b3fd13f43464656a4992b7404c6e8 | 407 | I1 | NOT_RUN/BLOCK | 授权节点证据审计与公开四矩阵 |
 | stage-0.2-v20 | e5f886ff05f6fe5391e019189b3c6a580eef238f | 410 | I1 | NOT_RUN/BLOCK | 隔离授权路由建议与公开四矩阵 |
 | stage-0.2-v21 | 9a6149e54e7cbe207cef0700f0603dbb51f1f0b9 | 413 | I1 | NOT_RUN/BLOCK | 公开条件查询与四矩阵复验 |
+| stage-0.2-v22 | 798050f82ff044ab6f1fbfa94b8b245c54c08540 | 416 | I1 | NOT_RUN/BLOCK | 授权任务状态子集及公开四矩阵 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

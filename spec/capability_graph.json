@@ -1304,6 +1304,49 @@
       "dependencies": [
         "state.event"
       ]
+    },
+    {
+      "id": "ref.source",
+      "name": "授权源区间精确回读",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/source_ref.py",
+        "symbol": "read_source_ref"
+      },
+      "implementation": [
+        {
+          "path": "framework/source_ref.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "受信宿主按源 ID 授权并提供已登记的不变 UTF-8 快照。",
+        "引用含整源与区间摘要，显式闭合行号；最多256行、整源1 MiB。"
+      ],
+      "subfunctions": [
+        "授权先于快照读取",
+        "精确按 LF 定位原始区间",
+        "整源及区间摘要双绑定"
+      ],
+      "execution": "匹配才返回不可信原文；源换版即使区间未改也拒绝。",
+      "negative": [
+        "不收本机路径，不索引、巡检或清退，不接生产及旧工具协议。"
+      ],
+      "evidence": [
+        "tests/test_source_ref.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4796,
+          4818
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

@@ -362,10 +362,15 @@
         658,
         676
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "ref.source",
+          "condition": "按已登记源 ID 授权；整源与区间摘要均匹配才回读。"
+        }
+      ],
+      "gap": "不接旧路径、索引水位、悬空清理、巡检或旧协议。"
     },
     {
       "tool": "cg",
