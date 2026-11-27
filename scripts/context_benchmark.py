@@ -14,7 +14,7 @@ def main():
     lock=parse((ROOT/"spec/benchmark.lock.json").read_text(encoding="utf-8"))
     if sha(manifest)!=lock["manifest_sha"]:raise ValueError("MANIFEST_DRIFT")
     report=run(manifest)
-    report["source_sha"]={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in ("sandbox_runtime/store.py","sandbox_runtime/controller.py","sandbox_runtime/benchmark.py")}
+    report["source_sha"]={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in ("sandbox_runtime/store.py","sandbox_runtime/controller.py","sandbox_runtime/benchmark.py","framework/context_recall.py")}
     print(json.dumps(report,ensure_ascii=True,sort_keys=True,allow_nan=False))
     return 0 if report["passed"]==report["total"] else 1
 

@@ -8,7 +8,7 @@
 python -X utf8 -B scripts/context_benchmark.py
 ~~~
 
-[实际脚本](<../scripts/context_benchmark.py>)只读取固定[独立样例清单](<../spec/benchmark_cases.json>)和[摘要锁](<../spec/benchmark.lock.json>)；每case新建隔离内存库，不读生产/私有文件。输出完整JSON，与[已执行结果](<../spec/benchmark_result.json>)逐值比较纳入CI，不用历史绿替代当前实测。输入不是外部通用接口。manifest_sha=5016ca1a5f7b791c28e660d8e6c23dc4fa458728f93cf2cf1f7ede0406798791；transcript_sha=22ef36b2189d09fff49c6b124e329bfa231eff09948c5ed3107b93600a5c4734。报告另绑定存储、控制器及基准源码字节摘要；摘要只能证一致性，不是独立真实性证明。
+[实际脚本](<../scripts/context_benchmark.py>)只读取固定[独立样例清单](<../spec/benchmark_cases.json>)和[摘要锁](<../spec/benchmark.lock.json>)；每case新建隔离内存库，不读生产/私有文件。输出完整JSON，与[已执行结果](<../spec/benchmark_result.json>)逐值比较纳入CI，不用历史绿替代当前实测。输入不是外部通用接口。manifest_sha=5016ca1a5f7b791c28e660d8e6c23dc4fa458728f93cf2cf1f7ede0406798791；transcript_sha=22ef36b2189d09fff49c6b124e329bfa231eff09948c5ed3107b93600a5c4734。报告另绑定存储、控制器、独立取用模块及基准源码字节摘要；摘要只能证一致性，不是独立真实性证明。
 
 39固定case：24正常样例=噪音0/10/100/1000×英文/中文/词汇不匹配×打乱种子7/29；15负例=不存在、无读取权限、跨租户、错版本、错架构、错条件、墓碑、悬空依赖、歧义、64候选截断、零calls、输出前calls不足、零bytes、零重试需要确认、零重试未命中。字节预算是读后计量的累计正文UTF8，不是硬内存/token上限。
 

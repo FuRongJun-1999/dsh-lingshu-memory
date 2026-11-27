@@ -15,7 +15,8 @@ graph LR
   R[治理受理与修订变更] --> S
   R --> A
   P[独立恢复方向] --> S
-  C[任务触发取用 / 待迁移] -. 核验后组装 .-> G
+  C[任务触发证据取用] --> O[合成授权读取与观察端口]
+  C -. 后续文件库接线 .-> G
 ~~~
 
 虚线表示计划接线，不表示已迁移或已验收。图中“待迁移”指尚未完成独立接口和逐项旧版对照，不否认已有影子能力。
@@ -54,3 +55,10 @@ graph LR
 - **恢复接口：** [decide_recovery](<../framework/recovery_plan.py>)消费持锁、已校验的 intent 和清单。提交前/后只允许匹配一个，矛盾或不匹配均拒绝。方向不是文件完整性证明；改盘前仍须校验元数据与正文。
 - **验证方式：** [独立判据](<../tests/test_govern_recovery_plan.py>)、[四动作故障窗口](<../tests/test_shadow_runtime.py>)及[真实强停实验](<DOCKER_PROCESS_LAB.md>)。四动作均使用故障注入；Docker 另实跑 Write.create 和 Govern.forget 各三个真实 SIGKILL 窗口。
 - **范围：** [固定上游遗忘入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4001-L4025)供语义对照，不迁移档位、旧审核队列或旧库文件格式。不验证物理掉电或真实生产鉴权。
+
+## 任务触发证据取用
+
+- **接口：** [select_evidence 与 revalidate_evidence](<../framework/context_recall.py>)消费受信搜索与回读端口，不选库；[控制器](<../sandbox_runtime/controller.py>)保留预算、实际动作观测、一次性票据与告警。
+- **条件：** 任务已校验并声明所需知识键、架构、版本和条件；先文本定位，允许重取时再确认完整键组；触及键组上限或出现多个匹配不放行。交付前盖住任务和主体变化，重新回读每条证据；不能返回部分正文。
+- **验证：** [独立接口测试](<../tests/test_context_recall.py>)核对操作顺序及版本差异；[控制器变异](<../tests/test_controller_mutations.py>)继续检查跳过重读、歧义和版本等故障。[Docker 复验](<../scripts/docker_context_lab.py>)在无网容器的实际 CLI 子进程观察三种结果：正常取用、错版本降级、零调用预算不访问端口。
+- **边界：** 当前仍接合成内存库，虚线表示后续接线，不冒充已改接文件库或由模型驱动。[固定旧入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L3559-L3573)供召回输入条件对照，不复制旧版 token 截断、自然语言推断或近况融合。真实宿主、生产与 LLM 效果仍未运行。

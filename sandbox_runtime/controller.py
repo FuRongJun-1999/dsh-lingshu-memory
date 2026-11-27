@@ -4,6 +4,7 @@ import hashlib
 from framework.api import _json_domain
 from framework.spec import canonical
 from framework.security import context_shape
+from framework.context_recall import RecallBlocked as Halt, revalidate_evidence, select_evidence
 from sandbox_runtime.store import SyntheticStore, Probe, text, integer
 
 
@@ -30,10 +31,6 @@ def task_shape(value):
     for k,upper in (("calls",128),("bytes",1048576),("retries",1)):
         if type(b[k]) is not int or not 0<=b[k]<=upper:raise ValueError("INVALID_TASK")
     return copy.deepcopy(value)
-
-
-class Halt(Exception):
-    pass
 
 
 class Ticket:
@@ -91,20 +88,6 @@ class Controller:
             if state["bytes"]>state["task"]["budget"]["bytes"]:raise Halt("BUDGET")
         return result
 
-    def _matches(self, row, requirement):
-        return row is not None and all(row[k]==requirement[k] for k in ("key","architecture","version","conditions"))
-
-    def _find(self, state, requirement, *, keyed):
-        hits=self._call(state,"search",state["task"]["query"],evidence_key=requirement["key"] if keyed else None,limit=64 if keyed else 4)
-        # No claim of complete conflict checking on a truncated candidate set.
-        if keyed and len(hits)>=64:raise Halt("CANDIDATE_LIMIT")
-        matches=[]
-        for loc in hits:
-            row=self._call(state,"get",loc)
-            if self._matches(row,requirement):matches.append(row)
-        if len(matches)>1:raise Halt("AMBIGUOUS")
-        return matches[0] if matches else None
-
     def _fail(self, state, reason):
         state["reason"]=reason;state["rows"]=[]
         before=len(self.alerts.events)
@@ -118,18 +101,11 @@ class Controller:
         if type(now) is not int or not 0<=now<=9007199254740991 or now>=ctx["expires_at"]:raise ValueError("EXPIRED_CONTEXT")
         state={"task":value,"task_sha":digest(value),"context":ctx,"last_now":now,"calls":0,"bytes":0,"rows":[],"reason":None,"trace_start":len(self.probe.events),"trace":[]}
         try:
-            for req in value["requirements"]:
-                row=self._find(state,req,keyed=False)
-                # Always confirm the complete key group: text search can omit a conflicting row.
-                if value["budget"]["retries"]:
-                    self.events.append({"operation":"refetch","task_sha":state["task_sha"]})
-                    exact=self._find(state,req,keyed=True)
-                    row=exact
-                elif row is not None:
-                    # No conflict-complete evidence without key-group confirmation.
-                    raise Halt("KEY_CONFIRMATION_REQUIRED")
-                if row is None:raise Halt("EVIDENCE_GAP")
-                state["rows"].append(row)
+            state["rows"] = select_evidence(
+                value, search=lambda query, **options: self._call(state, "search", query, **options),
+                get=lambda locator: self._call(state, "get", locator),
+                refetch=lambda: self.events.append({"operation":"refetch", "task_sha":state["task_sha"]}),
+            )
         except Exception as e:
             self._fail(state,str(e) if isinstance(e,Halt) else "BACKEND_UNKNOWN")
         ticket=Ticket();self._pending=(ticket,state)
@@ -143,12 +119,8 @@ class Controller:
         try:
             if digest(task_shape(task))!=state["task_sha"]:raise Halt("TASK_CHANGED")
             if state["reason"] is not None:return {"status":"blocked","reason":state["reason"]}
-            checked=[]
-            for old,req in zip(state["rows"],state["task"]["requirements"]):
-                current=self._call(state,"get",old["locator"])
-                if current!=old or not self._matches(current,req):raise Halt("EVIDENCE_CHANGED")
-                checked.append({"body":current["body"],"citation":copy.deepcopy(current["locator"])})
-            if len(checked)!=len(state["task"]["requirements"]):raise Halt("EVIDENCE_GAP")
+            checked = revalidate_evidence(state["task"], state["rows"],
+                                          get=lambda loc: self._call(state, "get", loc))
             self._fresh(state)
             output={"status":"ready","task_sha":state["task_sha"],"records":checked}
             self.events.append({"operation":"emit","task_sha":state["task_sha"],"response_sha":digest(output)})

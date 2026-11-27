@@ -265,9 +265,62 @@
     },
     {
       "id": "context.recall",
-      "name": "任务触发取用",
-      "state": "planned",
-      "dependencies": []
+      "name": "任务触发证据取用",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/context_recall.py",
+        "symbol": "select_evidence"
+      },
+      "implementation": [
+        {
+          "path": "framework/context_recall.py",
+          "symbol": null
+        },
+        {
+          "path": "sandbox_runtime/controller.py",
+          "symbol": null
+        },
+        {
+          "path": "sandbox_runtime/store.py",
+          "symbol": null
+        },
+        {
+          "path": "sandbox_runtime/cli.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "任务须有显式知识键、架构、版本、条件与预算；调用方校验任务并供给可信上下文及可观察端口。",
+        "先文本定位，后键组确认，完成重取与逐项实时回读；调用者保持任务、主体与票据绑定。"
+      ],
+      "subfunctions": [
+        "文本定位和键组确认",
+        "证据匹配与冲突拒绝",
+        "交付前重新回读",
+        "预算与失败通知"
+      ],
+      "execution": "候选定位符不等于事实；重核成功才交付正文和引用。证据缺失、冲突、超预算或观测不明则只交付失败元数据。",
+      "negative": [
+        "无开放语义或模型自主取用保证。",
+        "当前取用端口接合成内存库；不声明已接影子文件库、现用 GUI、生产身份或旧版预算截断。"
+      ],
+      "evidence": [
+        "tests/test_context_recall.py",
+        "tests/test_controller_mutations.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3559,
+          3573
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "context.synthetic_port"
+      ]
     },
     {
       "id": "transaction.storage",
@@ -336,6 +389,14 @@
       },
       "dependencies": [
         "snapshot.body"
+      ]
+    },
+    {
+      "id": "context.synthetic_port",
+      "name": "合成授权读取与观察端口",
+      "state": "dependency",
+      "dependencies": [
+        "policy.read"
       ]
     }
   ]

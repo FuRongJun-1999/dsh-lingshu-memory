@@ -40,6 +40,7 @@
 | stage-0.2-v2 | dce2ced23b34513cb3efdfb5d062dd6828e4630b | 350 | I1 | NOT_RUN/BLOCK | 按标识回读独立化；四矩阵及 Docker 两条接入路径 |
 | stage-0.2-v3 | a4d69ecaff604b3f1bdad9351f765c6d22d0cf3d | 355 | I1 | NOT_RUN/BLOCK | 候选检索独立化，冻结排序与两条 Docker 对照 |
 | stage-0.2-v4 | 14a795ca66ccc252b09f6a8ce2e73ceb7b4b872c | 358 | I1 | NOT_RUN/BLOCK | 写入幂等裁决隔离验收，三条 Docker 复验 |
+| stage-0.2-v5 | ef0334dc3f974b2f57a605068f3d9c17cbce3123 | 362 | I1 | NOT_RUN/BLOCK | 治理与恢复方向独立化；文件事务在容器中实测 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
