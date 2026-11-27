@@ -733,6 +733,56 @@
         "verify.proof",
         "recovery.plan"
       ]
+    },
+    {
+      "id": "edges.visible",
+      "name": "授权单节点来源出边",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/read_edges.py",
+        "symbol": "read_edges"
+      },
+      "implementation": [
+        {
+          "path": "framework/read_edges.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/edges_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信主体、显式时间轴和条件，持锁校验当前清单。",
+        "根和目标授权，目标修订及内容摘要与边绑定，双方均满足适用性。"
+      ],
+      "subfunctions": [
+        "根授权及适用性",
+        "逐边端点授权与修订检查",
+        "仅可见定位符投影"
+      ],
+      "execution": "缺失/拒绝合一；故障不交付隐边。边输出仅关系和目标当前定位符，不带正文、全库计数或过滤数。",
+      "negative": [
+        "不承诺时空反查、倒排索引、入边、批次过滤、聚合、旧接口兼容。"
+      ],
+      "evidence": [
+        "tests/test_read_edges.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          2482,
+          2507
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "condition.time",
+        "snapshot.body",
+        "recovery.plan"
+      ]
     }
   ]
 }

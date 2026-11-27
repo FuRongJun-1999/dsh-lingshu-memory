@@ -53,7 +53,12 @@ def observe():
                             cwd=ROOT,shell=False,capture_output=True,text=True,encoding='utf-8',errors='strict',timeout=40)
     if status.returncode or 'Ran 3 tests' not in status.stderr or not status.stderr.rstrip().endswith('OK'):
         raise RuntimeError('status tests failed: '+status.stderr)
-    return dict(cases=cases, file_tests=4, verification_tests=3, status_tests=3, dsh_model_loop='NOT_RUN', production='NOT_RUN')
+    edges = subprocess.run([sys.executable,'-X','utf8','-B','-m','unittest','discover','-s','tests','-p','test_read_edges.py','-v'],
+                           cwd=ROOT,shell=False,capture_output=True,text=True,encoding='utf-8',errors='strict',timeout=40)
+    if edges.returncode or 'Ran 3 tests' not in edges.stderr or not edges.stderr.rstrip().endswith('OK'):
+        raise RuntimeError('edge tests failed: '+edges.stderr)
+    return dict(cases=cases, file_tests=4, verification_tests=3, status_tests=3, edge_tests=3,
+                dsh_model_loop='NOT_RUN', production='NOT_RUN')
 
 
 def main():
@@ -67,7 +72,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='lingshu-recall-code-') as tmp:
         root = Path(tmp)
         sources = collect(root)
-        fixtures = ('test_read_status.py','test_verification_capability.py','test_file_recall.py','test_shadow_runtime.py','test_sandbox_controller.py','test_sandbox_store.py')
+        fixtures = ('test_read_edges.py','test_read_status.py','test_verification_capability.py','test_file_recall.py','test_shadow_runtime.py','test_sandbox_controller.py','test_sandbox_store.py')
         for rel in ('scripts/docker_process_lab.py', 'scripts/docker_context_lab.py', *(f'tests/{n}' for n in fixtures)):
             dest = root/rel
             dest.parent.mkdir(parents=True,exist_ok=True)

@@ -491,10 +491,15 @@
         1016,
         1031
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "内部血缘参与授权，不等于已实现旧边视图。"
+      "evidence": [
+        {
+          "capability": "edges.visible",
+          "condition": "按单节点查看已授权且适用的当前来源出边。"
+        }
+      ],
+      "gap": "未迁移旧反查、入边、时间窗、批次、分页与聚合；不返回隐边计数。"
     },
     {
       "tool": "cg",
