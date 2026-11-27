@@ -15,14 +15,25 @@ PRIVACY_DENY = [("private_drive", r"[A-Za-z]:[\\/](?:Users|program|dsh-home|ไปฃ็
                 ("secret_assignment", r'''(?i)(?:api_key|access_token|password)\s*[:=]\s*["'][A-Za-z0-9_-]{16,}["']''')]
 
 def public_files():
-    return sorted(p for p in ROOT.rglob("*") if p.is_file() and not (set(p.relative_to(ROOT).parts) & SKIP))
+    import os
+    files = []
+    def fail(error):
+        raise error
+    for parent, dirs, names in os.walk(ROOT, followlinks=False, onerror=fail):
+        dirs[:] = [name for name in dirs if name not in SKIP]
+        for name in names:
+            if name not in SKIP:
+                p = pathlib.Path(parent) / name
+                if p.is_file():
+                    files.append(p)
+    return sorted(files)
 
 def main():
     errors = []
     files = public_files()
     for p in files:
         rel = p.relative_to(ROOT).as_posix()
-        if p.suffix not in TEXT_SUFFIXES and p.name not in {"LICENSE", ".gitignore", ".gitattributes"}:
+        if p.suffix not in TEXT_SUFFIXES and p.name not in {"LICENSE", ".gitignore", ".gitattributes"} and rel != "scripts/linux_dsh_mcp_lab.mjs":
             errors.append((rel, "unapproved_file_type"))
             continue
         text = p.read_text(encoding="utf-8")

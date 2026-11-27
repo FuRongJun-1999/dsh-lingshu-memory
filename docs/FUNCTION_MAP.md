@@ -33,7 +33,7 @@
 | sandbox_runtime/ | 合成内存库、控制器、回放、基准和 C0-C5 | 隔离合成闭环；CLI 强制 --synthetic。 | 宿主会话、真实模型或生产记忆。 |
 | shadow_runtime/ | MD 原文 + JSON meta/index/WAL/intent、锁、恢复和审计 | synthetic-only 文件后端；本轮补上 meta 摘要/manifest 对账，仍需隔离测试。 | 产品服务、可信本机身份、抵抗本地管理员重写。 |
 | scripts/ + tests/ | schema/spec/public/migration/release/workspace 门禁与固定预期、变异测试 | 本地与 CI 的工程质量门。 | 生产接入证据。 |
-| 外部适配层 | MCP、HTTP、宿主插件/连接器 | NOT_IMPLEMENTED / NOT_FOUND | 不能把接口提案或 schema 当作可调用服务。 |
+| 外部适配层 | 受限 MCP stdio 与官方 DSH 工具链 | [Docker 隔离实测](<DOCKER_MCP_LAB.md>) | 非现用宿主接线；没有生产 HTTP、真实认证或宿主生命周期集成。 |
 | 真实迁移与发布 | M6 | PENDING；需授权数据、备份/回滚和真实验收。 | 不在本次隔离调度实验中。 |
 
 ## 差距路线（按当前证据）
@@ -41,7 +41,7 @@
 | 优先级 | 范围 | 当前证据/动作 |
 |---|---|---|
 | P0 已处理（仅 synthetic） | meta sidecar 完整性与 SelfCheck 不得伪造 PASS | 当前 metadata 严格键集/无密钥摘要、活动manifest交叉核对；未实现检查保持 NOT_RUN/unknown。隔离测试和C-only专用变异通过；这不授予生产 PASS。 |
-| P1 影子事务语义 | Write与Govern的manifest/index崩溃窗口及token/audit最终化 | 已实现schema-v2 token-scoped intent；manifest匹配before则回滚未提交sidecar并保留token unknown，匹配after则校验truth、重建index、幂等补审计和回执。Write 5阶段+Govern四动作提交前/后重启矩阵通过；只覆盖fault_hook模拟的process crash。真实SIGKILL/VM/掉电、跨文件原子性仍未证明。 |
+| P1 影子事务语义 | Write与Govern的manifest/index崩溃窗口及token/audit最终化 | 已实现schema-v2 token-scoped intent；manifest匹配before则回滚未提交sidecar并保留token unknown，匹配after则校验truth、重建index、幂等补审计和回执。Write 5阶段+Govern四动作提交前/后重启矩阵通过；另有[三窗口 Linux 进程强停实测](<DOCKER_PROCESS_LAB.md>)覆盖 Write.create；Govern 的实证仍为故障注入。VM 强停、断电与跨文件原子性不由此证明。 |
 | P2 schema/运维硬化 | meta value dtype、旧meta格式、回执错误分类/重建路径 | 当前meta读取校验键集+摘要，尚未逐字段校验bool/int/list[str]/edge元素类型；缺少meta_sha的旧shadow目录会拒绝，无自动迁移。先设计明确的失败/迁移行为，再实现。 |
 | P3 兼容候选复核 | 逐操作比较目标契约与固定原型基线，确定非目标能力的保留/删除 | 当前44项兼容候选来自较早原型b450d2f4，runtime_ready=0；先对照本文固定的71efd678再决定，不做名字级搬运。 |
 

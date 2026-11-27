@@ -58,7 +58,7 @@ python -m sandbox_runtime.cli --synthetic < request.json
 
 | 面 | 本仓状态 | 可用性 |
 |---|---|---|
-| MCP stdio / JSON-RPC server | NOT_IMPLEMENTED | 没有 server/tool registration/handshake endpoint。 |
+| MCP stdio / JSON-RPC server | SHADOW 实验 | [Docker MCP 实测](<DOCKER_MCP_LAB.md>)通过固定主体的 stdio 调用，不是通用服务。 |
 | HTTP/REST | NOT_FOUND | 没有 listen socket、路由、HTTP status contract 或认证中间件。 |
 | DSH/Codex 插件 | NOT_FOUND | 没有宿主 manifest、安装包、connector、生命周期 hook。 |
 | Authentication | NOT_IMPLEMENTED | schema context 与 authenticated 谓词不是身份凭证验证器。 |

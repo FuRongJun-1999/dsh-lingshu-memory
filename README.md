@@ -21,6 +21,8 @@
 - [四应用字段草案](<docs/API_DRAFT.md>)、[输入schema提案](<spec/api.schema.json>)、[开发运维](<docs/OPERATIONS.md>)
 - [双仓功能地图](<docs/FUNCTION_MAP.md>)、[接口参考](<docs/INTERFACE_REFERENCE.md>)、[多智能体派发实测](<docs/MULTIAGENT_DISPATCH_TRIAL.md>)
 
+- Docker Linux 隔离实测：[进程强停](<docs/DOCKER_PROCESS_LAB.md>)、[MCP 与官方 DSH 工具链](<docs/DOCKER_MCP_LAB.md>)。
+
 ## 定位
 
 承接 [dsh-memory](https://github.com/FuRongJun-1999/dsh-memory) 的设计与实践，不是它的原地升级或生产替代。

@@ -43,4 +43,4 @@ strict/power须平台实证才能启用：正文文件与发布目录先持久�
 
 没有恢复日志不得声称可从全无盘面重建正文。
 
-真实SIGKILL、断电/VM强停、短写、磁盘满、目录首次创建/轮转、并发和响应丢失实验现在均NOT_RUN。
+另有[Docker Linux 实验](<DOCKER_PROCESS_LAB.md>)在限定的 Write.create 窗口发送真实 SIGKILL，并由新进程通过同一 tmpfs 恢复。它不是断电、VM 强停、短写、磁盘满、目录首次创建或轮转的实证，也不能替代其他环境的独立复验。
