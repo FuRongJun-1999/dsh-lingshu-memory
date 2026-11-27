@@ -23,6 +23,8 @@
 
 - Docker Linux 隔离实测：[进程强停](<docs/DOCKER_PROCESS_LAB.md>)、[MCP 与官方 DSH 工具链](<docs/DOCKER_MCP_LAB.md>)。
 
+- [记忆能力图与迁移判据](<docs/CAPABILITY_GRAPH.md>)。
+
 ## 定位
 
 承接 [dsh-memory](https://github.com/FuRongJun-1999/dsh-memory) 的设计与实践，不是它的原地升级或生产替代。

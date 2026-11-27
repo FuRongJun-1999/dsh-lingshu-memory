@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "capabilities": [
+    {
+      "id": "read.get",
+      "name": "按标识授权回读",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/read_get.py",
+        "symbol": "read_get"
+      },
+      "implementation": [
+        {
+          "path": "framework/read_get.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._read_get"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore.execute"
+        }
+      ],
+      "conditions": [
+        "明确请求 Read.get，调用方提供经信任的上下文与时钟",
+        "存储提供同一工作单元的快照和按修订读正文能力；变更必须更新代际",
+        "授权、条件和指定时间轴均适用，交付前复核主体和快照"
+      ],
+      "subfunctions": [
+        "授权判定",
+        "条件及双时间判定",
+        "正文摘要/来源封装",
+        "交付前复核"
+      ],
+      "execution": "授权失败统一返回 NOT_FOUND_OR_DENIED；确定不匹配返回空；条件未知返回 CONDITION_DEFERRED；可见正文只能作为不可信数据交付。",
+      "negative": [
+        "不负责发现库、认证、检索、旧版分页、提案总览或网络发送原子性",
+        "不读取未指定时间轴；不把定位符或内容摘要当作授权"
+      ],
+      "evidence": [
+        "tests/test_read_get.py",
+        "scripts/docker_mcp_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3507,
+          3528
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "condition.time",
+        "snapshot.body"
+      ]
+    },
+    {
+      "id": "policy.read",
+      "name": "共享授权判据",
+      "state": "dependency",
+      "dependencies": []
+    },
+    {
+      "id": "condition.time",
+      "name": "共享条件与时间判据",
+      "state": "dependency",
+      "dependencies": []
+    },
+    {
+      "id": "snapshot.body",
+      "name": "快照与正文端口",
+      "state": "dependency",
+      "dependencies": []
+    },
+    {
+      "id": "read.search",
+      "name": "候选检索",
+      "state": "planned",
+      "dependencies": []
+    },
+    {
+      "id": "write.token",
+      "name": "写入与幂等",
+      "state": "planned",
+      "dependencies": []
+    },
+    {
+      "id": "govern.recovery",
+      "name": "治理与恢复",
+      "state": "planned",
+      "dependencies": []
+    },
+    {
+      "id": "context.recall",
+      "name": "任务触发取用",
+      "state": "planned",
+      "dependencies": []
+    }
+  ]
+}

@@ -10,6 +10,7 @@ ENV = dict(os.environ, PYTHONUTF8='1', PYTHONDONTWRITEBYTECODE='1')
 COMMANDS = [
     [sys.executable, '-B', 'scripts/spec_tools.py', 'check'],
     [sys.executable, '-B', 'scripts/spec_tree.py'],
+    [sys.executable, '-B', 'scripts/capability_graph.py'],
     [sys.executable, '-B', 'scripts/ledger_check.py'],
     [sys.executable, '-B', 'scripts/release_gate.py'],
     [sys.executable, '-B', 'scripts/migration_gate.py'],

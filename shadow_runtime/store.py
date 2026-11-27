@@ -15,6 +15,7 @@ from framework.contracts import build_untrusted_record, extract_condition_space,
 from framework.migration import time_bundle
 from framework.model import Edge, EpochDecisionCache, Model, Node, RecoveryEvidence, can_read_with_epoch_cache, recover, request_fingerprint, verification_eligible
 from framework.responses import absence_basis, cancellation
+from framework.read_get import ReadSnapshot, read_get
 from framework.security import binding_shape, context_shape, emit_allowed
 from framework.spec import canonical, parse
 from sandbox_runtime.retrieval import bm25_rank_visible
@@ -494,6 +495,8 @@ class ShadowMarkdownStore:
 
     def execute(self, request: dict, context: dict, now: int, *, request_id: str = "req-1",
                 fault_hook=None, current_context_provider=None, current_now_provider=None) -> dict:
+        if type(request) is dict and request.get("kind") == "Read.get":
+            return self._read_get(request, context, now, request_id, current_context_provider, current_now_provider)
         req = validate_v2_request(request)
         try:
             ctx = context_shape(context)
@@ -1208,6 +1211,24 @@ class ShadowMarkdownStore:
             "selfcheck_aggregate": agg,
         })
 
+    def _read_get(self, request, context, now, request_id, current_context, current_now):
+        with self._lock():
+            recovered = False
+            def snapshot():
+                nonlocal recovered
+                if not recovered:
+                    self._recover_pending_transactions()
+                    recovered = True
+                manifest = self._load_manifest_or_init()
+                nodes, metadata = self._build_graph_nodes(manifest)
+                return ReadSnapshot(manifest['content_generation'], manifest['policy_generation'], nodes, metadata)
+
+            return read_get(request, context=context, now=now, request_id=request_id,
+                            snapshot=snapshot, model=self.model,
+                            body=lambda key, rev: self._md_path(key, rev).read_bytes().decode('utf-8'),
+                            current_context=current_context if current_context is not None else lambda: context,
+                            current_now=current_now if current_now is not None else lambda: now)
+
     def _read_locked(self, req: dict, ctx: dict, now: int, rid: str, *,
                      current_context_provider=None, current_now_provider=None) -> dict:
         manifest_body = self._load_manifest_or_init()
@@ -1253,18 +1274,7 @@ class ShadowMarkdownStore:
                 clearance=c_ctx["clearance"], graph_epoch=manifest_body["graph_epoch"], cache=self.cache,
             )
 
-        if kind == "Read.get":
-            nid = req["node_id"]
-            if not _can_read(nid, ctx):
-                return validate_full_response({
-                    "version": "0.2-full", "request_id": rid, "scope": "read", "outcome": "error",
-                    "error_code": "NOT_FOUND_OR_DENIED", "next_action": "authenticate",
-                    "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                    "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
-                })
-            authorized_ids = [nid]
-            limit = 1
-        elif kind == "Read.search":
+        if kind == "Read.search":
             idx = self._load_valid_index(manifest_body)
             if idx is None and manifest_body["nodes"]:
                 return validate_full_response({
