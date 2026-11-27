@@ -299,3 +299,9 @@ graph LR
 [独立预演接口](<../framework/ingest_preview.py>)依赖已授权、摘要固定的同一来源快照。仅接源 ID、序号与文本三字段的合成 JSONL；先检查完整窗口和递增序号，再按受信水位统计待摄取数。超额或坏记录整次拒绝，即使错误在水位以前；不回显正文、不推进水位、不产生写入许可。
 
 参照[冻结旧摄取预演](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4544-L4575)。不迁旧数据格式、目录扫描、日志发现、真实事件写入或自动挖掘。[反例](<../tests/test_ingest_preview.py>)检查授权先行、来源混入、旧水位前坏记录及预算。
+
+## 授权失效传播预演
+
+[独立预演接口](<../framework/propagation_preview.py>)仅接可信快照内一个明确的已失效或复核中起点。沿显式下游逐跳核对可见性、适用条件与当前定位符；已待复核中继继续遍历，不重复列入计划。未知状态或超预算整次拒绝，隐藏或陈旧中继不穿透；未承诺计时或预算侧信道隔离。
+
+参照[冻结旧多跳传播判据](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/trust.py#L847-L875)。输出仅是计划，不应用、不扫全库、不改验证态。[反例](<../tests/test_propagation_preview.py>)验证待复核中继、环、权限、修订与超限。

@@ -2207,6 +2207,48 @@
       "dependencies": [
         "source.snapshot"
       ]
+    },
+    {
+      "id": "maintain.propagation_preview",
+      "name": "授权失效传播预演",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/propagation_preview.py",
+        "symbol": "preview_propagation"
+      },
+      "implementation": [
+        {
+          "path": "framework/propagation_preview.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "单个已授权失效源，同快照显式下游绑定与精确验证态。"
+      ],
+      "subfunctions": [
+        "授权及修订核对",
+        "穿过已待复核中继",
+        "预算耗尽整次拒绝"
+      ],
+      "execution": "只列拟标记的可见当前定位符，不写验证态。",
+      "negative": [
+        "不迁全库巡查、实际应用、自动重建或生产。"
+      ],
+      "evidence": [
+        "tests/test_propagation_preview.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/trust.py",
+        "lines": [
+          847,
+          875
+        ]
+      },
+      "dependencies": [
+        "edges.visible"
+      ]
     }
   ]
 }

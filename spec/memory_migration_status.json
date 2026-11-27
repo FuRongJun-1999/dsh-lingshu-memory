@@ -551,10 +551,15 @@
         872,
         922
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "maintain.propagation_preview",
+          "condition": "单授权失效源，按当前显式依赖拟定可见下游复核计划。"
+        }
+      ],
+      "gap": "不迁实际写验证态、全库巡查、自动重建、其他维护动作和旧协议。"
     },
     {
       "tool": "cg",
