@@ -578,10 +578,15 @@
         923,
         941
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "consolidate.promotion_preview",
+          "condition": "只预演授权情境节点的六要素、锁定、命中或重要性筛选。"
+        }
+      ],
+      "gap": "不迁旧批量扫描、实际升层、历史、回滚或旧协议。"
     },
     {
       "tool": "cg",

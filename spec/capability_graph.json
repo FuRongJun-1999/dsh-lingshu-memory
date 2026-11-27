@@ -2375,6 +2375,48 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "consolidate.promotion_preview",
+      "name": "授权情境记忆提升预演",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/promotion_preview.py",
+        "symbol": "preview_promotion"
+      },
+      "implementation": [
+        {
+          "path": "framework/promotion_preview.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "单节点授权与独立计划授权；同一临界区当前修订的六要素、锁定和命中证据。"
+      ],
+      "subfunctions": [
+        "授权先行",
+        "锁定与完整性拒绝",
+        "任一门限满足才给定位符计划"
+      ],
+      "execution": "只生成固定目标层的候选，不应用。",
+      "negative": [
+        "不迁批量、实际升层、全库扫描、自动回滚或生产。"
+      ],
+      "evidence": [
+        "tests/test_promotion_preview.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/consolidate.py",
+        "lines": [
+          1056,
+          1109
+        ]
+      },
+      "dependencies": [
+        "edges.visible"
+      ]
     }
   ]
 }

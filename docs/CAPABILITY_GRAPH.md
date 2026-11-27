@@ -323,3 +323,9 @@ graph LR
 [独立统计接口](<../framework/prediction_stats.py>)仅读宿主逐条授权且与独立摘要相符的反馈快照。至多 256 项，每个预测 ID 只允许一个明确布尔标签；重复、无效标签或版本变化整次拒绝。以确切分数返回命中率，空样本不报告读数，也不回显样本。
 
 参照[冻结旧预测命中统计](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/predict.py#L987-L1000)。不迁旧缺省命中率、路线生成、反馈写入、通道后验或阈值调整。[反例](<../tests/test_prediction_stats.py>)覆盖零样本、权限、重复和漂移。
+
+## 授权情境记忆提升预演
+
+[独立预演接口](<../framework/promotion_preview.py>)要求节点可见且适用，并通过独立计划权限。可信宿主按当前精确定位符提供六要素完整性、锁定、命中和重要性证据；接口不自行评定六要素。只预演未锁、声明完整的情境层节点，命中或重要性任一达到门限才列为知识层候选。证据未知或过时不出计划。
+
+参照[冻结旧提升候选判据](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/consolidate.py#L1056-L1109)。不扫库、不移动节点、不改变权限、不回滚。[反例](<../tests/test_promotion_preview.py>)覆盖独立许可、两个含等号的门限和修订漂移。
