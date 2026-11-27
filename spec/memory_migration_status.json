@@ -532,10 +532,15 @@
         4953,
         4975
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未迁移时空关系与观察轴默认行为。"
+      "evidence": [
+        {
+          "capability": "stg.time_relation",
+          "condition": "双端当前修订均可见且条件适用；显式单时间轴，不返回空间。"
+        }
+      ],
+      "gap": "不迁旧空间、热层预览、缺省观察轴或原区间输出；相邻端点语义按新版左闭右开。"
     },
     {
       "tool": "stg",

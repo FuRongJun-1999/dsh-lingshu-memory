@@ -19,6 +19,8 @@ graph LR
   K --> A
   E[授权单节点来源出边] --> A
   E --> T
+  Z[授权双节点时间关系] --> T
+  Z --> A
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -82,3 +84,9 @@ graph LR
 [独立边投影](<../framework/read_edges.py>)接收读选择条件、受信主体和快照；[合成文件端口](<../shadow_runtime/edges_port.py>)使用同一把库锁和事务恢复。根节点不可见与不存在结果相同。仅在根、目标均授权和适用、目标修订与摘要匹配时，投影关系及当前定位符；缺失或不确定的目标不返回，也不报告过滤数量。快照校验可在文件端口内部读取正文摘要，但结果不含正文。若根因版本冲突隔离，则整次拒绝。
 
 对照[固定旧边入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L2482-L2507)：此处迁移授权血缘视图子集，不复现按任一端反查、入边、观察轴默认值、时间窗、聚合、展开或寻路。没有新增 MCP 入口。[反例与变异](<../tests/test_read_edges.py>)核验隐边不影响可见输出及目标改版后的拒绝。
+
+## 授权双节点时间关系
+
+[独立时间判据](<../framework/time_relation.py>)对两个当前修订先做权限和条件判定，再比较指定的观察轴或效力轴；[文件端口](<../shadow_runtime/relation_port.py>)在原库锁内恢复并固定两端快照。不可见和不存在都返回同一错误，不标出是哪一端；结果仅含定位符、轴和关系，不交付正文或原段值。未知端点返回 unknown，允许明确的开放边界；零长度返回 empty，相邻端点按左闭右开不重叠。[反例](<../tests/test_time_relation.py>)覆盖端点变异、双轴分歧、目标换版与拒读。
+
+对应[冻结旧入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4953-L4975)与[旧计算](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/stg.py#L493-L506)的时间关系子集。旧版默认观察轴，旧实现相邻区间不判 before/after；新版强制选择轴并有意采用半开语义。空间关系、热层预览、旧协议与生产用户身份均不纳入本批。

@@ -783,6 +783,56 @@
         "snapshot.body",
         "recovery.plan"
       ]
+    },
+    {
+      "id": "stg.time_relation",
+      "name": "授权双节点时间关系",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/time_relation.py",
+        "symbol": "relate_time"
+      },
+      "implementation": [
+        {
+          "path": "framework/time_relation.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/relation_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "当前可信主体能读双端；显式选择 observed 或 effective，条件均适用。",
+        "读取同锁下校验的当前修订，不默认时间轴；未知端点不猜。"
+      ],
+      "subfunctions": [
+        "双端授权",
+        "条件三态",
+        "左闭右开时间关系投影"
+      ],
+      "execution": "只返回两端当前定位符、轴及关系；不可见与缺失同结果。相邻端点不重叠，零长区间为空。",
+      "negative": [
+        "不迁移空间/热层预览、旧缺省轴、不泄露原区间或缺失端；不是旧协议。"
+      ],
+      "evidence": [
+        "tests/test_time_relation.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4953,
+          4975
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "condition.time",
+        "snapshot.body",
+        "recovery.plan"
+      ]
     }
   ]
 }

@@ -46,6 +46,7 @@
 | stage-0.2-v8 | 63e3db5c6072fdd56148126fc16257be7a47b85b | 372 | I1 | NOT_RUN/BLOCK | 冻结旧入口与隔离能力覆盖对照 |
 | stage-0.2-v9 | 2281e11580a8b2f37c56c193d96f9af826f16d98 | 375 | I1 | NOT_RUN/BLOCK | 版本绑定证明子集与容器复验 |
 | stage-0.2-v10 | 0ea1bc313a90182e2edaa075c1b20b1924485904 | 378 | I1 | NOT_RUN/BLOCK | 授权节点核验态与容器复验 |
+| stage-0.2-v11 | f4866e5ac78b2dfbd82bb5e4e8a75374d0015f9a | 381 | I1 | NOT_RUN/BLOCK | 授权来源出边投影及容器复验 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
