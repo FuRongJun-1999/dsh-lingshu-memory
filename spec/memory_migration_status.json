@@ -585,10 +585,15 @@
         942,
         984
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "insight.decided_rate",
+          "condition": "授权、摘要固定的观察窗样本；只计算已裁决比例。"
+        }
+      ],
+      "gap": "不迁旧显著性、层可靠性、分支、生成、裁决写入或旧协议。"
     },
     {
       "tool": "cg",

@@ -2291,6 +2291,48 @@
       "dependencies": [
         "read.get"
       ]
+    },
+    {
+      "id": "insight.decided_rate",
+      "name": "授权窗口洞察裁决率",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/insight_rate.py",
+        "symbol": "insight_rate"
+      },
+      "implementation": [
+        {
+          "path": "framework/insight_rate.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "受信宿主逐条授权并独立锚定样本摘要，策略、时间和最小已裁决量明确。"
+      ],
+      "subfunctions": [
+        "检查权限及样本形状",
+        "裁决计数和固定分数",
+        "样本不足不判"
+      ],
+      "execution": "待裁决不入分母；摘要变化时不给部分读数。",
+      "negative": [
+        "不判定整层可靠性、不写洞察或启动分支。"
+      ],
+      "evidence": [
+        "tests/test_insight_rate.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/insight.py",
+        "lines": [
+          378,
+          416
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }
