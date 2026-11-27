@@ -1,20 +1,22 @@
 # 隔离记忆迁移交接
 
-## 当前边界
+固定上游：[71efd67](https://github.com/FuRongJun-1999/dsh-memory/commit/71efd6785b373a99504b74c61b2c03136d7fd809)。[覆盖清单](<MEMORY_MIGRATION_STATUS.md>)中 44 个顶层入口均有隔离验证子集，0 个可按旧协议调用；这不表示所有动作均已迁移。[中文条件图](<CAPABILITY_GRAPH.md>)的 500 行机检覆盖已登记专属实现，共享实现另列，机检不证明没有漏列依赖。
 
-固定上游 `71efd67`：[44 项顶层入口对照](<MEMORY_MIGRATION_STATUS.md>)为唯一覆盖清单。目前 44 项有隔离子集，0 项未迁移，0 项提供旧协议。这里的“隔离”不等于现用宿主、生产认证或 M6 试点通过。
+## 五条主线验收矩阵
 
-| 已验证主线 | 独立接口和当前适配 | 限制 |
-|---|---|---|
-| 授权回读 | [按标识读回](<../framework/read_get.py>)与[文件适配](<../shadow_runtime/store.py>) | 不开放历史修订或旧协议 |
-| 候选检索 | [授权排序](<../framework/read_search.py>) | 候选不是正文，不代表开放语义 |
-| 幂等写入 | [写入裁决](<../framework/write_token.py>) | 证据不明只查询，不放行新写 |
-| 治理与恢复 | [治理受理](<../framework/govern.py>)与[恢复方向](<../framework/recovery_plan.py>) | 真实进程强停不等于掉电 |
-| 任务主动取用 | [证据选择与复验](<../framework/context_recall.py>)和[合成文件端口](<../shadow_runtime/recall_port.py>) | 未接真实模型循环或现用 GUI |
+[复验基线 40afebd](https://github.com/FuRongJun-1999/dsh-lingshu-memory/commit/40afebdae640200d2438afd62b2016eb11ecfd62)的候选树与发布树均为 d8ca7f693e538f943462ba972e427e2ce6c78261，四路 Docker 与本地 497 项回归通过。[同 SHA 公开 CI](https://github.com/FuRongJun-1999/dsh-lingshu-memory/actions/runs/46023300556)另验规格回归，不代替 Docker。
+
+| 主线 | 独立接口与条件 | 定向与隔离实测 | 未覆盖 |
+|---|---|---|---|
+| 授权回读 | [回读](<../framework/read_get.py>)：可信快照、当前修订、有效权限及适用条件 | [回读反例](<../tests/test_read_get.py#L36-L54>)覆盖时点不符、完整性错误和撤权；两条 MCP 路径覆盖授权回读与拒读 | 历史修订、生产认证与网络交付原子性 |
+| 候选检索 | [排序](<../framework/read_search.py>)：授权和适用性过滤在排序前 | [排序反例](<../tests/test_read_search.py#L31-L82>)覆盖越权、摘要不符与冻结排序；两条 MCP 路径的授权、越权和无匹配对照通过 | 全语料、语义检索和旧排名器等价性 |
+| 幂等写入 | [裁决](<../framework/write_token.py>)：首写须有明确证据，提交不明不重写 | [裁决反例](<../tests/test_write_token.py#L16-L33>)；两条 MCP 路径回执重放通过、审计一行；三次强停提交前返回 unknown，提交后回放原写者回执 | 跨主机持久化、生产凭据、断电恢复 |
+| 治理恢复 | [治理](<../framework/govern.py>)、[恢复方向](<../framework/recovery_plan.py>)：操作授权、版本前置和明确恢复证据 | [恢复反例](<../tests/test_govern_recovery_plan.py#L9-L53>)拒绝宽化与歧义；Govern.forget 三次实际强停，提交前仍可读，提交后拒读，审计行数 1／2／2 | 其他治理动作只有故障注入，没有实际强停证据；不等于断电恢复 |
+| 任务主动取用 | [选择与复验](<../framework/context_recall.py>)、[合成端口](<../shadow_runtime/recall_port.py>)：绑定授权、预算、版本与证据 | [取用反例](<../tests/test_context_recall.py#L12>)区分取正文与确认；Docker 正例退出 0，错版 EVIDENCE_GAP 和零预算 BUDGET 均退出 3，零预算端口调用为零 | 无真实模型主动回取闭环；DSH 工具执行链不是模型闭环 |
 
 ## 怎么复验
 
-先读取[中文条件图](<CAPABILITY_GRAPH.md>)和[覆盖清单](<MEMORY_MIGRATION_STATUS.md>)。在仓根运行：
+在仓根运行：
 
 ~~~text
 python -X utf8 -B scripts/check_all.py
@@ -24,8 +26,4 @@ python -X utf8 -B scripts/docker_mcp_lab.py
 python -X utf8 -B scripts/docker_mcp_lab.py --with-dsh
 ~~~
 
-只用合成夹具，不挂载真实库。门禁的 500 行只计算具名登记的专属实现及单列共享实现，不能自动证明没有漏列。公开 CI（如[交接前固定提交](https://github.com/FuRongJun-1999/dsh-lingshu-memory/actions/runs/45995878469)）核对同一 SHA 的规格回归；Docker 强停和两条 MCP 实验另有[进程实测](<DOCKER_PROCESS_LAB.md>)及[MCP 接线](<DOCKER_MCP_LAB.md>)。本地容器回执的候选树需与发布提交核对，不能只用回执的 base 宣称发布版通过。保持 [阶段台账](<STAGE_LEDGER.md>) 的 I1 上限和生产 `NOT_RUN`。
-
-## 后续
-
-按对照表里的未迁移项选择可检验子集。优先做授权、版本与拒绝行为能明确定义的能力；为每项保留旧源锚点、独立反例、中文条件卡与真实容器证据。缺少旧事件真源、真实令牌或生产验收时，不用新版同名功能冒充完成；未经明确确认不接生产数据或现用 GUI。
+仅用合成夹具；参见[进程实测](<DOCKER_PROCESS_LAB.md>)和[MCP 接线](<DOCKER_MCP_LAB.md>)。判断发布版是否经过验证须核对候选树与发布树，不能只看 Docker 回执的基线字段。[阶段台账](<STAGE_LEDGER.md>)保留 I1 上限，生产验收 NOT_RUN。未覆盖的动作仍按覆盖清单列出的边界理解，不因顶层全有子集而放行。未接生产数据、真实认证、现用 GUI 或旧协议。

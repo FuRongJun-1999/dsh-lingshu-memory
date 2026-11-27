@@ -111,3 +111,4 @@
 2. 测试与实现由同一方编写，变异体锚点也可能与实现同步漂移（已发生：`body`→`lowered_body`、`valid`→`attestation_valid` 撞车）；
 3. 门禁脚本与被审仓库同仓同 PR，改动可同时触及两者；
 4. 本机 `cryptography` oracle 交叉验证不进 CI，Verifier 互通性证据仅一次性。
+| stage-0.2-v50 | 40afebdae640200d2438afd62b2016eb11ecfd62 | 497 | I1 | NOT_RUN/BLOCK | 六要素复核预演、44 项隔离覆盖及四路 Docker，本地验收 |
