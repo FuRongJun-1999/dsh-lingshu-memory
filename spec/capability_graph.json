@@ -1449,6 +1449,49 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "recent.window",
+      "name": "授权单会话近期事件窗口",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/recent_window.py",
+        "symbol": "recent_window"
+      },
+      "implementation": [
+        {
+          "path": "framework/recent_window.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "明确会话、可信授权及同一策略上下文的快照端口。",
+        "调用方指定预期快照代际、角色及上限。"
+      ],
+      "subfunctions": [
+        "授权先于读口",
+        "核对会话和快照代际",
+        "按角色筛选后截断"
+      ],
+      "execution": "只返回已通过检查的单会话窗口，标为不可信内容；坏项或新版整次拒绝。",
+      "negative": [
+        "不迁旧追加、清空、自动转录及状态抽取；不提供真实会话授权或旧协议。"
+      ],
+      "evidence": [
+        "tests/test_recent_window.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3890,
+          3927
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

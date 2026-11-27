@@ -61,6 +61,7 @@
 | stage-0.2-v23 | 8fe0527562924c8336d5bdab5498a5675b0ed1e4 | 419 | I1 | NOT_RUN/BLOCK | 授权源区间回读及公开四矩阵 |
 | stage-0.2-v24 | 9674eb1a382b4e1e8f6a3541b19920f508619249 | 422 | I1 | NOT_RUN/BLOCK | 文档章节定位闭环及公开四矩阵 |
 | stage-0.2-v25 | 27dc7c2ff6cf3e2cdbec4c1fcf38d1dfa37d71e8 | 425 | I1 | NOT_RUN/BLOCK | 静态 Python 引用闭环与公开四矩阵 |
+| stage-0.2-v26 | 201d3fa428124370211981e332ed1856419c3ed5 | 425 | I1 | NOT_RUN/BLOCK | 共享源版本闸门、四路 Docker 与交接 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

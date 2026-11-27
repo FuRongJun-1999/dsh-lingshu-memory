@@ -280,10 +280,15 @@
         560,
         590
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "recent.window",
+          "condition": "受信授权下读取明确单会话及预期版本，按角色取近期窗口。"
+        }
+      ],
+      "gap": "不迁会话自动转录、追加、清空、状态抽取或旧协议。"
     },
     {
       "tool": "cg",
