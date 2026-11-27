@@ -2040,6 +2040,48 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "info.index_observations",
+      "name": "授权索引快照对照",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/index_info.py",
+        "symbol": "index_info"
+      },
+      "implementation": [
+        {
+          "path": "framework/index_info.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "受信宿主明示授权并提供同临界区、同摘要口径的两份索引观测。"
+      ],
+      "subfunctions": [
+        "核对权限与代际",
+        "区分同代摘要或计数不符",
+        "处理未知证据"
+      ],
+      "execution": "仅返回诊断及两个计数，不修复。",
+      "negative": [
+        "不扫盘、不比较节点正文、不作根因归因或生产健康证明。"
+      ],
+      "evidence": [
+        "tests/test_index_info.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3261,
+          3308
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

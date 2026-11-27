@@ -381,10 +381,15 @@
         619,
         628
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "info.index_observations",
+          "condition": "同权限快照内对照两份索引代际、计数及摘要。"
+        }
+      ],
+      "gap": "不迁自动重建、运行进程信息、全库健康、外部验证器、配置或旧协议。"
     },
     {
       "tool": "cg",
