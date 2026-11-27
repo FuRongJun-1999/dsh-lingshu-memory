@@ -474,10 +474,15 @@
         1003,
         1015
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "有新版回执/恢复判据，但未验旧状态投影与字段。"
+      "evidence": [
+        {
+          "capability": "status.current",
+          "condition": "已授权且条件、时间适用的当前修订；只检查 full 证明。"
+        }
+      ],
+      "gap": "未迁移旧巡查、验证态台账、履历、冷队列或旧状态字段。"
     },
     {
       "tool": "cg",

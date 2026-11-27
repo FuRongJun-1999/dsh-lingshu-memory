@@ -681,6 +681,58 @@
         "snapshot.body",
         "recovery.plan"
       ]
+    },
+    {
+      "id": "status.current",
+      "name": "授权节点当前版本核验态",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/read_status.py",
+        "symbol": "read_status"
+      },
+      "implementation": [
+        {
+          "path": "framework/read_status.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/status_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "已认证主体由调用方提供；在同一锁中恢复并校验合成库快照。",
+        "沿用显式读条件和时间轴，已授权且适用后才查询证明。"
+      ],
+      "subfunctions": [
+        "当前节点定位",
+        "权限与适用性过滤",
+        "完整用途证明绑定"
+      ],
+      "execution": "返回当前修订定位符和已验证或未验证；只接受 full 用途，无法确认不标 verified。",
+      "negative": [
+        "不返回证明正文或跨记录统计。",
+        "不是旧巡查、台账、验证态履历或生产鉴权。"
+      ],
+      "evidence": [
+        "tests/test_read_status.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          2426,
+          2447
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "condition.time",
+        "snapshot.body",
+        "verify.proof",
+        "recovery.plan"
+      ]
     }
   ]
 }

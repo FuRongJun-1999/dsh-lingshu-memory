@@ -15,6 +15,8 @@ graph LR
   R[治理受理与修订变更] --> S
   R --> A
   R --> V[版本绑定核验证明]
+  K[授权节点当前核验态] --> V
+  K --> A
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -68,3 +70,7 @@ graph LR
 ## 版本绑定核验证明
 
 [证明构造与适用判据](<../framework/verification.py>)单独接收受信主体与时间证据，生成节点、修订、正文摘要、来源与用途绑定。用途或当前版本不符、来源自证或封签漂移都不得进入恢复；SHA-256 校验不是认证或签名。影子库保留原证明文件形状、当前提交版本检查和锁。仅对应[固定旧核验入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L3960-L3964)的一个子能力，不迁移旧裁决、见证凭据或鉴权协议。[回归](<../tests/test_verification_capability.py>)对比原始、改动和还原后的证据，实际重开文件库验证恢复结果。
+
+## 授权节点当前版本核验态
+
+[独立状态查询](<../framework/read_status.py>)接受显式读选择条件、可信主体和当前快照；[文件适配](<../shadow_runtime/status_port.py>)复用事务恢复和锁，不修改证明。权限、条件或时间不满足时不会读取证明端口。只有当前节点、修订、摘要和来源匹配的 full 用途证明才显示 verified；仅用于恢复的证明、未来时间的证明、缺失或损坏的证明均不显示 verified。该状态不是签名或生产身份验证。见[固定旧实现](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L2426-L2447)。不迁移全库巡查、历史台账和冷队列，不暴露证明正文。[定向测试](<../tests/test_read_status.py>)检查拒读、用途和修订切换。

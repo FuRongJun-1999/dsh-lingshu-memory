@@ -44,6 +44,7 @@
 | stage-0.2-v6 | b14845f4987c022775a916d35641f527d8c9be51 | 364 | I1 | NOT_RUN/BLOCK | 主动取用核心解耦，冻结调用轨迹和容器实测 |
 | stage-0.2-v7 | 404944e761ec48886d9f85585079817cfc961280 | 370 | I1 | NOT_RUN/BLOCK | 文件端口实测与共享实现行数机检 |
 | stage-0.2-v8 | 63e3db5c6072fdd56148126fc16257be7a47b85b | 372 | I1 | NOT_RUN/BLOCK | 冻结旧入口与隔离能力覆盖对照 |
+| stage-0.2-v9 | 2281e11580a8b2f37c56c193d96f9af826f16d98 | 375 | I1 | NOT_RUN/BLOCK | 版本绑定证明子集与容器复验 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

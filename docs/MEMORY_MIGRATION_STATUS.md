@@ -1,7 +1,7 @@
 # 固定上游记忆功能迁移对照（生成）
 
 范围：固定上游提交的 39 个 cg 和 5 个 stg 顶层操作。未运行旧仓，不覆盖 action、参数组合和历史别名。
-统计：4 项子集有隔离证据，40 项未迁移，旧接口可调用 0 项。
+统计：5 项子集有隔离证据，39 项未迁移，旧接口可调用 0 项。
 
 “子集有证据”只指新版中文功能图中的隔离能力；不表示旧协议兼容。既有 S3 映射保留原冻结基线。
 新版节点见[记忆能力图](<CAPABILITY_GRAPH.md>)；旧候选见[兼容候选](<COMPATIBILITY.md>)。
@@ -43,7 +43,7 @@
 | [cg.consolidate](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L923-L941) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
 | [cg.insight](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L942-L984) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
 | [cg.ccg](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L985-L1002) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
-| [cg.status](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1003-L1015) | 未迁移 | 无已验收迁移子集 | 有新版回执/恢复判据，但未验旧状态投影与字段。 |
+| [cg.status](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1003-L1015) | 子集隔离验证 | status.current：已授权且条件、时间适用的当前修订；只检查 full 证明。 | 未迁移旧巡查、验证态台账、履历、冷队列或旧状态字段。 |
 | [cg.edges](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1016-L1031) | 未迁移 | 无已验收迁移子集 | 内部血缘参与授权，不等于已实现旧边视图。 |
 | [cg.audit](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1032-L1041) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
 | [cg.help](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1042-L1051) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
