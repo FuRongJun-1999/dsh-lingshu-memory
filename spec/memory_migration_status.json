@@ -217,10 +217,15 @@
         299,
         354
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "sustain.heartbeat_status",
+          "condition": "单服务授权及实例代际匹配，按可信时钟判断心跳时效。"
+        }
+      ],
+      "gap": "不迁旧常驻、心跳写入、自愈、会话水位、对端或协议。"
     },
     {
       "tool": "cg",

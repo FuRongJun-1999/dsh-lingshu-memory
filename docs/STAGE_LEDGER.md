@@ -77,6 +77,7 @@
 | stage-0.2-v39 | ac2bc7f6fad06559b197d30381b9d2100c80fa05 | 464 | I1 | NOT_RUN/BLOCK | 五维状态卡与四路 Docker，本地验收 |
 | stage-0.2-v40 | 7bfc76814c4d60ea7a8fd4817cbda0ab9c7d8cf3 | 467 | I1 | NOT_RUN/BLOCK | 样本校准差与四路 Docker，本地验收 |
 | stage-0.2-v41 | 2b876b310dde0abfcc139c36ebb70d0a5e219e45 | 470 | I1 | NOT_RUN/BLOCK | 索引快照对照与四路 Docker，本地验收 |
+| stage-0.2-v42 | a318bd89b753414d2ec6b6aa19ec5b38cf39453f | 473 | I1 | NOT_RUN/BLOCK | 理论声明核对与四路 Docker，本地验收 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

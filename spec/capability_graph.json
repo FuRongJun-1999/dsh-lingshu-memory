@@ -2124,6 +2124,48 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "sustain.heartbeat_status",
+      "name": "授权心跳时效诊断",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/heartbeat_status.py",
+        "symbol": "heartbeat_status"
+      },
+      "implementation": [
+        {
+          "path": "framework/heartbeat_status.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信宿主授权单服务，绑定实例及策略代际，固定同一时钟和时效窗。"
+      ],
+      "subfunctions": [
+        "未授权不读取",
+        "检查代际",
+        "区分新鲜、过期、未来和未知"
+      ],
+      "execution": "只对未过期观测给出忙闲自报；不执行任何自愈。",
+      "negative": [
+        "不写心跳、启动循环、修复或证明存活。"
+      ],
+      "evidence": [
+        "tests/test_heartbeat_status.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          2094,
+          2113
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

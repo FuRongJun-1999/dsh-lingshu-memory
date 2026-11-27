@@ -287,3 +287,9 @@ graph LR
 [独立核对接口](<../framework/theory_declaration.py>)从授权快照读取版本声明，与宿主独立提供的摘要和认可版本集合比对。声明缺失只报告未声明；策略、格式或摘要变动返回错误，已有但不认可的版本单独报告。匹配不证明理论正确、声明者身份或启动资格。
 
 参照[冻结旧理论检查](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/theory.py#L137-L176)。不迁旧默认放行、落盘声明、签章或真实宿主权限。[反例](<../tests/test_theory_declaration.py>)证明即使改后的版本也在认可集合，摘要仍须匹配。
+
+## 授权心跳时效诊断
+
+[独立诊断接口](<../framework/heartbeat_status.py>)只检查明确服务、实例代际和当前策略下的授权观测。可信时钟下观测年龄在半开区间内才报告新鲜：恰好到期已过时，未来时间为错误，缺失为未知。只在新鲜时返回忙闲自报；这不是存活或任务健康保证。未授权不触读口。
+
+参照[冻结旧维生状态入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L2094-L2113)，不迁心跳写入、后台循环、会话水位、对端或自愈。[反例](<../tests/test_heartbeat_status.py>)覆盖时效边界、代际与权限。
