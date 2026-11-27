@@ -31,6 +31,8 @@ graph LR
   SE[授权单槽事件追加] --> SC
   SE --> X
   SL[授权单槽租约视图] --> SE
+  EA[授权节点证据审计] --> K
+  EA --> E
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -136,3 +138,9 @@ graph LR
 [独立租约判据](<../framework/state_lease.py>)消费已校验的单槽投影。由受信调用方明确提供正整数 TTL 秒，年龄达到 TTL 即标为 weak，不删除现值。缺失时间证据不伪造稳定；空槽、撤回、未知和损坏分别返回。[合成文件端口](<../shadow_runtime/state_view_port.py>)重用已授权的只读检查，不另存投影或改变台账。[定向反例](<../tests/test_state_lease.py>)覆盖端点、撤回、拒读不触盘和读取不改文件。
 
 此为[固定旧租约](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/state_view.py#L101-L124)子集（源码 SHA256 b444909414d7e8137a8bc6c32085126c88f9e0086a741b939d17f987de309dca）；不迁旧环境变量、槽名缺省、不可变声明、多槽联合或历史输出。时间为受信落账秒，不做真相、签名或生产身份保证；无旧接口接线。
+
+## 授权单节点证据审计
+
+[独立证据接口](<../framework/evidence_audit.py>)额外要求节点审计许可，然后复用可见来源和核验态判据。两个投影必须绑定同一个当前定位符；冲突拒绝，不能交付半份。只返回当前定位符、核验态和至多 64 个可见来源；不返回正文、证明原件或隐边计数。[合成文件适配](<../shadow_runtime/evidence_audit_port.py>)复用库锁及既有事务恢复；查询不改证明或追加审计，先前未完成事务仍按原规则恢复。
+
+对照[冻结五面组装器](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/auditview.py#L136-L248)（SHA256 0fac5a19403229095dba7307bf4f6aaaae9c0792a3401496d03ca88a3b0210b3）；仅迁移当前核验与可见来源子集，不迁旧备择、反向出处、盲区和退役史，也不改事务日志或开放旧 RPC。[定向测试](<../tests/test_evidence_audit.py>)核对审计授权变异、同修订拒绝及重开换版。

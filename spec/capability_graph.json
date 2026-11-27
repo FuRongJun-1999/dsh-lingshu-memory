@@ -1119,6 +1119,55 @@
         "state.event",
         "stg.state_chain"
       ]
+    },
+    {
+      "id": "audit.evidence",
+      "name": "授权单节点证据审计视图",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/evidence_audit.py",
+        "symbol": "evidence_audit"
+      },
+      "implementation": [
+        {
+          "path": "framework/evidence_audit.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/evidence_audit_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信调用方另授节点审计权限；原读权限不放宽。",
+        "在同锁校验的当前快照上读，保留来源授权及条件、时间和修订绑定，公开输出最多64项来源。"
+      ],
+      "subfunctions": [
+        "专门授权先于读库",
+        "核验态和可见来源同修订检查",
+        "仅输出定位符和投影"
+      ],
+      "execution": "权限不足或混合版本不交付任何部分；不返回正文、原证明或隐边数量。",
+      "negative": [
+        "非事务日志导出、旧五面审计或生产身份核验；不迁备择、反向出处、盲区或退役史。"
+      ],
+      "evidence": [
+        "tests/test_evidence_audit.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3755,
+          3773
+        ]
+      },
+      "dependencies": [
+        "edges.visible",
+        "status.current",
+        "recovery.plan"
+      ]
     }
   ]
 }

@@ -518,10 +518,15 @@
         1032,
         1041
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "audit.evidence",
+          "condition": "另授审计权限，授权只读快照中组合当前核验态与可见来源。"
+        }
+      ],
+      "gap": "不迁旧五面全部字段、备择、反向出处、盲区和退役史，不替代事务日志。"
     },
     {
       "tool": "cg",
