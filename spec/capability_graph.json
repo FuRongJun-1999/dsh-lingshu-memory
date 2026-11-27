@@ -1663,6 +1663,48 @@
       "dependencies": [
         "edges.visible"
       ]
+    },
+    {
+      "id": "link.lineage",
+      "name": "授权显式派生谱系",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/read_lineage.py",
+        "symbol": "read_lineage"
+      },
+      "implementation": [
+        {
+          "path": "framework/read_lineage.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "受信同快照的显式派生记录，绑定子父当前定位符，两端均已授权且适用。"
+      ],
+      "subfunctions": [
+        "按关系过滤",
+        "两端授权与修订核对",
+        "可见父项稳定去重及限额"
+      ],
+      "execution": "只返回定位符，不从来源边自动产生派生。",
+      "negative": [
+        "不迁握手、对端信任、签名、历史巡查或重建，不接真实台账。"
+      ],
+      "evidence": [
+        "tests/test_read_lineage.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3210,
+          3220
+        ]
+      },
+      "dependencies": [
+        "edges.visible"
+      ]
     }
   ]
 }

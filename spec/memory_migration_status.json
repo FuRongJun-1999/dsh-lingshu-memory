@@ -433,10 +433,15 @@
         745,
         806
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "link.lineage",
+          "condition": "授权同快照显式派生记录，只有当前子父定位符匹配才报告。"
+        }
+      ],
+      "gap": "不迁旧握手、对端信任、证据交换、签名、原台账读写及重建。"
     },
     {
       "tool": "cg",
