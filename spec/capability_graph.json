@@ -2417,6 +2417,48 @@
       "dependencies": [
         "edges.visible"
       ]
+    },
+    {
+      "id": "ccg.review_preview",
+      "name": "授权六要素编外复核预演",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/ccg_review_preview.py",
+        "symbol": "review_preview"
+      },
+      "implementation": [
+        {
+          "path": "framework/ccg_review_preview.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "宿主提供独立候选摘要、授权快照，并以受信验证口解析已认证回执和统一主体 ID。"
+      ],
+      "subfunctions": [
+        "六要素及摘要核对",
+        "回执候选与策略绑定",
+        "拒绝自证和未通过结果"
+      ],
+      "execution": "仅返回预演结果，不写。",
+      "negative": [
+        "不做身份认证、签章、写库、编译、复核派发或旧路由。"
+      ],
+      "evidence": [
+        "tests/test_ccg_review_preview.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/ccgc.py",
+        "lines": [
+          742,
+          780
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

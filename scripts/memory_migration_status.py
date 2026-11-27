@@ -11,6 +11,7 @@ from framework.spec import parse
 
 PIN = {"repo":"FuRongJun-1999/dsh-memory","commit":"71efd6785b373a99504b74c61b2c03136d7fd809","sources":{"cg":{"path":"md_cg/op_table.py","sha256":"47e161e68332fbbb99da501a35c4dfe04af0acf61c100c395e6c116ac82f34d7"},"stg":{"path":"md_cg/mcp_server.py","sha256":"fd367661c814c349ba9ce178a24b58e15981b80a9e858b6759569673edd9cc2e"}}}
 PARTIAL = {
+    ('cg', 'ccg'): {'ccg.review_preview'},
     ('cg', 'consolidate'): {'consolidate.promotion_preview'},
     ('cg', 'predict'): {'predict.feedback_stats'},
     ('cg', 'insight'): {'insight.decided_rate'},
@@ -92,7 +93,7 @@ def verify(doc, inventory, graph):
             actual.add(k)
         require(actual==targets, '缺已登记的隔离对子')
     require(seen==expected, '顶层操作漏报')
-    return dict(Counter(x['state'] for x in doc['operations']))
+    return {'partial':0,'not_migrated':0} | dict(Counter(x['state'] for x in doc['operations']))
 
 
 def render(doc, stats):

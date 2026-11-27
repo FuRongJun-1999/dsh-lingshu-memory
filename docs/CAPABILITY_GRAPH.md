@@ -329,3 +329,9 @@ graph LR
 [独立预演接口](<../framework/promotion_preview.py>)要求节点可见且适用，并通过独立计划权限。可信宿主按当前精确定位符提供六要素完整性、锁定、命中和重要性证据；接口不自行评定六要素。只预演未锁、声明完整的情境层节点，命中或重要性任一达到门限才列为知识层候选。证据未知或过时不出计划。
 
 参照[冻结旧提升候选判据](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/consolidate.py#L1056-L1109)。不扫库、不移动节点、不改变权限、不回滚。[反例](<../tests/test_promotion_preview.py>)覆盖独立许可、两个含等号的门限和修订漂移。
+
+## 授权六要素编外复核预演
+
+[独立预演接口](<../framework/ccg_review_preview.py>)先授权再取六要素候选，核对固定摘要和策略代际。受信宿主负责验证回执及权限、统一主体 ID，并保证编译者身份来自可信来源；接口不认证身份、不接受调用方附带的自报裁决。回执须绑定同一候选和策略，编译者与复核者不同，且裁决明确接受。
+
+参照[冻结旧准入闸](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/ccgc.py#L742-L780)。匹配仅为本次预演，不签章、不授予写入权限，不迁编译、派发或旧路由。[反例](<../tests/test_ccg_review_preview.py>)覆盖同主体、摘要漂移、缺六要素及未通过。

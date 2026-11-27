@@ -1,7 +1,7 @@
 # 固定上游记忆功能迁移对照（生成）
 
 范围：固定上游提交的 39 个 cg 和 5 个 stg 顶层操作。未运行旧仓，不覆盖 action、参数组合和历史别名。
-统计：43 项子集有隔离证据，1 项未迁移，旧接口可调用 0 项。
+统计：44 项子集有隔离证据，0 项未迁移，旧接口可调用 0 项。
 
 “子集有证据”只指新版中文功能图中的隔离能力；不表示旧协议兼容。既有 S3 映射保留原冻结基线。
 新版节点见[记忆能力图](<CAPABILITY_GRAPH.md>)；旧候选见[兼容候选](<COMPATIBILITY.md>)。
@@ -42,7 +42,7 @@
 | [cg.maintain](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L872-L922) | 子集隔离验证 | maintain.propagation_preview：单授权失效源，按当前显式依赖拟定可见下游复核计划。 | 不迁实际写验证态、全库巡查、自动重建、其他维护动作和旧协议。 |
 | [cg.consolidate](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L923-L941) | 子集隔离验证 | consolidate.promotion_preview：只预演授权情境节点的六要素、锁定、命中或重要性筛选。 | 不迁旧批量扫描、实际升层、历史、回滚或旧协议。 |
 | [cg.insight](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L942-L984) | 子集隔离验证 | insight.decided_rate：授权、摘要固定的观察窗样本；只计算已裁决比例。 | 不迁旧显著性、层可靠性、分支、生成、裁决写入或旧协议。 |
-| [cg.ccg](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L985-L1002) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
+| [cg.ccg](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L985-L1002) | 子集隔离验证 | ccg.review_preview：已授权固定候选与可信复核口的回执绑定；编外接受才匹配。 | 不迁旧凭据验证、签章、编译、写入、派发或旧协议。 |
 | [cg.status](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1003-L1015) | 子集隔离验证 | status.current：已授权且条件、时间适用的当前修订；只检查 full 证明。 | 未迁移旧巡查、验证态台账、履历、冷队列或旧状态字段。 |
 | [cg.edges](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1016-L1031) | 子集隔离验证 | edges.visible：按单节点查看已授权且适用的当前来源出边。 | 未迁移旧反查、入边、时间窗、批次、分页与聚合；不返回隐边计数。 |
 | [cg.audit](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L1032-L1041) | 子集隔离验证 | audit.evidence：另授审计权限，授权只读快照中组合当前核验态与可见来源。 | 不迁旧五面全部字段、备择、反向出处、盲区和退役史，不替代事务日志。 |

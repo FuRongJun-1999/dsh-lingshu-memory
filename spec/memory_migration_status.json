@@ -612,10 +612,15 @@
         985,
         1002
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "ccg.review_preview",
+          "condition": "已授权固定候选与可信复核口的回执绑定；编外接受才匹配。"
+        }
+      ],
+      "gap": "不迁旧凭据验证、签章、编译、写入、派发或旧协议。"
     },
     {
       "tool": "cg",
