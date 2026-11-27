@@ -62,7 +62,7 @@ def main():
         except subprocess.TimeoutExpired:
             command(["docker", "kill", name], 15)
             raise
-    if len(result["cases"]) != 3 or [x["exit"] for x in result["cases"]] != [-9, -9, -9]:
+    if any([x["exit"] for x in result[name]] != [-9, -9, -9] for name in ("cases", "governance_cases")):
         raise RuntimeError("incomplete process exit evidence")
     print(json.dumps(dict(base=head, working_tree_changes=dirty, image=image["Id"], source_sha=source_sha,
                           isolation="read-only source copy; task-local tmpfs; no network; non-root", run=result), sort_keys=True))

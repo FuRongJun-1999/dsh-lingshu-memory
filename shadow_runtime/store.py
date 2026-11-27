@@ -9,7 +9,9 @@ import time
 import uuid
 from shadow_runtime.writer_status import WriterStatus, _name
 from dataclasses import replace
-from framework.api import cursor_valid, govern_transition, receipt_scope_allowed
+from framework.api import cursor_valid, receipt_scope_allowed
+from framework.govern import decide_govern
+from framework.recovery_plan import decide_recovery
 from framework.conditions import bitemporal_match, condition_match
 from framework.contracts import build_untrusted_record, extract_condition_space, validate_full_response, validate_v2_request
 from framework.migration import time_bundle
@@ -319,14 +321,11 @@ class ShadowMarkdownStore:
                 continue
             if intent["state"] in ("complete", "aborted"):
                 continue
-            current = self._load_manifest_or_init()
-            current_sha = _sha_obj(current)
-            if current_sha == intent["before_manifest_sha"]:
+            direction = decide_recovery(intent, self._load_manifest_or_init())
+            if direction == "rollback":
                 self._rollback_transaction(intent)
-            elif current_sha == intent["after_manifest_sha"]:
+            elif direction == "rollforward":
                 self._finish_transaction(intent)
-            else:
-                raise ValueError("INTEGRITY_FAILURE: transaction manifest diverged")
 
     def _load_intent_for_scope(self, tenant: str, principal: str, operation: str, token: str) -> tuple[dict | None, bool]:
         tx_id = _token_key_sha(tenant, principal, operation, token)[:16]
@@ -1037,30 +1036,18 @@ class ShadowMarkdownStore:
                 "historical_receipt": None, "selfcheck_aggregate": None,
             })
         cur_meta = metas.get(node_id)
-        authorized = cur_meta is not None and cur_meta["tenant"] == ctx["tenant"] and ctx["principal"] in cur_meta["creation_readers"] and ctx["clearance"] >= cur_meta["declared_sensitivity"]
-        if not authorized:
-            return validate_full_response({
-                "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "error",
-                "error_code": "NOT_FOUND_OR_DENIED", "next_action": "authenticate",
-                "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
-            })
-
-        policy_safe = True
-        if action == "change_policy":
-            policy_safe = req["declared_sensitivity"] >= cur_meta["declared_sensitivity"] and frozenset(req["reader_ceiling"]) <= frozenset(cur_meta["creation_readers"])
-        elif action == "correct_revision":
-            rep = req["replacement"]
-            policy_safe = rep["declared_sensitivity"] >= cur_meta["declared_sensitivity"] and frozenset(rep["reader_ceiling"]) <= frozenset(cur_meta["creation_readers"])
-        proof_fresh = self._is_verified_locked(node_id, cur_meta["revision"], cur_meta["content_sha"], cur_meta["source_attribution"]["source_id"], "restore") if action == "restore" else True
+        def verify_restore():
+            return self._is_verified_locked(node_id, cur_meta["revision"], cur_meta["content_sha"],
+                                            cur_meta["source_attribution"]["source_id"], "restore")
 
         try:
-            govern_transition(cur_meta["state"], cur_meta["revision"], req["expected_revision"], action, authorized, policy_safe, proof_fresh)
+            transition = decide_govern(req, context=ctx, metadata=cur_meta, verify_restore=verify_restore)
         except ValueError as exc:
             code = str(exc)
             return validate_full_response({
                 "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "error",
-                "error_code": code, "next_action": "refresh_snapshot" if code in ("REVISION_CONFLICT", "STATE_CONFLICT") else "fix_input",
+                "error_code": code, "next_action": {"NOT_FOUND_OR_DENIED": "authenticate", "REVISION_CONFLICT": "refresh_snapshot",
+                                "STATE_CONFLICT": "refresh_snapshot"}.get(code, "fix_input"),
                 "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
                 "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
             })
@@ -1070,7 +1057,7 @@ class ShadowMarkdownStore:
         new_md_content = None
         new_md = None
         if action in ("forget", "restore"):
-            new_state = "tombstoned" if action == "forget" else "active"
+            new_state = transition[0]
             updated_meta = copy.deepcopy(cur_meta)
             updated_meta["state"] = new_state
             meta_changes.append({"revision": cur_meta["revision"], "before": copy.deepcopy(cur_meta), "after": _seal_meta(updated_meta)})

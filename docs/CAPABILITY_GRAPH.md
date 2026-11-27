@@ -12,7 +12,9 @@ graph LR
   Q --> S
   Q -. 候选不等于正文 .-> G
   W[写入受理与幂等裁决] --> X[共享文件事务与恢复]
-  R[治理与恢复 / 待迁移] -. 策略输入 .-> S
+  R[治理受理与修订变更] --> S
+  R --> A
+  P[独立恢复方向] --> S
   C[任务触发取用 / 待迁移] -. 核验后组装 .-> G
 ~~~
 
@@ -45,3 +47,10 @@ graph LR
 - **执行：** 同作用域同指纹且提交证据完整时回放原写者回执；异指纹冲突仍拒绝；已持久取消不再写入。回执的审计结果仍由影子库结合实际审计计算。事务文件、锁、清单提交点及恢复顺序未改。
 - **验证方式：** [判据与变异](<../tests/test_write_token.py>)、既有跨进程幂等测试，以及 [Docker 强停](<DOCKER_PROCESS_LAB.md>) 和 [MCP 回放](<DOCKER_MCP_LAB.md>)。判据观察包括回执一致、取消不放行、无证据不冒充已提交、审计不重复。
 - **不适用条件：** [固定上游写入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L3805-L3836) 还支持元数据补丁并调用旧写链；此处不迁移该补丁或审核治理。本节点验证隔离写链，不保证平台掉电或生产认证。
+
+## 治理受理与恢复方向
+
+- **治理接口：** [decide_govern](<../framework/govern.py>)在受信快照下校验主体、版本、状态与策略上限。恢复动作只有在前置条件满足后才查询证明。判定不写库；影子适配负责生成并提交变化。
+- **恢复接口：** [decide_recovery](<../framework/recovery_plan.py>)消费持锁、已校验的 intent 和清单。提交前/后只允许匹配一个，矛盾或不匹配均拒绝。方向不是文件完整性证明；改盘前仍须校验元数据与正文。
+- **验证方式：** [独立判据](<../tests/test_govern_recovery_plan.py>)、[四动作故障窗口](<../tests/test_shadow_runtime.py>)及[真实强停实验](<DOCKER_PROCESS_LAB.md>)。四动作均使用故障注入；Docker 另实跑 Write.create 和 Govern.forget 各三个真实 SIGKILL 窗口。
+- **范围：** [固定上游遗忘入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4001-L4025)供语义对照，不迁移档位、旧审核队列或旧库文件格式。不验证物理掉电或真实生产鉴权。

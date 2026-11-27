@@ -208,9 +208,60 @@
     },
     {
       "id": "govern.recovery",
-      "name": "治理与恢复",
-      "state": "planned",
-      "dependencies": []
+      "name": "治理受理与修订变更",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/govern.py",
+        "symbol": "decide_govern"
+      },
+      "implementation": [
+        {
+          "path": "framework/govern.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore.execute"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._govern_locked"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._is_verified_locked"
+        }
+      ],
+      "conditions": [
+        "受信主体、当前元数据和同一锁作用域；v2 请求已验证",
+        "权限、预期修订与状态通过后才查恢复证明"
+      ],
+      "subfunctions": [
+        "核对受信输入",
+        "选择显式分支",
+        "拒绝不一致证据"
+      ],
+      "execution": "允许或拒绝治理受理；适配器负责治理实际落盘。",
+      "negative": [
+        "不兼容旧式档位裁决或物理删除；不认证主体"
+      ],
+      "evidence": [
+        "tests/test_govern_recovery_plan.py",
+        "tests/test_shadow_runtime.py",
+        "scripts/docker_process_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4001,
+          4025
+        ]
+      },
+      "dependencies": [
+        "snapshot.body",
+        "policy.read"
+      ]
     },
     {
       "id": "context.recall",
@@ -223,6 +274,69 @@
       "name": "共享文件事务与恢复",
       "state": "dependency",
       "dependencies": []
+    },
+    {
+      "id": "recovery.plan",
+      "name": "提交清单证据与恢复方向",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/recovery_plan.py",
+        "symbol": "decide_recovery"
+      },
+      "implementation": [
+        {
+          "path": "framework/recovery_plan.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._recover_pending_transactions"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._rollback_transaction"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._verify_transaction_files"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._finish_transaction"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._intent_matches"
+        }
+      ],
+      "conditions": [
+        "持锁并校验 intent；清单摘要仅匹配一个阶段"
+      ],
+      "subfunctions": [
+        "核对受信输入",
+        "选择显式分支",
+        "拒绝不一致证据"
+      ],
+      "execution": "匹配提交前回滚，匹配提交后前滚；矛盾拒绝，不由方向判据改盘。",
+      "negative": [
+        "旧版入口只作治理来源，不把旧库当作新版 intent 协议；未验证掉电"
+      ],
+      "evidence": [
+        "tests/test_govern_recovery_plan.py",
+        "tests/test_shadow_runtime.py",
+        "scripts/docker_process_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4001,
+          4025
+        ]
+      },
+      "dependencies": [
+        "snapshot.body"
+      ]
     }
   ]
 }
