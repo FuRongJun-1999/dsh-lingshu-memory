@@ -69,6 +69,7 @@
 | stage-0.2-v31 | 93c3466f5e9f7982f693e19b1dc2c5e5cbb30518 | 440 | I1 | NOT_RUN/BLOCK | 授权目标列表与公开四矩阵 |
 | stage-0.2-v32 | b4fed3b126224fb89b3a47370b9674bb2253619e | 443 | I1 | NOT_RUN/BLOCK | 授权派生谱系与公开四矩阵 |
 | stage-0.2-v33 | 218e8d21ebb72eeea39fb337cb4dccde66378d0e | 446 | I1 | NOT_RUN/BLOCK | 授权条件历史与公开四矩阵 |
+| stage-0.2-v34 | f1c1bddb994f3b5a4acfcf28074ac0d8ea3e61d7 | 449 | I1 | NOT_RUN/BLOCK | 授权裁决记录与公开四矩阵 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

@@ -144,10 +144,15 @@
         203,
         221
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "consistency.exact_conditions",
+          "condition": "只在已授权且匹配当前修订的候选中做正负条件精确对照。"
+        }
+      ],
+      "gap": "不迁旧语义近似、递归、统计或自动飞轮。"
     },
     {
       "tool": "cg",

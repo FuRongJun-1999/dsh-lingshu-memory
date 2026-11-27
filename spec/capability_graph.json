@@ -1789,6 +1789,47 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "consistency.exact_conditions",
+      "name": "授权显式条件对照",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/condition_conflict.py",
+        "symbol": "check_conditions"
+      },
+      "implementation": [
+        {
+          "path": "framework/condition_conflict.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "受信同快照内已授权且适用的候选、精确修订和正负条件标识。"
+      ],
+      "subfunctions": [
+        "先检查授权与当前版本",
+        "交叉求正负条件交集"
+      ],
+      "execution": "只报告明确冲突；没有命中不表示全局一致。",
+      "negative": [
+        "不迁语义近似、递归、飞轮或生产。"
+      ],
+      "evidence": [
+        "tests/test_condition_conflict.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          1760,
+          1785
+        ]
+      },
+      "dependencies": [
+        "edges.visible"
+      ]
     }
   ]
 }

@@ -239,3 +239,9 @@ graph LR
 [独立记录读口](<../framework/review_records.py>)要求单提案权限及可信宿主单独提供的完整投影摘要。只接至多 128 条严格递增的记录；仅有裁决类型、序号和修订。即使改变的是最终页以外的记录，也会摘要不符而整次拒绝；成功后倒序返回至多 32 条。这不是签章，也不验证裁决者身份。
 
 参照[冻结旧审核记录分支](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L3966-L3991)，不迁旧账本、摘要编码、待审队列、写裁决或生产接线。[反例](<../tests/test_review_records.py>)覆盖无权不读、他提案或擅带正文、预算和页外变化。
+
+## 授权显式条件对照
+
+[独立对照接口](<../framework/condition_conflict.py>)仅对同一可信快照中可见、适用且当前修订匹配的目标比较显式正负条件。正对负或负对正出现同一标识时返回精确冲突。候选集合未知、超额或有效条目重复不报告一致；没有命中也不是全库一致。
+
+参照[冻结旧条件冲突入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L1760-L1785)及[跨侧比对口径](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/consistency.py#L1247-L1251)，不做文本推断、递归、飞轮或写库。[反例](<../tests/test_condition_conflict.py>)验证隐藏与旧版不参与，简单同侧匹配不报冲突。
