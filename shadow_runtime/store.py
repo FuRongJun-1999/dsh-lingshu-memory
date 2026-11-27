@@ -15,11 +15,12 @@ from framework.recovery_plan import decide_recovery
 from framework.conditions import bitemporal_match, condition_match
 from framework.contracts import build_untrusted_record, extract_condition_space, validate_full_response, validate_v2_request
 from framework.migration import time_bundle
-from framework.model import Edge, EpochDecisionCache, Model, Node, RecoveryEvidence, can_read_with_epoch_cache, recover, request_fingerprint, verification_eligible
+from framework.model import Edge, EpochDecisionCache, Model, Node, RecoveryEvidence, can_read_with_epoch_cache, recover, request_fingerprint
 from framework.responses import absence_basis, cancellation
 from framework.read_get import ReadSnapshot, read_get
 from framework.security import binding_shape, context_shape, emit_allowed
 from framework.spec import canonical, parse
+from framework.verification import issue_proof, proof_applies
 from framework.read_search import read_search
 from framework.write_token import decide_write
 from sandbox_runtime.store import wordset
@@ -908,65 +909,23 @@ class ShadowMarkdownStore:
                     or meta["tenant"] != entry["tenant"] or meta["state"] != entry["state"]
                     or not mdp.exists() or _sha_bytes(mdp.read_bytes()) != meta["content_sha"]):
                 raise ValueError("INTEGRITY_FAILURE: verification subject mismatch")
-            source_id = meta["source_attribution"]["source_id"]
-            ok = verification_eligible(
-                subject_revision=meta["revision"],
-                subject_sha=meta["content_sha"],
-                proof_revision=expected_revision,
-                proof_sha=meta["content_sha"],
-                verifier_id=verifier_id,
-                source_id=source_id,
-                scope_covers=scope in ("full", "restore"),
-                method_allowed=method_allowed,
-                credential_exists=credential_exists,
-                credential_time=credential_time,
-                verified_at=verified_at,
-            )
-            if ok:
-                vp = self.root / "verifications" / f"{_node_dir_key(node_id)}_rev_{expected_revision:06d}.json"
-                proof_body = {
-                    "node_id": node_id,
-                    "subject_revision": meta["revision"],
-                    "subject_sha": meta["content_sha"],
-                    "verifier_id": verifier_id,
-                    "source_id": source_id,
-                    "scope": scope,
-                    "method_allowed": bool(method_allowed),
-                    "credential_exists": bool(credential_exists),
-                    "credential_time": credential_time,
-                    "verified_at": verified_at,
-                }
-                proof_body["proof_sha"] = _sha_obj(proof_body)
-                self._write_json_atomic(vp, proof_body, durable=False)
-            return ok
+            proof = issue_proof(node_id=node_id, revision=expected_revision, content_sha=meta["content_sha"],
+                                source_id=meta["source_attribution"]["source_id"], verifier_id=verifier_id,
+                                scope=scope, method_allowed=method_allowed, credential_exists=credential_exists,
+                                credential_time=credential_time, verified_at=verified_at)
+            if proof is None:
+                return False
+            vp = self.root / "verifications" / f"{_node_dir_key(node_id)}_rev_{expected_revision:06d}.json"
+            self._write_json_atomic(vp, proof, durable=False)
+            return True
 
     def _is_verified_locked(self, node_id: str, rev: int, content_sha: str, source_id: str, required_scope: str = "restore") -> bool:
         vp = self.root / "verifications" / f"{_node_dir_key(node_id)}_rev_{rev:06d}.json"
         if not vp.exists():
             return False
         try:
-            proof = self._read_json_strict(vp)
-            expected = {"node_id", "subject_revision", "subject_sha", "verifier_id", "source_id", "scope", "method_allowed", "credential_exists", "credential_time", "verified_at", "proof_sha"}
-            if type(proof) is not dict or set(proof) != expected:
-                return False
-            body = {k: v for k, v in proof.items() if k != "proof_sha"}
-            if _sha_obj(body) != proof["proof_sha"]:
-                return False
-            if proof["node_id"] != node_id or proof["source_id"] != source_id:
-                return False
-            return verification_eligible(
-                subject_revision=rev,
-                subject_sha=content_sha,
-                proof_revision=proof["subject_revision"],
-                proof_sha=proof["subject_sha"],
-                verifier_id=proof["verifier_id"],
-                source_id=source_id,
-                scope_covers=proof["scope"] in ("full", required_scope),
-                method_allowed=proof["method_allowed"],
-                credential_exists=proof["credential_exists"],
-                credential_time=proof["credential_time"],
-                verified_at=proof["verified_at"],
-            )
+            return proof_applies(self._read_json_strict(vp), node_id=node_id, revision=rev,
+                                 content_sha=content_sha, source_id=source_id, required_scope=required_scope)
         except Exception:
             return False
 

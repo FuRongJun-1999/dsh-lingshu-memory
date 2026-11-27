@@ -76,10 +76,15 @@
         100,
         118
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "存在隔离文件核验支撑，但没有旧版核验凭据与接口的兼容验收。"
+      "evidence": [
+        {
+          "capability": "verify.proof",
+          "condition": "受信来源、当前已提交修订与摘要；证明仅在规定用途内适用。"
+        }
+      ],
+      "gap": "仅新版隔离证明；无旧 verdict、override、凭据签发或协议适配。"
     },
     {
       "tool": "cg",

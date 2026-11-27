@@ -42,7 +42,6 @@ class ShadowRuntimeMutationTests(unittest.TestCase):
             ("allow_overwrite_correct_revision_md", 'if self._md_path(node_id, new_rev).exists() or self._meta_path(node_id, new_rev).exists():', "if False:"),
             ("ignore_corrupt_index", 'postings=None if idx is None else idx["inverted"]', 'postings={} if idx is None else idx["inverted"]'),
             ("skip_cancel_fence_on_write", 'elif action == "return_original_cancel":', "elif False:"),
-            ("skip_proof_sha_check", 'if _sha_obj(body) != proof["proof_sha"]:', "if False:"),
             ("skip_meta_sha_check", 'if type(meta["meta_sha"]) is not str or _sha_obj(body) != meta["meta_sha"]:', "if False:"),
             ("skip_manifest_state_binding", 'or meta["state"] != entry["state"]):', 'or False):'),
             ("selfcheck_fake_c_pass", '"status": "NOT_RUN"} for cid in req["check_ids"]', '"status": "PASS"} for cid in req["check_ids"]'),

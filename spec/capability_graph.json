@@ -336,10 +336,6 @@
         {
           "path": "shadow_runtime/store.py",
           "symbol": "ShadowMarkdownStore._govern_locked"
-        },
-        {
-          "path": "shadow_runtime/store.py",
-          "symbol": "ShadowMarkdownStore._is_verified_locked"
         }
       ],
       "conditions": [
@@ -371,7 +367,8 @@
       "dependencies": [
         "snapshot.body",
         "policy.read",
-        "transaction.storage"
+        "transaction.storage",
+        "verify.proof"
       ]
     },
     {
@@ -626,6 +623,63 @@
           "path": "sandbox_runtime/store.py",
           "symbol": null
         }
+      ]
+    },
+    {
+      "id": "verify.proof",
+      "name": "版本绑定核验证明",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/verification.py",
+        "symbol": "issue_proof"
+      },
+      "implementation": [
+        {
+          "path": "framework/verification.py",
+          "symbol": null
+        },
+        {
+          "path": "framework/model.py",
+          "symbol": "verification_eligible"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore.verify_record"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._is_verified_locked"
+        }
+      ],
+      "conditions": [
+        "仅受信调用方提供已提交版本、核验者资格和时间。",
+        "证据必须绑定节点、修订、摘要、来源及用途；核验者不得是来源。"
+      ],
+      "subfunctions": [
+        "证明构造",
+        "完整绑定复核",
+        "已提交版本下的影子库适配"
+      ],
+      "execution": "不合格不出证；完整性、版本或用途不符均不得恢复，影子库保持持锁改盘。",
+      "negative": [
+        "不读取旧库、不重现旧 verdict/override 接口，不是可信签名和生产鉴权。"
+      ],
+      "evidence": [
+        "tests/test_verification_capability.py",
+        "tests/test_shadow_runtime.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3960,
+          3964
+        ]
+      },
+      "dependencies": [
+        "snapshot.body",
+        "recovery.plan"
       ]
     }
   ]

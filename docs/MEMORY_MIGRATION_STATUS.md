@@ -1,7 +1,7 @@
 # 固定上游记忆功能迁移对照（生成）
 
 范围：固定上游提交的 39 个 cg 和 5 个 stg 顶层操作。未运行旧仓，不覆盖 action、参数组合和历史别名。
-统计：3 项子集有隔离证据，41 项未迁移，旧接口可调用 0 项。
+统计：4 项子集有隔离证据，40 项未迁移，旧接口可调用 0 项。
 
 “子集有证据”只指新版中文功能图中的隔离能力；不表示旧协议兼容。既有 S3 映射保留原冻结基线。
 新版节点见[记忆能力图](<CAPABILITY_GRAPH.md>)；旧候选见[兼容候选](<COMPATIBILITY.md>)。
@@ -11,7 +11,7 @@
 | [cg.route](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L33-L46) | 未迁移 | 无已验收迁移子集 | 无旧路由与路由副作用的迁移验收；不能用候选搜索替代。 |
 | [cg.read](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L47-L78) | 子集隔离验证 | read.get：显式节点标识；按当前修订、授权、条件与时间读回。；read.search：显式查询；只在已授权且适用的候选中排序。；context.recall：结构化任务与受信端口；按明确知识键确认并实时复核。 | 未接旧式分页、标签/角色视图、token 截断、近况融合及查询推导。 |
 | [cg.write](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L79-L99) | 子集隔离验证 | write.token：显式新建或修改、可信身份及同锁 token/intent 证据。 | 未接旧 upsert、元数据补丁、写入档位或审核队列。 |
-| [cg.verify](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L100-L118) | 未迁移 | 无已验收迁移子集 | 存在隔离文件核验支撑，但没有旧版核验凭据与接口的兼容验收。 |
+| [cg.verify](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L100-L118) | 子集隔离验证 | verify.proof：受信来源、当前已提交修订与摘要；证明仅在规定用途内适用。 | 仅新版隔离证明；无旧 verdict、override、凭据签发或协议适配。 |
 | [cg.review](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L119-L151) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
 | [cg.protect](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L152-L170) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |
 | [cg.identity](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/op_table.py#L171-L202) | 未迁移 | 无已验收迁移子集 | 未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。 |

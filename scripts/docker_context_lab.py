@@ -45,7 +45,11 @@ def observe():
                            cwd=ROOT,shell=False,capture_output=True,text=True,encoding='utf-8',errors='strict',timeout=40)
     if suite.returncode or 'Ran 4 tests' not in suite.stderr or not suite.stderr.rstrip().endswith('OK'):
         raise RuntimeError('file recall tests failed: '+suite.stderr)
-    return dict(cases=cases, file_tests=4, dsh_model_loop='NOT_RUN', production='NOT_RUN')
+    proof = subprocess.run([sys.executable,'-X','utf8','-B','-m','unittest','discover','-s','tests','-p','test_verification_capability.py','-v'],
+                           cwd=ROOT,shell=False,capture_output=True,text=True,encoding='utf-8',errors='strict',timeout=40)
+    if proof.returncode or 'Ran 3 tests' not in proof.stderr or not proof.stderr.rstrip().endswith('OK'):
+        raise RuntimeError('proof tests failed: '+proof.stderr)
+    return dict(cases=cases, file_tests=4, verification_tests=3, dsh_model_loop='NOT_RUN', production='NOT_RUN')
 
 
 def main():
@@ -59,7 +63,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='lingshu-recall-code-') as tmp:
         root = Path(tmp)
         sources = collect(root)
-        fixtures = ('test_file_recall.py','test_shadow_runtime.py','test_sandbox_controller.py','test_sandbox_store.py')
+        fixtures = ('test_verification_capability.py','test_file_recall.py','test_shadow_runtime.py','test_sandbox_controller.py','test_sandbox_store.py')
         for rel in ('scripts/docker_process_lab.py', 'scripts/docker_context_lab.py', *(f'tests/{n}' for n in fixtures)):
             dest = root/rel
             dest.parent.mkdir(parents=True,exist_ok=True)
