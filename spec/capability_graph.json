@@ -1914,6 +1914,48 @@
       "dependencies": [
         "status.current"
       ]
+    },
+    {
+      "id": "identity.profile_refs",
+      "name": "授权单主体画像引用",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/identity_profile.py",
+        "symbol": "identity_profile"
+      },
+      "implementation": [
+        {
+          "path": "framework/identity_profile.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "主体明确且已授权，可信宿主逐条授权引用并独立提供快照摘要。"
+      ],
+      "subfunctions": [
+        "权限先于读取",
+        "验证主体和锚点特征引用",
+        "核对完整投影摘要"
+      ],
+      "execution": "只交付当前快照的引用；不符整次拒绝。",
+      "negative": [
+        "不枚举主体，不建立身份、授予权限或写锚点。"
+      ],
+      "evidence": [
+        "tests/test_identity_profile.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          1663,
+          1680
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

@@ -132,10 +132,15 @@
         171,
         202
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "identity.profile_refs",
+          "condition": "单主体授权画像，完整摘要绑定后只返回锚点及特征引用。"
+        }
+      ],
+      "gap": "不迁画像正文、主体枚举、观察或锚点写入、身份认证、契约及旧协议。"
     },
     {
       "tool": "cg",
