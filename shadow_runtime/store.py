@@ -9,7 +9,7 @@ import time
 import uuid
 from shadow_runtime.writer_status import WriterStatus, _name
 from dataclasses import replace
-from framework.api import cursor_valid, govern_transition, receipt_scope_allowed, retry_action
+from framework.api import cursor_valid, govern_transition, receipt_scope_allowed
 from framework.conditions import bitemporal_match, condition_match
 from framework.contracts import build_untrusted_record, extract_condition_space, validate_full_response, validate_v2_request
 from framework.migration import time_bundle
@@ -19,6 +19,7 @@ from framework.read_get import ReadSnapshot, read_get
 from framework.security import binding_shape, context_shape, emit_allowed
 from framework.spec import canonical, parse
 from framework.read_search import read_search
+from framework.write_token import decide_write
 from sandbox_runtime.store import wordset
 from shadow_runtime.audit import PayloadFreeAuditLog, inspect_audit
 from shadow_runtime.durability import ExclusiveFileLock, atomic_write_text, ensure_dir_durable, probe_platform_durability
@@ -530,84 +531,45 @@ class ShadowMarkdownStore:
                 current_now_provider=current_now_provider,
             )
 
+    def _write_history_response(self, decision, tok_rec, manifest_body, ctx, rid):
+        base = dict(version="0.2-full", request_id=rid, scope="mutation", snapshot_ref=None,
+                    policy_generation=None, records=None, next_cursor=None, historical_receipt=None,
+                    selfcheck_aggregate=None, target=None)
+        action = decision.action
+        if action == "return_original":
+            nid = tok_rec["node_id"]
+            nodes, metas = self._build_graph_nodes(manifest_body)
+            can_r = can_read_with_epoch_cache(self.model, nid, nodes, tenant=ctx["tenant"], principal=ctx["principal"], clearance=ctx["clearance"], graph_epoch=manifest_body["graph_epoch"], cache=self.cache)
+            proj = metas[nid]["state"] if can_r else "unknown"
+            audit = self._audit_status_norm(ctx["tenant"], tok_rec["receipt"])
+            base.update(outcome="ok" if audit == "ok" else "error",
+                        error_code=None if audit == "ok" else ("AUDIT_INCOMPLETE" if audit == "missing" else "AUDIT_FAILED"),
+                        next_action="return_original" if audit == "ok" else "reconcile_audit",
+                        policy_generation=manifest_body["policy_generation"],
+                        target=dict(commit_status="committed", audit=audit, projection=proj, negative_basis="unassessed"),
+                        historical_receipt=copy.deepcopy(tok_rec["receipt"]))
+        elif action == "return_original_cancel":
+            base.update(outcome="error", error_code="CANCELLED", next_action="return_original_cancel",
+                        target=dict(commit_status="absent", audit="unknown", projection="unknown", negative_basis="durable_cancel"))
+        elif action == "conflict":
+            base.update(outcome="error", error_code="TOKEN_PAYLOAD_CONFLICT", next_action="fix_input")
+        else:
+            base.update(outcome="unknown", error_code="INTEGRITY_FAILURE" if action == "integrity_failure" else "RECOVERY_UNCERTAIN",
+                        next_action="query_same_token", target=dict(commit_status="unknown", audit="unknown", projection="unknown", negative_basis="unassessed"))
+        return validate_full_response(base)
+
     def _write_locked(self, req: dict, ctx: dict, now: int, rid: str, *, fault_hook=None) -> dict:
         kind = req["kind"]
-        fp = request_fingerprint(req)
-        tok_rec, tok_corrupt = self._load_token_record(ctx["tenant"], ctx["principal"], kind, req["caller_token"])
-        if tok_corrupt:
-            return validate_full_response({
-                "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "unknown",
-                "error_code": "INTEGRITY_FAILURE", "next_action": "query_same_token",
-                "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                "target": {"commit_status": "unknown", "audit": "unknown", "projection": "unknown", "negative_basis": "unassessed"},
-                "historical_receipt": None, "selfcheck_aggregate": None,
-            })
-
-        manifest_body = self._load_manifest_or_init()
-        if tok_rec is None:
-            intent_rec, intent_corrupt = self._load_intent_for_scope(ctx["tenant"], ctx["principal"], kind, req["caller_token"])
-            if intent_corrupt:
-                return validate_full_response({
-                    "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "unknown",
-                    "error_code": "INTEGRITY_FAILURE", "next_action": "query_same_token",
-                    "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                    "target": {"commit_status": "unknown", "audit": "unknown", "projection": "unknown", "negative_basis": "unassessed"},
-                    "historical_receipt": None, "selfcheck_aggregate": None,
-                })
-            if intent_rec is not None:
-                if intent_rec["fingerprint"] != fp:
-                    return validate_full_response({
-                        "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "error",
-                        "error_code": "TOKEN_PAYLOAD_CONFLICT", "next_action": "fix_input",
-                        "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                        "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
-                    })
-                return validate_full_response({
-                    "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "unknown",
-                    "error_code": "RECOVERY_UNCERTAIN", "next_action": "query_same_token",
-                    "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                    "target": {"commit_status": "unknown", "audit": "unknown", "projection": "unknown", "negative_basis": "unassessed"},
-                    "historical_receipt": None, "selfcheck_aggregate": None,
-                })
-        if tok_rec is not None:
-            same_fp = True if (tok_rec["fingerprint"] is None and tok_rec.get("negative_basis") == "durable_cancel") else (tok_rec["fingerprint"] == fp)
-            action = retry_action(tok_rec["commit_status"], same_fp, tok_rec["history_complete"], tok_rec["negative_basis"])
-            if action == "conflict":
-                return validate_full_response({
-                    "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "error",
-                    "error_code": "TOKEN_PAYLOAD_CONFLICT", "next_action": "fix_input",
-                    "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                    "target": None, "historical_receipt": None, "selfcheck_aggregate": None,
-                })
-            if action == "return_original":
-                nid = tok_rec["node_id"]
-                nodes, metas = self._build_graph_nodes(manifest_body)
-                can_r = can_read_with_epoch_cache(self.model, nid, nodes, tenant=ctx["tenant"], principal=ctx["principal"], clearance=ctx["clearance"], graph_epoch=manifest_body["graph_epoch"], cache=self.cache)
-                proj = metas[nid]["state"] if can_r else "unknown"
-                audit_norm = self._audit_status_norm(ctx["tenant"], tok_rec["receipt"])
-                return validate_full_response({
-                    "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "ok" if audit_norm == "ok" else "error",
-                    "error_code": None if audit_norm == "ok" else ("AUDIT_INCOMPLETE" if audit_norm == "missing" else "AUDIT_FAILED"),
-                    "next_action": "return_original" if audit_norm == "ok" else "reconcile_audit",
-                    "snapshot_ref": None, "policy_generation": manifest_body["policy_generation"], "records": None, "next_cursor": None,
-                    "target": {"commit_status": "committed", "audit": audit_norm, "projection": proj, "negative_basis": "unassessed"},
-                    "historical_receipt": copy.deepcopy(tok_rec["receipt"]), "selfcheck_aggregate": None,
-                })
-            if action == "return_original_cancel":
-                return validate_full_response({
-                    "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "error",
-                    "error_code": "CANCELLED", "next_action": "return_original_cancel",
-                    "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                    "target": {"commit_status": "absent", "audit": "unknown", "projection": "unknown", "negative_basis": "durable_cancel"},
-                    "historical_receipt": None, "selfcheck_aggregate": None,
-                })
-            return validate_full_response({
-                "version": "0.2-full", "request_id": rid, "scope": "mutation", "outcome": "unknown",
-                "error_code": "RECOVERY_UNCERTAIN", "next_action": "query_same_token",
-                "snapshot_ref": None, "policy_generation": None, "records": None, "next_cursor": None,
-                "target": {"commit_status": "unknown", "audit": "unknown", "projection": "unknown", "negative_basis": "unassessed"},
-                "historical_receipt": None, "selfcheck_aggregate": None,
-            })
+        scope = (ctx["tenant"], ctx["principal"], kind, req["caller_token"])
+        tok_rec, tok_corrupt = self._load_token_record(*scope)
+        intent, intent_corrupt = None, False
+        if tok_rec is None and not tok_corrupt:
+            intent, intent_corrupt = self._load_intent_for_scope(*scope)
+        decision = decide_write(req, token=tok_rec, token_corrupt=tok_corrupt, intent=intent, intent_corrupt=intent_corrupt)
+        manifest_body = self._load_manifest_or_init() if decision.action in ("return_original", "first_apply_candidate") else None
+        if decision.action != "first_apply_candidate":
+            return self._write_history_response(decision, tok_rec, manifest_body, ctx, rid)
+        fp = decision.fingerprint
 
         durable = req["durability_request"] == "power"
         if durable:

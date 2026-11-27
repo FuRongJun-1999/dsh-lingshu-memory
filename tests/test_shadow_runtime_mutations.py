@@ -41,7 +41,7 @@ class ShadowRuntimeMutationTests(unittest.TestCase):
             ("allow_overwrite_revision_md", "if md_target.exists() or meta_target.exists():", "if False:"),
             ("allow_overwrite_correct_revision_md", 'if self._md_path(node_id, new_rev).exists() or self._meta_path(node_id, new_rev).exists():', "if False:"),
             ("ignore_corrupt_index", 'postings=None if idx is None else idx["inverted"]', 'postings={} if idx is None else idx["inverted"]'),
-            ("skip_cancel_fence_on_write", 'if action == "return_original_cancel":', "if False:"),
+            ("skip_cancel_fence_on_write", 'elif action == "return_original_cancel":', "elif False:"),
             ("skip_proof_sha_check", 'if _sha_obj(body) != proof["proof_sha"]:', "if False:"),
             ("skip_meta_sha_check", 'if type(meta["meta_sha"]) is not str or _sha_obj(body) != meta["meta_sha"]:', "if False:"),
             ("skip_manifest_state_binding", 'or meta["state"] != entry["state"]):', 'or False):'),
@@ -69,6 +69,8 @@ class ShadowRuntimeMutationTests(unittest.TestCase):
                              if method_name else unittest.defaultTestLoader.loadTestsFromTestCase(tm2.ShadowRuntimeR01ToR09Tests))
                     res_s = unittest.TextTestRunner(stream=io.StringIO()).run(suite)
                     failed_names = {case._testMethodName for case, _ in res_s.failures + res_s.errors}
+                    if name == "skip_cancel_fence_on_write":
+                        self.assertIn("test_r02_crash_points_cross_process_race_and_cancel_fence", failed_names)
                     if name == "selfcheck_fake_c_pass":
                         self.assertIn("test_selfcheck_never_reports_unimplemented_checks_as_pass", failed_names)
                     self.assertFalse(res_s.wasSuccessful(), "mutant survived: " + name)

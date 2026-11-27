@@ -146,9 +146,65 @@
     },
     {
       "id": "write.token",
-      "name": "写入与幂等",
-      "state": "planned",
-      "dependencies": []
+      "name": "写入受理与幂等裁决",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/write_token.py",
+        "symbol": "decide_write"
+      },
+      "implementation": [
+        {
+          "path": "framework/write_token.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore.execute"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._write_locked"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._write_history_response"
+        }
+      ],
+      "conditions": [
+        "请求通过 v2 校验，上下文由可信入口提供。",
+        "调用者在同一库锁及可信身份作用域内查 token；缺 token 时查 intent。",
+        "只有两个证据面均确认未见，才进入首次受理检查；恢复查询不以缺失推断未提交。"
+      ],
+      "subfunctions": [
+        "请求语义指纹",
+        "历史裁决",
+        "首次受理前置条件"
+      ],
+      "execution": "返回首次受理候选、原回执路径、取消、冲突或未知；不读写磁盘。影子层决定授权和耐久条件，在同一锁内执行事务。",
+      "negative": [
+        "不复制旧写链的元数据补丁或审核队列。",
+        "不证明跨主机互斥、掉电或恰好一次。",
+        "治理、取消和恢复各自另行拆解。"
+      ],
+      "evidence": [
+        "tests/test_write_token.py",
+        "scripts/docker_process_lab.py",
+        "scripts/docker_mcp_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3805,
+          3836
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "condition.time",
+        "snapshot.body",
+        "transaction.storage"
+      ]
     },
     {
       "id": "govern.recovery",
@@ -160,6 +216,12 @@
       "id": "context.recall",
       "name": "任务触发取用",
       "state": "planned",
+      "dependencies": []
+    },
+    {
+      "id": "transaction.storage",
+      "name": "共享文件事务与恢复",
+      "state": "dependency",
       "dependencies": []
     }
   ]
