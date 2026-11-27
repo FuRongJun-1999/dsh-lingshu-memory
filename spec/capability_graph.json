@@ -933,6 +933,56 @@
         "snapshot.body",
         "recovery.plan"
       ]
+    },
+    {
+      "id": "stg.time_check",
+      "name": "授权当前修订时间证据检查",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/time_consistency.py",
+        "symbol": "check_time"
+      },
+      "implementation": [
+        {
+          "path": "framework/time_consistency.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/time_check_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信主体、同锁快照、显式单轴、待核对时点及适用条件。",
+        "先授权，再区分确定冲突与未知。"
+      ],
+      "subfunctions": [
+        "单节点可见性判定",
+        "显式时间字段分类",
+        "仅投影当前定位符和诊断"
+      ],
+      "execution": "拒绝项不分不存在与不可见；倒置、空区间或时点在半开区间外为冲突。未知不报通过。",
+      "negative": [
+        "不迁旧空间字段、全库巡查、毫秒归一或自动修正；不是旧协议。"
+      ],
+      "evidence": [
+        "tests/test_time_consistency.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4987,
+          4989
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "condition.time",
+        "snapshot.body",
+        "recovery.plan"
+      ]
     }
   ]
 }

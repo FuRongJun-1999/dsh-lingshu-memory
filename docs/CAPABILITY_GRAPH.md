@@ -25,6 +25,8 @@ graph LR
   L --> A
   WN[授权时间窗锚点] --> T
   WN --> A
+  TC[授权当前修订时间证据检查] --> T
+  TC --> A
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -106,3 +108,9 @@ graph LR
 [独立接口](<../framework/time_anchors.py>)在明确选择的轴上与有限非空查询窗比较；[文件端口](<../shadow_runtime/anchors_port.py>)使用同锁已校验的当前修订。先授权及筛选适用条件，再检查时间交集。区间按左闭右开，端点接触不算相交；明确无界不等于未知。只按标识确定顺序、截断至 1–100 项，结果仅含轴及定位符，不含正文、原区间、坐标或全库计数。[定向验证](<../tests/test_time_anchors.py>)涵盖无界、未知、端点变异、隐藏记录与换版。
 
 这是[固定旧 anchors](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/stg.py#L664-L733)的时间窗子集（源码 SHA256 42ad24f6cbd95244be7406a45c6500e06e44983d89012d7a03a9e55d45c275b9），不复刻空间查询、热层、旧缺省轴、索引扫描统计或预览，未接旧协议或现用 GUI。
+
+## 授权当前修订时间证据检查
+
+[独立检查](<../framework/time_consistency.py>)要求显式时点、单轴与条件。可见且条件匹配才判断当前修订；[合成文件适配](<../shadow_runtime/time_check_port.py>)在共享锁内恢复、核对快照。倒置、空区间和已知的区间外时点是冲突；已有确定冲突无需等待另一端点，不能判定时返回 unknown。已知相容只指本时点与该轴，不等于普遍自洽。结果只含定位符和诊断，无正文、原区间、隐藏计数。
+
+[冻结上游检查](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/stg.py#L737-L782)仅作为时间冲突语义来源（SHA256 42ad24f6cbd95244be7406a45c6500e06e44983d89012d7a03a9e55d45c275b9）。不承接全库巡查、空间、旧秒/毫秒归一及默认轴，不补造旧 temporal 字段。[定向与故障变异](<../tests/test_time_consistency.py>)对照半开端点、隐藏与缺失、双轴及换版。未接旧协议或现用 GUI。

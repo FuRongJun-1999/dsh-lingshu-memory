@@ -1,7 +1,7 @@
 # 固定上游记忆功能迁移对照（生成）
 
 范围：固定上游提交的 39 个 cg 和 5 个 stg 顶层操作。未运行旧仓，不覆盖 action、参数组合和历史别名。
-统计：9 项子集有隔离证据，35 项未迁移，旧接口可调用 0 项。
+统计：10 项子集有隔离证据，34 项未迁移，旧接口可调用 0 项。
 
 “子集有证据”只指新版中文功能图中的隔离能力；不表示旧协议兼容。既有 S3 映射保留原冻结基线。
 新版节点见[记忆能力图](<CAPABILITY_GRAPH.md>)；旧候选见[兼容候选](<COMPATIBILITY.md>)。
@@ -50,5 +50,5 @@
 | [stg.relation](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4953-L4975) | 子集隔离验证 | stg.time_relation：双端当前修订均可见且条件适用；显式单时间轴，不返回空间。 | 不迁旧空间、热层预览、缺省观察轴或原区间输出；相邻端点语义按新版左闭右开。 |
 | [stg.timeline](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4976-L4982) | 子集隔离验证 | stg.timeline：显式轴和时点；只排序已授权且适用的当前修订。 | 未迁旧会话归一、整库时间线、原区间视图、层级与正文预览。 |
 | [stg.anchors](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4983-L4986) | 子集隔离验证 | stg.anchors：显式轴与有限非空时间窗；只投影授权且适用的相交当前修订。 | 未迁旧坐标适配、空间范围、扫描统计或正文预览。 |
-| [stg.consistency](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4987-L4989) | 未迁移 | 无已验收迁移子集 | 未迁移时空一致性；不以内部安全判据替代。 |
+| [stg.consistency](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4987-L4989) | 子集隔离验证 | stg.time_check：可见且条件适用的当前修订，显式轴和时点；未知与确定冲突分开。 | 未迁旧全库巡查、空间、历史时间单位及旧观察轴内 temporal 与窗口映射。 |
 | [stg.state_chain](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4990-L4999) | 未迁移 | 无已验收迁移子集 | 未迁移受开关保护的状态投影；不伪造效力轴。 |

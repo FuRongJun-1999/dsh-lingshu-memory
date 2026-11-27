@@ -583,10 +583,15 @@
         4987,
         4989
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未迁移时空一致性；不以内部安全判据替代。"
+      "evidence": [
+        {
+          "capability": "stg.time_check",
+          "condition": "可见且条件适用的当前修订，显式轴和时点；未知与确定冲突分开。"
+        }
+      ],
+      "gap": "未迁旧全库巡查、空间、历史时间单位及旧观察轴内 temporal 与窗口映射。"
     },
     {
       "tool": "stg",
