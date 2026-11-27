@@ -338,10 +338,15 @@
         629,
         647
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "index.python_declarations",
+          "condition": "已授权且版本匹配的 Python 快照，静态生成顶层声明引用。"
+        }
+      ],
+      "gap": "不迁旧目录扫描、多语言、嵌套声明、注释渲染、写入和增量水位。"
     },
     {
       "tool": "cg",

@@ -1390,6 +1390,49 @@
       "dependencies": [
         "ref.source"
       ]
+    },
+    {
+      "id": "index.python_declarations",
+      "name": "授权 Python 顶层声明引用",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/python_declarations.py",
+        "symbol": "index_python"
+      },
+      "implementation": [
+        {
+          "path": "framework/python_declarations.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "已登记且授权的 UTF-8 源 ID、可信不可变快照及整源摘要。",
+        "显式 Python 3.11 语法口径、LF 或 CRLF。"
+      ],
+      "subfunctions": [
+        "授权和版本核对",
+        "静态顶层声明定位",
+        "原字节区间摘要绑定"
+      ],
+      "execution": "只返回名称、类型和定位符；最多64项，每项256行。语法失败或超限整次拒绝。",
+      "negative": [
+        "不导入或执行源；不读取路径，不做嵌套声明展开、多语言、注释渲染、水位或落库。"
+      ],
+      "evidence": [
+        "tests/test_python_declarations.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/codeindex.py",
+        "lines": [
+          140,
+          180
+        ]
+      },
+      "dependencies": [
+        "ref.source"
+      ]
     }
   ]
 }

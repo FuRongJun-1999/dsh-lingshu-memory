@@ -59,6 +59,7 @@
 | stage-0.2-v21 | 9a6149e54e7cbe207cef0700f0603dbb51f1f0b9 | 413 | I1 | NOT_RUN/BLOCK | 公开条件查询与四矩阵复验 |
 | stage-0.2-v22 | 798050f82ff044ab6f1fbfa94b8b245c54c08540 | 416 | I1 | NOT_RUN/BLOCK | 授权任务状态子集及公开四矩阵 |
 | stage-0.2-v23 | 8fe0527562924c8336d5bdab5498a5675b0ed1e4 | 419 | I1 | NOT_RUN/BLOCK | 授权源区间回读及公开四矩阵 |
+| stage-0.2-v24 | 9674eb1a382b4e1e8f6a3541b19920f508619249 | 422 | I1 | NOT_RUN/BLOCK | 文档章节定位闭环及公开四矩阵 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

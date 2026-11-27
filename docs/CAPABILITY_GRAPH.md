@@ -38,6 +38,7 @@ graph LR
   TP[显式任务状态迁移] --> SE
   RF[授权源区间精确回读] --> A
   DS[授权文档章节引用] --> RF
+  CD[授权 Python 顶层声明引用] --> RF
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -179,3 +180,9 @@ graph LR
 [独立构造器](<../framework/document_sections.py>)只接受已登记、已授权且整源摘要匹配的 UTF-8 快照。只在围栏外识别一级至三级 ATX 标题；跳过开头闭合的元数据块；每段止于下一个受支持标题的前一行。围栏须用同类标记且长度不短于开围栏。标题前普通正文不产生引用。最多 64 段，每段最多 256 行；未闭合或超额整次拒绝。返回层级和字节绑定引用，不返回原文或自动写库。
 
 对照[固定旧标题判据](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/docindex.py#L86-L115)（SHA256 880479af92609ad2ee031d527e7905177731a1e9dfc5525fe3adfb4fb69d5d23），不迁旧目录扫描、小节归并、CCG 渲染、索引写入或水位。[回归](<../tests/test_document_sections.py>)以[源区间读口](<../framework/source_ref.py>)回读每个生成定位符，核对原始字节与围栏变异。
+
+## 授权 Python 顶层声明引用
+
+[独立构造器](<../framework/python_declarations.py>)仅接受已授权、版本一致的 UTF-8 快照。按 Python 3.11 语法口径静态分析，只索引顶层函数、异步函数和类，从 def/class 行开始，不包括前置装饰器。返回名称、类型和原字节定位符，不复制正文，不导入或执行源码；只支持 LF/CRLF，语法错误或超限整次拒绝。
+
+对照[固定旧 Python 抽取器](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/codeindex.py#L140-L180)（SHA256 aad69786d2107b8a852fa4520306862e9945b519f52c5dfb0f4225f8681d2f41）。不迁旧目录扫描、所有语言、嵌套展开、注释渲染、写库或增量水位。[定向测试](<../tests/test_python_declarations.py>)用独立源区间读口核对 CRLF 和末行字节，并验证未授权、语法错误和换版拒绝。
