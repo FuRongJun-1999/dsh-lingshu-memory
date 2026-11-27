@@ -23,6 +23,8 @@ graph LR
   Z --> A
   L[授权当前修订时间线] --> T
   L --> A
+  WN[授权时间窗锚点] --> T
+  WN --> A
   P[独立恢复方向] --> S
   C[任务触发证据取用] --> O[合成授权读取与观察端口]
   C --> G
@@ -98,3 +100,9 @@ graph LR
 [时间线独立接口](<../framework/read_timeline.py>)在显式轴和查询时点筛选已授权、条件适用且可判定的当前修订；[文件适配](<../shadow_runtime/timeline_port.py>)沿用恢复与锁。区间左闭右开；未知端点或无有限起点不进入排序。先过滤，再以起点递减、同起点按标识递增排序并截断。输出只有轴及当前定位符，不返回正文、原区间或计数。[实测](<../tests/test_read_timeline.py>)对比隐藏样例、端点、双轴和修订变化；移除权限判据时反例会变红。
 
 对照[固定旧入口](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/mcp_server.py#L4976-L4982)及[旧时间线](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/stg.py#L602-L660)（源码 SHA256 42ad24f6cbd95244be7406a45c6500e06e44983d89012d7a03a9e55d45c275b9）。本批只做一个查询时点，不复制会话归一、历史路径、跨会话统计、预览、旧协议和生产认证。
+
+## 授权时间窗当前修订锚点
+
+[独立接口](<../framework/time_anchors.py>)在明确选择的轴上与有限非空查询窗比较；[文件端口](<../shadow_runtime/anchors_port.py>)使用同锁已校验的当前修订。先授权及筛选适用条件，再检查时间交集。区间按左闭右开，端点接触不算相交；明确无界不等于未知。只按标识确定顺序、截断至 1–100 项，结果仅含轴及定位符，不含正文、原区间、坐标或全库计数。[定向验证](<../tests/test_time_anchors.py>)涵盖无界、未知、端点变异、隐藏记录与换版。
+
+这是[固定旧 anchors](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/stg.py#L664-L733)的时间窗子集（源码 SHA256 42ad24f6cbd95244be7406a45c6500e06e44983d89012d7a03a9e55d45c275b9），不复刻空间查询、热层、旧缺省轴、索引扫描统计或预览，未接旧协议或现用 GUI。

@@ -566,10 +566,15 @@
         4983,
         4986
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未迁移时空锚与坐标过滤。"
+      "evidence": [
+        {
+          "capability": "stg.anchors",
+          "condition": "显式轴与有限非空时间窗；只投影授权且适用的相交当前修订。"
+        }
+      ],
+      "gap": "未迁旧坐标适配、空间范围、扫描统计或正文预览。"
     },
     {
       "tool": "stg",

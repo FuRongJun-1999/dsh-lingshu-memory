@@ -883,6 +883,56 @@
         "snapshot.body",
         "recovery.plan"
       ]
+    },
+    {
+      "id": "stg.anchors",
+      "name": "授权时间窗当前修订锚点",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/time_anchors.py",
+        "symbol": "time_anchors"
+      },
+      "implementation": [
+        {
+          "path": "framework/time_anchors.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/anchors_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "可信主体、同锁快照、显式单轴与非空有限查询窗。",
+        "已授权且条件适用，当前修订区间与查询窗相交；未知无资格。"
+      ],
+      "subfunctions": [
+        "授权先于端点读取",
+        "左闭右开窗口相交",
+        "确定顺序及限额定位符投影"
+      ],
+      "execution": "端点相接不相交；明确无界允许，未知不猜。最终仅返回轴与当前定位符。",
+      "negative": [
+        "不迁旧坐标、空间范围、默认轴、扫描统计或正文预览。"
+      ],
+      "evidence": [
+        "tests/test_time_anchors.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          4983,
+          4986
+        ]
+      },
+      "dependencies": [
+        "policy.read",
+        "condition.time",
+        "snapshot.body",
+        "recovery.plan"
+      ]
     }
   ]
 }
