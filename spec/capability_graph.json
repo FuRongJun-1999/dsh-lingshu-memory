@@ -2333,6 +2333,48 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "predict.feedback_stats",
+      "name": "授权预测反馈统计",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/prediction_stats.py",
+        "symbol": "prediction_stats"
+      },
+      "implementation": [
+        {
+          "path": "framework/prediction_stats.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "宿主逐条授权反馈并独立锚定完整样本摘要和政策快照。"
+      ],
+      "subfunctions": [
+        "权限先行",
+        "预测 ID 去重及布尔标签校验",
+        "非空样本精确命中率"
+      ],
+      "execution": "仅聚合计数和比例，不回显样本。",
+      "negative": [
+        "不迁路线、反馈写入、缺省命中率、贝叶斯或动态阈值。"
+      ],
+      "evidence": [
+        "tests/test_prediction_stats.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/predict.py",
+        "lines": [
+          987,
+          1000
+        ]
+      },
+      "dependencies": [
+        "policy.read"
+      ]
     }
   ]
 }

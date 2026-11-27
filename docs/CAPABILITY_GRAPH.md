@@ -317,3 +317,9 @@ graph LR
 [独立报告接口](<../framework/insight_rate.py>)要求宿主逐条授权，在同一策略快照下独立固定样本摘要。只聚合明确观察窗，已验证数除以已验证与已证伪之和，待裁决不进分母。达到调用方指定门限才返回精确分数；样本不足不报告比例。完整授权样本的摘要必须匹配，窗外漂移也拒绝。
 
 参照[冻结旧有效洞见率判据](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/insight.py#L378-L416)，不迁显著性或整层可靠性分类，也不生成、改写和裁决洞察。[反例](<../tests/test_insight_rate.py>)覆盖待裁决、权限、门限与窗外漂移。
+
+## 授权预测反馈统计
+
+[独立统计接口](<../framework/prediction_stats.py>)仅读宿主逐条授权且与独立摘要相符的反馈快照。至多 256 项，每个预测 ID 只允许一个明确布尔标签；重复、无效标签或版本变化整次拒绝。以确切分数返回命中率，空样本不报告读数，也不回显样本。
+
+参照[冻结旧预测命中统计](https://github.com/FuRongJun-1999/dsh-memory/blob/71efd6785b373a99504b74c61b2c03136d7fd809/md_cg/predict.py#L987-L1000)。不迁旧缺省命中率、路线生成、反馈写入、通道后验或阈值调整。[反例](<../tests/test_prediction_stats.py>)覆盖零样本、权限、重复和漂移。

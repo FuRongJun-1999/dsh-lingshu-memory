@@ -82,6 +82,7 @@
 | stage-0.2-v44 | 6e8f2a77a78acf3083a277a4825b99e9c98446d3 | 479 | I1 | NOT_RUN/BLOCK | 事件摄取预演与四路 Docker，本地验收 |
 | stage-0.2-v45 | 73c584917e769a85425bd818059bac6399ace70e | 482 | I1 | NOT_RUN/BLOCK | 失效传播预演与四路 Docker，本地验收 |
 | stage-0.2-v46 | d0edb22be6c8b70d6e278a4acd0468a4c567bebe | 485 | I1 | NOT_RUN/BLOCK | 白箱回读与四路 Docker，本地验收 |
+| stage-0.2-v47 | f4411c2cdf20685a4b4599ba02ea5c6085f0bfab | 488 | I1 | NOT_RUN/BLOCK | 洞察裁决率与四路 Docker，本地验收 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

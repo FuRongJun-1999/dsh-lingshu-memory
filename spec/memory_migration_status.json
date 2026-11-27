@@ -251,10 +251,15 @@
         390,
         430
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "predict.feedback_stats",
+          "condition": "授权且摘要固定的反馈，报告精确命中率；空样本不定。"
+        }
+      ],
+      "gap": "不迁路线预测、反馈写入、全库统计、先验和阈值及旧协议。"
     },
     {
       "tool": "cg",
