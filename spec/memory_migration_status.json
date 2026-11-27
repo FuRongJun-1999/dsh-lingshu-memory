@@ -1,0 +1,574 @@
+{
+  "format": 1,
+  "upstream": {
+    "repo": "FuRongJun-1999/dsh-memory",
+    "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+    "sources": {
+      "cg": {
+        "path": "md_cg/op_table.py",
+        "sha256": "47e161e68332fbbb99da501a35c4dfe04af0acf61c100c395e6c116ac82f34d7"
+      },
+      "stg": {
+        "path": "md_cg/mcp_server.py",
+        "sha256": "fd367661c814c349ba9ce178a24b58e15981b80a9e858b6759569673edd9cc2e"
+      }
+    }
+  },
+  "operations": [
+    {
+      "tool": "cg",
+      "op": "route",
+      "lines": [
+        33,
+        46
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "无旧路由与路由副作用的迁移验收；不能用候选搜索替代。"
+    },
+    {
+      "tool": "cg",
+      "op": "read",
+      "lines": [
+        47,
+        78
+      ],
+      "state": "partial",
+      "runtime_ready": false,
+      "evidence": [
+        {
+          "capability": "read.get",
+          "condition": "显式节点标识；按当前修订、授权、条件与时间读回。"
+        },
+        {
+          "capability": "read.search",
+          "condition": "显式查询；只在已授权且适用的候选中排序。"
+        },
+        {
+          "capability": "context.recall",
+          "condition": "结构化任务与受信端口；按明确知识键确认并实时复核。"
+        }
+      ],
+      "gap": "未接旧式分页、标签/角色视图、token 截断、近况融合及查询推导。"
+    },
+    {
+      "tool": "cg",
+      "op": "write",
+      "lines": [
+        79,
+        99
+      ],
+      "state": "partial",
+      "runtime_ready": false,
+      "evidence": [
+        {
+          "capability": "write.token",
+          "condition": "显式新建或修改、可信身份及同锁 token/intent 证据。"
+        }
+      ],
+      "gap": "未接旧 upsert、元数据补丁、写入档位或审核队列。"
+    },
+    {
+      "tool": "cg",
+      "op": "verify",
+      "lines": [
+        100,
+        118
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "存在隔离文件核验支撑，但没有旧版核验凭据与接口的兼容验收。"
+    },
+    {
+      "tool": "cg",
+      "op": "review",
+      "lines": [
+        119,
+        151
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "protect",
+      "lines": [
+        152,
+        170
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "identity",
+      "lines": [
+        171,
+        202
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "consistency",
+      "lines": [
+        203,
+        221
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "metacognition",
+      "lines": [
+        222,
+        241
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "self_state",
+      "lines": [
+        242,
+        265
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "evolution",
+      "lines": [
+        266,
+        298
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "sustain",
+      "lines": [
+        299,
+        354
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "scrub",
+      "lines": [
+        355,
+        389
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "predict",
+      "lines": [
+        390,
+        430
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "causal",
+      "lines": [
+        431,
+        454
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "forget",
+      "lines": [
+        455,
+        464
+      ],
+      "state": "partial",
+      "runtime_ready": false,
+      "evidence": [
+        {
+          "capability": "govern.recovery",
+          "condition": "治理须通过主体、预期修订与状态检查；恢复须有有效证明。"
+        },
+        {
+          "capability": "recovery.plan",
+          "condition": "仅新版合成文件事务的恢复方向，不是旧遗忘接口。"
+        }
+      ],
+      "gap": "未接旧档位、强制恢复或覆写、旧文件格式；不做物理删除。"
+    },
+    {
+      "tool": "cg",
+      "op": "goal",
+      "lines": [
+        465,
+        501
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "task",
+      "lines": [
+        502,
+        559
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "取用消费显式任务；未迁移旧任务状态和归档。"
+    },
+    {
+      "tool": "cg",
+      "op": "recent",
+      "lines": [
+        560,
+        590
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "state_view",
+      "lines": [
+        591,
+        604
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "state_event",
+      "lines": [
+        605,
+        618
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "info",
+      "lines": [
+        619,
+        628
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "index_code",
+      "lines": [
+        629,
+        647
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "index_doc",
+      "lines": [
+        648,
+        657
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "ref",
+      "lines": [
+        658,
+        676
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "whitebox",
+      "lines": [
+        677,
+        729
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "theory",
+      "lines": [
+        730,
+        744
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "link",
+      "lines": [
+        745,
+        806
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "session",
+      "lines": [
+        807,
+        833
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "ingest",
+      "lines": [
+        834,
+        849
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "export",
+      "lines": [
+        850,
+        871
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "maintain",
+      "lines": [
+        872,
+        922
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "consolidate",
+      "lines": [
+        923,
+        941
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "insight",
+      "lines": [
+        942,
+        984
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "ccg",
+      "lines": [
+        985,
+        1002
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "status",
+      "lines": [
+        1003,
+        1015
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "有新版回执/恢复判据，但未验旧状态投影与字段。"
+    },
+    {
+      "tool": "cg",
+      "op": "edges",
+      "lines": [
+        1016,
+        1031
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "内部血缘参与授权，不等于已实现旧边视图。"
+    },
+    {
+      "tool": "cg",
+      "op": "audit",
+      "lines": [
+        1032,
+        1041
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "cg",
+      "op": "help",
+      "lines": [
+        1042,
+        1051
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+    },
+    {
+      "tool": "stg",
+      "op": "relation",
+      "lines": [
+        4953,
+        4975
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未迁移时空关系与观察轴默认行为。"
+    },
+    {
+      "tool": "stg",
+      "op": "timeline",
+      "lines": [
+        4976,
+        4982
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未迁移观察轴时间线及会话过滤。"
+    },
+    {
+      "tool": "stg",
+      "op": "anchors",
+      "lines": [
+        4983,
+        4986
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未迁移时空锚与坐标过滤。"
+    },
+    {
+      "tool": "stg",
+      "op": "consistency",
+      "lines": [
+        4987,
+        4989
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未迁移时空一致性；不以内部安全判据替代。"
+    },
+    {
+      "tool": "stg",
+      "op": "state_chain",
+      "lines": [
+        4990,
+        4999
+      ],
+      "state": "not_migrated",
+      "runtime_ready": false,
+      "evidence": [],
+      "gap": "未迁移受开关保护的状态投影；不伪造效力轴。"
+    }
+  ]
+}

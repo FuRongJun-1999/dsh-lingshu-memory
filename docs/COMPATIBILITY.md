@@ -53,6 +53,8 @@
 | stg | consistency | extension | 4227 |
 | stg | state_chain | extension | 4230 |
 
+较新的固定上游与已验收子集另见[迁移进度对照](<MEMORY_MIGRATION_STATUS.md>)；不改此冻结候选矩阵。
+
 ## 非自动等价映射
 
 cg read包含get/search/recall及大量时间/角色视图参数；必须按已核对的shape明确分流，不能用node_id真假替代显式kind。route检索可有副作用，不能因映射Read就绕过状态变更审计。status/edges只有已授权视图可输出。

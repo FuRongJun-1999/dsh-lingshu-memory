@@ -42,6 +42,7 @@
 | stage-0.2-v4 | 14a795ca66ccc252b09f6a8ce2e73ceb7b4b872c | 358 | I1 | NOT_RUN/BLOCK | 写入幂等裁决隔离验收，三条 Docker 复验 |
 | stage-0.2-v5 | ef0334dc3f974b2f57a605068f3d9c17cbce3123 | 362 | I1 | NOT_RUN/BLOCK | 治理与恢复方向独立化；文件事务在容器中实测 |
 | stage-0.2-v6 | b14845f4987c022775a916d35641f527d8c9be51 | 364 | I1 | NOT_RUN/BLOCK | 主动取用核心解耦，冻结调用轨迹和容器实测 |
+| stage-0.2-v7 | 404944e761ec48886d9f85585079817cfc961280 | 370 | I1 | NOT_RUN/BLOCK | 文件端口实测与共享实现行数机检 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）
