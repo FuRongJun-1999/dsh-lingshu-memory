@@ -2966,7 +2966,7 @@
   "source_sha": {
     "framework/context_recall.py": "e6f7203b1631360de0678fc8a42d98bc228109cd7d330bb8aab69d87546c41bb",
     "sandbox_runtime/benchmark.py": "9dace246f8ef4271bfcdf662b1ac91d7975e3a642b6d875e9f37c9a3110f1a33",
-    "sandbox_runtime/controller.py": "c7173d8c55d63b42a313b96cd962aa0285a9a5c1d09b62527b90b97eca40987d",
+    "sandbox_runtime/controller.py": "cf4b341dc44cad5858fdeb04a0aedb0df6fc131c56ef6ee5ab39f21f53de517e",
     "sandbox_runtime/store.py": "d4d2b54099b67a45fac8053c11e0ae6935718e7b8634456e0c15d3f34ca53242"
   },
   "total": 39,

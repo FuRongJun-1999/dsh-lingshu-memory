@@ -1,4 +1,5 @@
 """Synchronous isolated action loop; trusted fixture inputs, not a production auth layer."""
+from dataclasses import dataclass
 import copy
 import hashlib
 from framework.api import _json_domain
@@ -44,10 +45,22 @@ class AlertSink:
         self.events.append({"event":"alert","reason":reason})
 
 
+@dataclass(frozen=True)
+class RecallPorts:
+    """受信组装者提供端口；请求正文不能构造或改变端口。"""
+    search: object
+    get: object
+    probe: Probe
+    validate: object = None
+
+
 class Controller:
     def __init__(self, store, probe, *, context_provider, clock, alerts):
-        if type(store) is not SyntheticStore or type(probe) is not Probe or store._probe is not probe or type(alerts) is not AlertSink:raise ValueError("INVALID_CAPABILITY")
+        synthetic = type(store) is SyntheticStore and store._probe is probe
+        supplied = type(store) is RecallPorts and store.probe is probe and callable(store.search) and callable(store.get)
+        if not (synthetic or supplied) or type(probe) is not Probe or type(alerts) is not AlertSink:raise ValueError("INVALID_CAPABILITY")
         if not callable(context_provider) or not callable(clock):raise ValueError("INVALID_CAPABILITY")
+        if supplied and store.validate is not None and not callable(store.validate):raise ValueError("INVALID_CAPABILITY")
         self.store=store;self.probe=probe;self.provider=context_provider;self.clock=clock;self.alerts=alerts
         self.events=[];self._pending=None;self._seq=0;self.usage={"calls":0,"bytes":0}
 
@@ -121,7 +134,9 @@ class Controller:
             if state["reason"] is not None:return {"status":"blocked","reason":state["reason"]}
             checked = revalidate_evidence(state["task"], state["rows"],
                                           get=lambda loc: self._call(state, "get", loc))
-            self._fresh(state)
+            actor, now = self._fresh(state)
+            if type(self.store) is RecallPorts and self.store.validate is not None:
+                self.store.validate(actor, now)
             output={"status":"ready","task_sha":state["task_sha"],"records":checked}
             self.events.append({"operation":"emit","task_sha":state["task_sha"],"response_sha":digest(output)})
             return output

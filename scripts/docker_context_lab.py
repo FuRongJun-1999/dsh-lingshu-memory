@@ -41,7 +41,11 @@ def observe():
         elif actual != {'status':'blocked','reason':reason} or report['alerts'] != [{'event':'alert','reason':reason}]:
             raise RuntimeError(label+' incorrect failure or alert')
         cases[label] = dict(exit=code,status=status,reason=reason,operations=operations)
-    return dict(cases=cases, dsh_model_loop='NOT_RUN', production='NOT_RUN')
+    suite = subprocess.run([sys.executable,'-X','utf8','-B','-m','unittest','discover','-s','tests','-p','test_file_recall.py','-v'],
+                           cwd=ROOT,shell=False,capture_output=True,text=True,encoding='utf-8',errors='strict',timeout=40)
+    if suite.returncode or 'Ran 4 tests' not in suite.stderr or not suite.stderr.rstrip().endswith('OK'):
+        raise RuntimeError('file recall tests failed: '+suite.stderr)
+    return dict(cases=cases, file_tests=4, dsh_model_loop='NOT_RUN', production='NOT_RUN')
 
 
 def main():
@@ -55,12 +59,15 @@ def main():
     with tempfile.TemporaryDirectory(prefix='lingshu-recall-code-') as tmp:
         root = Path(tmp)
         sources = collect(root)
-        for rel in ('scripts/docker_process_lab.py', 'scripts/docker_context_lab.py'):
-            (root/rel).write_bytes((ROOT/rel).read_bytes())
+        fixtures = ('test_file_recall.py','test_shadow_runtime.py','test_sandbox_controller.py','test_sandbox_store.py')
+        for rel in ('scripts/docker_process_lab.py', 'scripts/docker_context_lab.py', *(f'tests/{n}' for n in fixtures)):
+            dest = root/rel
+            dest.parent.mkdir(parents=True,exist_ok=True)
+            dest.write_bytes((ROOT/rel).read_bytes())
         hashes = {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                   for p in root.rglob('*') if p.is_file()}
         argv = ['docker','run','--rm','--name',name,'--pull','never','--network','none',*NO_PROXY_ENV,
-                '--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--user','65534:65534',
+                '--read-only','--tmpfs','/tmp:rw,nosuid,nodev,noexec,size=128m,mode=1777','--cap-drop','ALL','--security-opt','no-new-privileges','--user','65534:65534',
                 '--pids-limit','64','--memory','384m','--mount',f'type=bind,source={tmp},target=/exercise,readonly',
                 image['Id'],'python','-X','utf8','-B','/exercise/scripts/docker_context_lab.py','--inside']
         try:

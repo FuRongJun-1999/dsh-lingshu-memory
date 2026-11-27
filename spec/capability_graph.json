@@ -61,19 +61,129 @@
       "id": "policy.read",
       "name": "共享授权判据",
       "state": "dependency",
-      "dependencies": []
+      "dependencies": [],
+      "implementation": [
+        {
+          "path": "framework/model.py",
+          "symbol": "Edge"
+        },
+        {
+          "path": "framework/model.py",
+          "symbol": "Node"
+        },
+        {
+          "path": "framework/model.py",
+          "symbol": "Decision"
+        },
+        {
+          "path": "framework/model.py",
+          "symbol": "Model"
+        },
+        {
+          "path": "framework/model.py",
+          "symbol": "EpochDecisionCache"
+        },
+        {
+          "path": "framework/model.py",
+          "symbol": "can_read_with_epoch_cache"
+        },
+        {
+          "path": "framework/security.py",
+          "symbol": "integer"
+        },
+        {
+          "path": "framework/security.py",
+          "symbol": "context_shape"
+        },
+        {
+          "path": "framework/security.py",
+          "symbol": "binding_shape"
+        },
+        {
+          "path": "framework/security.py",
+          "symbol": "emit_allowed"
+        }
+      ]
     },
     {
       "id": "condition.time",
       "name": "共享条件与时间判据",
       "state": "dependency",
-      "dependencies": []
+      "dependencies": [],
+      "implementation": [
+        {
+          "path": "framework/conditions.py",
+          "symbol": null
+        },
+        {
+          "path": "framework/migration.py",
+          "symbol": "time_bundle"
+        },
+        {
+          "path": "framework/migration.py",
+          "symbol": "time_match"
+        },
+        {
+          "path": "framework/migration.py",
+          "symbol": "instant"
+        },
+        {
+          "path": "framework/migration.py",
+          "symbol": "interval"
+        },
+        {
+          "path": "framework/contracts.py",
+          "symbol": "_schema_to_condition_space"
+        },
+        {
+          "path": "framework/contracts.py",
+          "symbol": "extract_condition_space"
+        }
+      ]
     },
     {
       "id": "snapshot.body",
       "name": "快照与正文端口",
       "state": "dependency",
-      "dependencies": []
+      "dependencies": [],
+      "implementation": [
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._load_manifest_or_init"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._read_meta_verified"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._read_json_strict"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._build_graph_nodes"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._md_path"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._meta_path"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._manifest_path"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._load_valid_index"
+        },
+        {
+          "path": "framework/read_get.py",
+          "symbol": "ReadSnapshot"
+        }
+      ]
     },
     {
       "id": "read.search",
@@ -260,7 +370,8 @@
       },
       "dependencies": [
         "snapshot.body",
-        "policy.read"
+        "policy.read",
+        "transaction.storage"
       ]
     },
     {
@@ -287,11 +398,16 @@
         {
           "path": "sandbox_runtime/cli.py",
           "symbol": null
+        },
+        {
+          "path": "shadow_runtime/recall_port.py",
+          "symbol": null
         }
       ],
       "conditions": [
         "任务须有显式知识键、架构、版本、条件与预算；调用方校验任务并供给可信上下文及可观察端口。",
-        "先文本定位，后键组确认，完成重取与逐项实时回读；调用者保持任务、主体与票据绑定。"
+        "先文本定位，后键组确认，完成重取与逐项实时回读；调用者保持任务、主体与票据绑定。",
+        "合成文件端口在共享锁内固定清单摘要，并在最后一次读取后复验。"
       ],
       "subfunctions": [
         "文本定位和键组确认",
@@ -302,12 +418,13 @@
       "execution": "候选定位符不等于事实；重核成功才交付正文和引用。证据缺失、冲突、超预算或观测不明则只交付失败元数据。",
       "negative": [
         "无开放语义或模型自主取用保证。",
-        "当前取用端口接合成内存库；不声明已接影子文件库、现用 GUI、生产身份或旧版预算截断。"
+        "仅内存或显式合成影子库；不是现用宿主、生产身份或旧版预算截断。"
       ],
       "evidence": [
         "tests/test_context_recall.py",
         "tests/test_controller_mutations.py",
-        "scripts/docker_context_lab.py"
+        "scripts/docker_context_lab.py",
+        "tests/test_file_recall.py"
       ],
       "upstream": {
         "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
@@ -319,14 +436,119 @@
       },
       "dependencies": [
         "policy.read",
-        "context.synthetic_port"
+        "context.synthetic_port",
+        "read.get",
+        "read.search",
+        "recovery.plan"
       ]
     },
     {
       "id": "transaction.storage",
       "name": "共享文件事务与恢复",
       "state": "dependency",
-      "dependencies": []
+      "dependencies": [],
+      "implementation": [
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._prepare_transaction"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._run_prepared_transaction"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._finalize_audit"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._save_token_record"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._load_token_record"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._save_intent"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._load_intent_for_scope"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._transaction_audit"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._audit_status_norm"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._save_manifest"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._write_json_atomic"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._intent_path"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._token_path"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._index_path"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._rebuild_index_locked"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "ShadowMarkdownStore._lock"
+        },
+        {
+          "path": "shadow_runtime/audit.py",
+          "symbol": null
+        },
+        {
+          "path": "shadow_runtime/durability.py",
+          "symbol": "ExclusiveFileLock"
+        },
+        {
+          "path": "shadow_runtime/durability.py",
+          "symbol": "atomic_write_text"
+        },
+        {
+          "path": "shadow_runtime/durability.py",
+          "symbol": "append_line_durable"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "_seal_meta"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "_sha_obj"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "_sha_bytes"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "_node_dir_key"
+        },
+        {
+          "path": "shadow_runtime/store.py",
+          "symbol": "_token_key_sha"
+        }
+      ]
     },
     {
       "id": "recovery.plan",
@@ -388,7 +610,8 @@
         ]
       },
       "dependencies": [
-        "snapshot.body"
+        "snapshot.body",
+        "transaction.storage"
       ]
     },
     {
@@ -397,6 +620,12 @@
       "state": "dependency",
       "dependencies": [
         "policy.read"
+      ],
+      "implementation": [
+        {
+          "path": "sandbox_runtime/store.py",
+          "symbol": null
+        }
       ]
     }
   ]

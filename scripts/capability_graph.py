@@ -54,7 +54,15 @@ def verify(doc, root=ROOT):
     for key, row in nodes.items():
         visit(key)
         require(row['state'] in ('planned', 'dependency','isolated'), '状态未知')
-        if row['state'] != 'isolated':
+        if row['state'] == 'planned':
+            continue
+        if row['state'] == 'dependency':
+            units = row.get('implementation')
+            require(units, f'{key} 共享实现未登记')
+            counted = {(source(root, unit['path']).resolve(), i) for unit in units
+                       for i in span(source(root, unit['path']), unit['symbol'])}
+            require(0 < len(counted) <= LIMIT, f'{key} 共享实现超过 {LIMIT} 行或为空：{len(counted)}')
+            report[key] = len(counted)
             continue
         for label in ('conditions','subfunctions','execution','negative','evidence','upstream'):
             require(row.get(label), f'{key} 缺少 {label}')
@@ -72,7 +80,7 @@ def verify(doc, root=ROOT):
         for path in row['evidence']:
             source(root, path)
         report[key] = len(counted)
-    require(report, '无已登记可调用能力')
+    require(any(n['state'] == 'isolated' for n in rows), '无已登记可调用能力')
     return report
 
 
