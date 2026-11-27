@@ -1872,6 +1872,48 @@
       "dependencies": [
         "edges.visible"
       ]
+    },
+    {
+      "id": "scrub.verification_age",
+      "name": "授权长期未验证诊断",
+      "state": "isolated",
+      "entry": {
+        "path": "framework/verification_age.py",
+        "symbol": "inspect_verification_age"
+      },
+      "implementation": [
+        {
+          "path": "framework/verification_age.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "显式当前授权修订、同一临界区内的元数据和证明，按秒与整日比较。"
+      ],
+      "subfunctions": [
+        "复用当前验证态",
+        "核对修订起点及层级",
+        "含等号的时长判据"
+      ],
+      "execution": "只报告知识层当前未建立有效证明；未知元数据不报告为空诊断。",
+      "negative": [
+        "不证明污染、不改数据、不迁近似抽查、校准或自动处置。"
+      ],
+      "evidence": [
+        "tests/test_verification_age.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/scrub.py",
+        "lines": [
+          713,
+          790
+        ]
+      },
+      "dependencies": [
+        "status.current"
+      ]
     }
   ]
 }

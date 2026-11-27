@@ -214,10 +214,15 @@
         355,
         389
       ],
-      "state": "not_migrated",
+      "state": "partial",
       "runtime_ready": false,
-      "evidence": [],
-      "gap": "未建立旧参数、条件、权限与输出的独立对照，不提供兼容接线。"
+      "evidence": [
+        {
+          "capability": "scrub.verification_age",
+          "condition": "当前知识修订达到时长门限且没有建立当前有效证明，只读诊断。"
+        }
+      ],
+      "gap": "不迁全库抽查、相似污染、校准、修复及旧协议。"
     },
     {
       "tool": "cg",
