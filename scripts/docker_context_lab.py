@@ -77,7 +77,11 @@ def observe():
                                  cwd=ROOT,shell=False,capture_output=True,text=True,encoding='utf-8',errors='strict',timeout=40)
     if state_chain.returncode or 'Ran 4 tests' not in state_chain.stderr or not state_chain.stderr.rstrip().endswith('OK'):
         raise RuntimeError('state chain tests failed: '+state_chain.stderr)
-    return dict(cases=cases, file_tests=4, verification_tests=3, status_tests=3, edge_tests=3, relation_tests=3, timeline_tests=3, anchor_tests=3, time_check_tests=3, state_chain_tests=4,
+    event_port = subprocess.run([sys.executable,'-X','utf8','-B','-m','unittest','discover','-s','tests','-p','test_state_event_port.py','-v'],
+                                 cwd=ROOT,shell=False,capture_output=True,text=True,encoding='utf-8',errors='strict',timeout=40)
+    if event_port.returncode or 'Ran 4 tests' not in event_port.stderr or not event_port.stderr.rstrip().endswith('OK'):
+        raise RuntimeError('state event tests failed: '+event_port.stderr)
+    return dict(cases=cases, file_tests=4, verification_tests=3, status_tests=3, edge_tests=3, relation_tests=3, timeline_tests=3, anchor_tests=3, time_check_tests=3, state_chain_tests=4, state_event_tests=4,
                 dsh_model_loop='NOT_RUN', production='NOT_RUN')
 
 
@@ -92,7 +96,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='lingshu-recall-code-') as tmp:
         root = Path(tmp)
         sources = collect(root)
-        fixtures = ('test_state_chain.py','test_time_consistency.py','test_time_anchors.py','test_read_timeline.py','test_time_relation.py','test_read_edges.py','test_read_status.py','test_verification_capability.py','test_file_recall.py','test_shadow_runtime.py','test_sandbox_controller.py','test_sandbox_store.py')
+        fixtures = ('test_state_event_port.py','test_state_chain.py','test_time_consistency.py','test_time_anchors.py','test_read_timeline.py','test_time_relation.py','test_read_edges.py','test_read_status.py','test_verification_capability.py','test_file_recall.py','test_shadow_runtime.py','test_sandbox_controller.py','test_sandbox_store.py')
         for rel in ('scripts/docker_process_lab.py', 'scripts/docker_context_lab.py', *(f'tests/{n}' for n in fixtures)):
             dest = root/rel
             dest.parent.mkdir(parents=True,exist_ok=True)

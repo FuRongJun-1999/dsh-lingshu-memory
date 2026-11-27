@@ -51,6 +51,7 @@
 | stage-0.2-v13 | 64a8bd2b89f3a0ed78cbf29518c3de10ed5b5b03 | 387 | I1 | NOT_RUN/BLOCK | 显式时点授权时间线及容器/四矩阵 |
 | stage-0.2-v14 | de0e8a01cc5e2851a3f65fe23eac02c368253861 | 390 | I1 | NOT_RUN/BLOCK | 授权时间窗锚点及容器和四矩阵 |
 | stage-0.2-v15 | 9732a0eaeca9814c4d7bffa6298e9d165903612f | 393 | I1 | NOT_RUN/BLOCK | 单节点时间检查与公开四矩阵 |
+| stage-0.2-v16 | 617949909dc131ead74b6ae9857e52559f160754 | 397 | I1 | NOT_RUN/BLOCK | 受信单槽状态投影与容器四矩阵 |
 
 
 ## 证据等级定义（与 SELF_ITERATION_VALIDATION.md §5 一致）

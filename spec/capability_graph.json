@@ -1027,6 +1027,50 @@
       "dependencies": [
         "policy.read"
       ]
+    },
+    {
+      "id": "state.event",
+      "name": "授权单槽事件追加",
+      "state": "isolated",
+      "entry": {
+        "path": "shadow_runtime/state_event_port.py",
+        "symbol": "append_state_event"
+      },
+      "implementation": [
+        {
+          "path": "shadow_runtime/state_event_port.py",
+          "symbol": null
+        }
+      ],
+      "conditions": [
+        "显式合成目录，可信主体/时钟及单槽写授权。",
+        "同锁下校验完整事件头与上次读到的链头、预期旧值，序号自动推进。"
+      ],
+      "subfunctions": [
+        "先授权后查盘",
+        "同锁比较与事件生成",
+        "单一快照原子替换"
+      ],
+      "execution": "同旧链头并发至多一个获准；失败不放行，成功返回新链头。投影使用相同记录和链头。",
+      "negative": [
+        "不是旧 JSONL、签名台账、防宿主重写、掉电持久或多主机协议。"
+      ],
+      "evidence": [
+        "tests/test_state_event_port.py",
+        "scripts/docker_context_lab.py"
+      ],
+      "upstream": {
+        "commit": "71efd6785b373a99504b74c61b2c03136d7fd809",
+        "path": "md_cg/mcp_server.py",
+        "lines": [
+          3929,
+          3947
+        ]
+      },
+      "dependencies": [
+        "stg.state_chain",
+        "transaction.storage"
+      ]
     }
   ]
 }
